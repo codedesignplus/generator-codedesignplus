@@ -1,0 +1,25 @@
+{
+  "name": "generator-condedesignplus",
+  "version": "1.0.0",
+  "description": "yeoman generator codedesignplus",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "generators"
+  ],
+  "keywords": [
+    "yeoman",
+    "generator",
+    "codedesignplus",
+    "library",
+    "microservices"
+  ],
+  "author": "CodeDesignPlus",
+  "license": "MIT",
+  "dependencies": {
+    "yeoman-generator": "^7.2.0"
+  }
+}
