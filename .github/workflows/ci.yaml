@@ -8,9 +8,9 @@ on:
       - dev
       - feature/*
 env:
-  IS_RELEASE: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-  IS_RC: ${{ github.ref == 'refs/heads/rc' }}
-  IS_BETA: ${{ github.ref == 'refs/heads/dev' }}
+  IS_RELEASE: "${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}"
+  IS_RC: "${{ github.ref == 'refs/heads/rc' }}"
+  IS_BETA: "${{ github.ref == 'refs/heads/dev' }}"
 jobs:
   build:
     name: Build
