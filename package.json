@@ -1,6 +1,7 @@
 {
   "name": "@codedesignplus/generator-cli",
   "version": "0.0.1",
+  "private": false,
   "description": "yeoman generator codedesignplus",
   "type": "module",
   "main": "index.js",
