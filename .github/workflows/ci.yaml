@@ -12,14 +12,13 @@ env:
   IS_RC: ${{ github.ref == 'refs/heads/rc' }}
   IS_BETA: ${{ github.ref == 'refs/heads/dev' }}
 jobs:
-  yeoman:
+  build:
     name: Yeoman
     runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
       repository-projects: write
-
     steps:
       - name: Checkout
         id: checkout
