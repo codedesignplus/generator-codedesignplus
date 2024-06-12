@@ -111,7 +111,7 @@ jobs:
         
       - name: Pack
         if: env.IS_RELEASE == 'true' || env.IS_RC == 'true' || env.IS_BETA == 'true'
-        run: npm pack --pack-destination dist
+        run: mkdir dist && npm pack --pack-destination dist
 
       - name: Configure npm for npmjs.com authentication
         run: echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
