@@ -17,10 +17,10 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # permissions:
-    #   contents: write
-    #   packages: write
-    #   repository-projects: write
+    permissions:
+      contents: write
+      packages: write
+      repository-projects: write
     steps:
       - name: Checkout
         id: checkout
