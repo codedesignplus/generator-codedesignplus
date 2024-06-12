@@ -1,6 +1,6 @@
 {
-  "name": "@codedesignplus/generator-codedesignplus",
-  "version": "1.0.0",
+  "name": "@codedesignplus/generator-cli",
+  "version": "0.0.1",
   "description": "yeoman generator codedesignplus",
   "type": "module",
   "main": "index.js",
@@ -8,7 +8,9 @@
     "test": "jest",
     "unlink": "npm unlink generator-codedesignplus -g",
     "link": "npm link",
-    "local": "npm run unlink && npm run link && yo --generators"
+    "local": "npm run unlink && npm run link && yo --generators",
+    "submodule": "git submodule update --remote",
+    "submodule:net:library": "git clone --recurse-submodules https://github.com/codedesignplus/CodeDesignPlus.Net.Library submodules/CodeDesignPlus.Net.Library"
   },
   "files": [
     "generators"

@@ -1,0 +1,133 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+      - rc
+      - dev
+      - feature/*
+env:
+  IS_RELEASE: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+  IS_RC: ${{ github.ref == 'refs/heads/rc' }}
+  IS_BETA: ${{ github.ref == 'refs/heads/dev' }}
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      repository-projects: write
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore Package
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
+      - name: Version
+        id: version
+        uses: codedesignplus/semver-git-version@v0.1.4
+        with:
+          folder: ${{github.workspace}}
+          release-branch: "main"
+          release-candidate-branch: "rc"
+          beta-branch: "dev"
+          major-identifier: "breaking"
+          minor-identifier: "feat"
+          prefix: "v"
+          dir-affected: ./
+          previous-version: true
+          new-version: true
+
+      - name: Print Output
+        id: output
+        run: |
+          echo Previous Tag "${{ steps.version.outputs.previous-tag }}"
+          echo Previous Version "${{ steps.version.outputs.previous-version }}"
+          echo Previous Version Prefix "${{ steps.version.outputs.previous-version-prefix }}"
+          echo New Version "${{steps.version.outputs.new-version}}"
+          echo New Version Prefix "${{steps.version.outputs.new-version-prefix}}"
+
+      # SonarQube
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectVersion=${{ steps.version.outputs.new-version-prefix }}
+            -Dsonar.organization=codedesignplus
+            -Dsonar.projectKey=CDP.Net.Generator.Key
+            -Dsonar.projectName=CDP.Net.Generator
+            -Dsonar.coverage.exclusions=**Tests*.cs
+            -Dsonar.cs.opencover.reportsPaths=tests/CDP.Net.Generator.Test/coverage.opencover.xml
+            -Dsonar.sources=src
+            -Dsonar.tests=tests
+
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Pack
+        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true' || env.IS_BETA == 'true'
+        run: dotnet pack --configuration Release /p:Version=${{steps.version.outputs.new-version}} --output .
+
+      - name: Push Nuget
+        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true' || env.IS_BETA == 'true'
+        run: dotnet nuget push "*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${NUGET_TOKEN}
+        env:
+          NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+
+      - name: Push GitHub
+        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true' || env.IS_BETA == 'true'
+        run: |
+          dotnet nuget push "*.nupkg" --source https://nuget.pkg.github.com/codedesignplus/index.json --api-key ${{ secrets.GH_PACKAGE_TOKEN }} 
+
+      - name: Push tag
+        id: push_tag
+        uses: mathieudutour/github-tag-action@v6.1
+        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true'
+        with:
+          custom_tag: ${{ steps.version.outputs.new-version }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true'
+        with:
+          configuration: "${{ github.workspace }}/.github/settings/configuration.json"
+          fromTag: ${{ steps.version.outputs.previous-version-prefix }}
+          toTag: ${{ steps.version.outputs.new-version-prefix }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: mikepenz/action-gh-release@v1
+        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ steps.version.outputs.new-version-prefix }}
+          name: "actions/codedesignplus-git-version@${{ steps.version.outputs.new-version-prefix }}"
+          body: ${{ steps.build_changelog.outputs.changelog }} # esto usará el changelog generado anteriormente
+          prerelease: ${{ contains(github.ref, 'rc') || contains(github.ref, 'dev') }}

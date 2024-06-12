@@ -17,7 +17,7 @@ export default class extends Generator {
         type: "input",
         name: "organization",
         message: "Your Organization Name:",
-        default: this.options.organizationName
+        default: this.options.organizationName ?? "CodeDesignPlus"
       },
       {
         type: "input",
@@ -28,21 +28,21 @@ export default class extends Generator {
     ]);
   }
 
-  async initializing() {
-    this.log("Copy templates...");
+  // async initializing() {
+  //   this.log("Copy templates...");
 
-    const template = this.templatePath();
-    const subModule = path.join(this.destinationRoot(), 'submodules', 'CodeDesignPlus.Net.Library');
+  //   const template = this.templatePath();
+  //   const subModule = path.join(this.destinationRoot(), 'submodules', 'CodeDesignPlus.Net.Library');
 
-    const files = glob.sync('**', { dot: true, nodir: true, cwd: subModule })
+  //   const files = glob.sync('**', { dot: true, nodir: true, cwd: subModule })
 
-    for (let i in files) {
-      const src = path.resolve(subModule, files[i]);
-      const dest = path.resolve(template, files[i]);
+  //   for (let i in files) {
+  //     const src = path.resolve(subModule, files[i]);
+  //     const dest = path.resolve(template, files[i]);
 
-      await this.fs.copyAsync(src, dest, { overwrite: true, errorOnExist: false })
-    }
-  }
+  //     await this.fs.copyAsync(src, dest, { overwrite: true, errorOnExist: false })
+  //   }
+  // }
 
   async writing() {
     const library = `${this.answers.organization}.Net.${this.answers.name}`;
