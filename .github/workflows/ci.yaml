@@ -13,7 +13,7 @@ env:
   IS_BETA: ${{ github.ref == 'refs/heads/dev' }}
 jobs:
   build:
-    name: Yeoman
+    name: Build
     runs-on: ubuntu-latest
     permissions:
       contents: write
