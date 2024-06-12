@@ -17,10 +17,10 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-      repository-projects: write
+    # permissions:
+    #   contents: write
+    #   packages: write
+    #   repository-projects: write
     steps:
       - name: Checkout
         id: checkout
@@ -28,133 +28,132 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        id: setup-node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install Dependencies
-        id: npm-ci
-        run: npm install
-
-      # - name: Check Format
-      #   id: npm-format-check
-      #   run: npm run format:check
-
-      # - name: Lint
-      #   id: npm-lint
-      #   run: npm run lint
-
-      # - name: Bundle
-      #   id: npm-bundle
-      #   run: npm run bundle
-               
-      # - name: Test
-      #   id: npm-test
-      #   run: npm run test
-
-       - name: Version
-        id: version
-        uses: codedesignplus/semver-git-version@v0.1.4
-        with:
-          folder: ${{github.workspace}}
-          release-branch: "main"
-          release-candidate-branch: "rc"
-          beta-branch: "dev"
-          major-identifier: "breaking"
-          minor-identifier: "feat"
-          prefix: "v"
-          dir-affected: ./
-          previous-version: true
-          new-version: true
-
-      - name: Print Output
-        id: output
-        run: | 
-          echo Previous Tag "${{ steps.test-action.outputs.previous-tag }}"
-          echo Previous Version "${{ steps.test-action.outputs.previous-version }}"
-          echo Previous Version Prefix "${{ steps.test-action.outputs.previous-version-prefix }}"
-          echo New Version "${{steps.test-action.outputs.new-version}}"
-          echo New Version Prefix "${{steps.test-action.outputs.new-version-prefix}}"
-
-      # - name: SonarCloud Scan
-      #   uses: SonarSource/sonarcloud-github-action@master
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # - name: Setup Node.js
+      #   id: setup-node
+      #   uses: actions/setup-node@v3
       #   with:
-      #     args: >
-      #       -Dsonar.projectVersion=${{ steps.test-action.outputs.new-version-prefix }}
-      #       -Dsonar.organization=codedesignplus
-      #       -Dsonar.projectKey=CodeDesignPlus.Npm.GitVersion.Key
-      #       -Dsonar.projectName=CodeDesignPlus.Npm.GitVersion
-      #       -Dsonar.test.exclusions=__tests__/**
-      #       -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-      #       -Dsonar.sources=src
-      #       -Dsonar.tests=__tests__
+      #     node-version: 20
+      #     cache: npm
 
-      # - name: SonarQube Quality Gate check
-      #   id: sonarqube-quality-gate-check
-      #   uses: sonarsource/sonarqube-quality-gate-action@master
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # - name: Install Dependencies
+      #   id: npm-ci
+      #   run: npm install
 
-      - name: Set Version
-        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true' || env.IS_BETA == 'true'
-        run: |
-          git reset --hard HEAD
-          npm version ${{steps.test-action.outputs.new-version-prefix}}
+      # # - name: Check Format
+      # #   id: npm-format-check
+      # #   run: npm run format:check
+
+      # # - name: Lint
+      # #   id: npm-lint
+      # #   run: npm run lint
+
+      # # - name: Bundle
+      # #   id: npm-bundle
+      # #   run: npm run bundle
+               
+      # # - name: Test
+      # #   id: npm-test
+      # #   run: npm run test
+
+      #  - name: Version
+      #   id: version
+      #   uses: codedesignplus/semver-git-version@v0.1.4
+      #   with:
+      #     folder: ${{github.workspace}}
+      #     release-branch: "main"
+      #     release-candidate-branch: "rc"
+      #     beta-branch: "dev"
+      #     major-identifier: "breaking"
+      #     minor-identifier: "feat"
+      #     prefix: "v"
+      #     dir-affected: ./
+      #     previous-version: true
+      #     new-version: true
+
+      # - name: Print Output
+      #   id: output
+      #   run: | 
+      #     echo Previous Tag "${{ steps.test-action.outputs.previous-tag }}"
+      #     echo Previous Version "${{ steps.test-action.outputs.previous-version }}"
+      #     echo Previous Version Prefix "${{ steps.test-action.outputs.previous-version-prefix }}"
+      #     echo New Version "${{steps.test-action.outputs.new-version}}"
+      #     echo New Version Prefix "${{steps.test-action.outputs.new-version-prefix}}"
+
+      # # - name: SonarCloud Scan
+      # #   uses: SonarSource/sonarcloud-github-action@master
+      # #   env:
+      # #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # #   with:
+      # #     args: >
+      # #       -Dsonar.projectVersion=${{ steps.test-action.outputs.new-version-prefix }}
+      # #       -Dsonar.organization=codedesignplus
+      # #       -Dsonar.projectKey=CodeDesignPlus.Npm.GitVersion.Key
+      # #       -Dsonar.projectName=CodeDesignPlus.Npm.GitVersion
+      # #       -Dsonar.test.exclusions=__tests__/**
+      # #       -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+      # #       -Dsonar.sources=src
+      # #       -Dsonar.tests=__tests__
+
+      # # - name: SonarQube Quality Gate check
+      # #   id: sonarqube-quality-gate-check
+      # #   uses: sonarsource/sonarqube-quality-gate-action@master
+      # #   timeout-minutes: 5
+      # #   env:
+      # #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      # - name: Set Version
+      #   if: env.IS_RELEASE == 'true' || env.IS_RC == 'true' || env.IS_BETA == 'true'
+      #   run: |
+      #     git reset --hard HEAD
+      #     npm version ${{steps.test-action.outputs.new-version-prefix}}
         
-      - name: Pack
-        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true' || env.IS_BETA == 'true'
-        run: npm pack --pack-destination dist
+      # - name: Pack
+      #   if: env.IS_RELEASE == 'true' || env.IS_RC == 'true' || env.IS_BETA == 'true'
+      #   run: npm pack --pack-destination dist
 
-      - name: Configure npm for npmjs.com authentication
-        run: echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Configure npm for npmjs.com authentication
+      #   run: echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish to npmjs.com
-        run: npm publish --registry=https://registry.npmjs.org/
+      # - name: Publish to npmjs.com
+      #   run: npm publish --registry=https://registry.npmjs.org/
 
-      - name: Configure npm for GitHub Packages authentication
-        run: echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGE_TOKEN }}
+      # - name: Configure npm for GitHub Packages authentication
+      #   run: echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGE_TOKEN }}
 
-      - name: Publish to GitHub Packages
-        run: npm publish --registry=https://npm.pkg.github.com/
+      # - name: Publish to GitHub Packages
+      #   run: npm publish --registry=https://npm.pkg.github.com/
 
-      - name: Push tag
-        id: push_tag
-        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true' || env.IS_BETA == 'true'
-        uses: mathieudutour/github-tag-action@v6.1
-        with:
-          custom_tag: ${{ steps.test-action.outputs.new-version }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Push tag
+      #   id: push_tag
+      #   if: env.IS_RELEASE == 'true' || env.IS_RC == 'true' || env.IS_BETA == 'true'
+      #   uses: mathieudutour/github-tag-action@v6.1
+      #   with:
+      #     custom_tag: ${{ steps.test-action.outputs.new-version }}
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Changelog
-        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true'
-        id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v4
-        with:
-          configuration: "${{ github.workspace }}/.github/settings/configuration.json"          
-          fromTag: ${{ steps.test-action.outputs.previous-version-prefix }}
-          toTag: ${{ steps.test-action.outputs.new-version-prefix }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Build Changelog
+      #   if: env.IS_RELEASE == 'true' || env.IS_RC == 'true'
+      #   id: build_changelog
+      #   uses: mikepenz/release-changelog-builder-action@v4
+      #   with:
+      #     configuration: "${{ github.workspace }}/.github/settings/configuration.json"          
+      #     fromTag: ${{ steps.test-action.outputs.previous-version-prefix }}
+      #     toTag: ${{ steps.test-action.outputs.new-version-prefix }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Create GitHub Release
-        if: env.IS_RELEASE == 'true' || env.IS_RC == 'true'
-        uses: mikepenz/action-gh-release@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: ${{ steps.test-action.outputs.new-version-prefix }}
-          name: "actions/codedesignplus-git-version@${{ steps.test-action.outputs.new-version-prefix }}"
-          body: ${{ steps.build_changelog.outputs.changelog }} 
-          prerelease: ${{ contains(github.ref, 'rc') || contains(github.ref, 'dev') }}
-          
+      # - name: Create GitHub Release
+      #   if: env.IS_RELEASE == 'true' || env.IS_RC == 'true'
+      #   uses: mikepenz/action-gh-release@v1
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     tag_name: ${{ steps.test-action.outputs.new-version-prefix }}
+      #     name: "actions/codedesignplus-git-version@${{ steps.test-action.outputs.new-version-prefix }}"
+      #     body: ${{ steps.build_changelog.outputs.changelog }} 
+      #     prerelease: ${{ contains(github.ref, 'rc') || contains(github.ref, 'dev') }}
