@@ -23,6 +23,7 @@
     "yeoman-environment": "^4.4.1"
   },
   "devDependencies": {
+    "find-up": "^7.0.0",
     "glob": "^11.0.0",
     "gulp-replace": "^1.1.4",
     "make-dir": "^5.0.0",
