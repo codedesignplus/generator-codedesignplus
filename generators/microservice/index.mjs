@@ -4,12 +4,16 @@ import path from 'path';
 import replace from 'gulp-replace';
 import { makeDirectory } from 'make-dir';
 import { findUp } from 'find-up';
+import AggregateGenerator from './core/aaggregate.mjs';
+import Utils from './core/utils.mjs';
 
 export default class extends Generator {
 
     constructor(args, opts) {
         super(args, opts);
         this.argument('name', { type: String, required: false });
+
+        this.utils = new Utils(this);
     }
 
     async prompting() {
@@ -140,17 +144,9 @@ export default class extends Generator {
         }
 
         if (this.answers.resource === 'Aggregate') {
-            const additionalAnswers = await this.prompt([
-                {
-                    type: 'input',
-                    name: 'name',
-                    message: 'Your aggregate name',
-                    default: this.name,
-                    store: true,
-                }
-            ]);
+            this.aggregate = new AggregateGenerator(this.utils);
 
-            this.answers = { ...this.answers, ...additionalAnswers };
+            await this.aggregate.prompt();
         }
 
         if (this.answers.resource === 'Command' || this.answers.resource === 'Query') {
@@ -213,7 +209,9 @@ export default class extends Generator {
 
         switch (this.answers.resource) {
             case 'Aggregate':
-                await this._writingAggregate()
+                //await this._writingAggregate()
+
+                await this.aggregate.generate();
                 break;
             // case 'Async Worker':
             //     this._writingAsyncWorker()
@@ -323,7 +321,7 @@ export default class extends Generator {
         const namespace = `${content.organization}.Net.Microservice.${content.name}.Application.${content.name}.Commands.${this.answers.useCase}`;
 
         await this.fs.copyTplAsync(
-            this.templatePath('command/ItemCommand.cs'),            
+            this.templatePath('command/ItemCommand.cs'),
             this.destinationPath(path.join(this.answers.useCase, `${content.name}Command.cs`)),
             {
                 ns: namespace,
@@ -423,7 +421,7 @@ export default class extends Generator {
         const namespace = `${content.organization}.Net.Microservice.${content.name}.Application.${content.name}.Queries.${this.answers.useCase}`;
 
         await this.fs.copyTplAsync(
-            this.templatePath('query/ItemQuery.cs'),            
+            this.templatePath('query/ItemQuery.cs'),
             this.destinationPath(path.join(this.answers.useCase, `${content.name}Query.cs`)),
             {
                 ns: namespace,
