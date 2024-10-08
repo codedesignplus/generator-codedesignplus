@@ -1,0 +1,103 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # APP
+      - "15672:15672" # UI
+    environment:
+      RABBITMQ_DEFAULT_USER: usr_code
+      RABBITMQ_DEFAULT_PASS: Temporal1
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./shared/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./shared/grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./shared/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor traceQLStreaming metricsSummary
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+
+  otel-collector-contrib:
+    image: otel/opentelemetry-collector-contrib:latest
+    ports:
+      - "4317:4317" # OTLP gRPC port
+      - "4318:4318" # OTLP http port
+    volumes:
+      - ./shared/otel-config.yaml:/etc/otel/config.yaml
+      - ./prom_rw:/etc/prom_rw
+    command: ["--config", "/etc/otel/config.yaml"]
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+    networks:
+      - backend
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/loki-config.yaml
+    volumes:
+      - ./shared/:/etc/loki
+    networks:
+      - backend
+
+  tempo:
+    image: grafana/tempo:latest
+    ports:
+      - "4320:4317"  # otlp grpc
+      - "4321:4318"  # otlp http
+      - "3200:3200"  # metrics
+    volumes:
+      - ./shared/tempo-config.yaml:/etc/tempo-config.yaml
+    command: ["-config.file=/etc/tempo-config.yaml"]
+    networks:
+      - backend
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./shared/prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml
+    command: ["--config.file=/etc/prometheus/prometheus-config.yaml"]
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  mongo-data:
+  redis-data:
+  rabbitmq_data:
