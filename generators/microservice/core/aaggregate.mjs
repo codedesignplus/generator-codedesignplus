@@ -1,33 +1,31 @@
 export default class AggregateGenerator {
 
-    constructor(utils) {
-        this.utils = utils;
+    constructor(utils, generator) {
+        this._utils = utils;
+        this._generator = generator;
     }
 
     async prompt() {
-        const answers = await this.utils.generator.prompt([
+        this._answers = await this._generator.prompt([
             {
                 type: 'input',
                 name: 'name',
-                message: 'Your aggregate name',
-                default: this.name,
-                store: true,
+                message: 'Your aggregate name'
             }
         ]);
-
-        this.name = answers.name;
     }
 
     async generate() {
 
-        const content = await this.utils.readArchetypeMetadata();
+        const content = await this._utils.readArchetypeMetadata();
 
-        const from = this.utils.generator.templatePath('aggregate/ItemAggregate.cs');
-        const to = this.utils.generator.destinationPath(`${content.name}Aggregate.cs`);
-
-        await this.utils.generator.fs.copyTplAsync(from, to, {
-            ns: `${content.organization}.Net.Microservice.${content.name}.Domain`,
-            name: this.name,
-        });
+        await this._generator.fs.copyTplAsync(
+            this._generator.templatePath('aggregate/ItemAggregate.cs'),
+            this._generator.destinationPath(`${content.name}Aggregate.cs`),
+            {
+                ns: `${content.organization}.Net.Microservice.${content.name}.Domain`,
+                name: this._answers.name
+            }
+        );
     }
 }

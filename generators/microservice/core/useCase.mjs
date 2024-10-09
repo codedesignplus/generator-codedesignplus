@@ -1,4 +1,4 @@
-export default class EntityGenerator {
+export default class UseCaseGenerator {
 
     constructor(utils, generator) {
         this._utils = utils;
@@ -6,13 +6,11 @@ export default class EntityGenerator {
     }
 
     async prompt() {
-        this._answers = await this._generator.prompt([
+        this._answers = await this._.generator.prompt([
             {
                 type: 'input',
                 name: 'name',
-                message: 'Your entity name',
-                default: this.name,
-                store: true
+                message: 'Your aggregate name'
             }
         ]);
     }
@@ -21,10 +19,10 @@ export default class EntityGenerator {
         const content = await this._utils.readArchetypeMetadata();
 
         await this._generator.fs.copyTplAsync(
-            this._generator.templatePath('entity/ItemEntity.cs'),
-            this._generator.destinationPath(`${content.name}Entity.cs`),
+            this._generator.templatePath('data-transfer-object/ItemDto.cs'),
+            this._generator.destinationPath(`${content.name}Dto.cs`),
             {
-                ns: `${content.organization}.Net.Microservice.${content.name}.Domain.Entities`,
+                ns: `${content.organization}.Net.Microservice.${content.name}.Domain.DataTransferObjects`,
                 name: this._answers.name
             }
         );

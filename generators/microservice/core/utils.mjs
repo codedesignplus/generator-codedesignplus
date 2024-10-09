@@ -2,7 +2,7 @@ import { findUp } from 'find-up';
 
 export default class Utils {
     constructor(generator) {
-        this.generator = generator;
+        this._generator = generator;
     }
 
     async readArchetypeMetadata() {
@@ -12,6 +12,6 @@ export default class Utils {
             throw new Error('No se encontró el archivo archetype.json');
         }
 
-        return await this.generator.fs.readJSON(archetypeFile);
+        return await this._generator.fs.readJSON(archetypeFile);
     }
 }
