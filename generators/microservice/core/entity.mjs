@@ -1,3 +1,4 @@
+import path from 'path';
 export default class EntityGenerator {
 
     constructor(utils, generator) {
@@ -17,16 +18,16 @@ export default class EntityGenerator {
         ]);
     }
 
-    async generate() {
-        const content = await this._utils.readArchetypeMetadata();
-
-        await this._generator.fs.copyTplAsync(
-            this._generator.templatePath('entity/ItemEntity.cs'),
-            this._generator.destinationPath(`${content.name}Entity.cs`),
-            {
-                ns: `${content.organization}.Net.Microservice.${content.name}.Domain.Entities`,
-                name: this._answers.name
-            }
-        );
+    async generate(options) {        
+        for (const entity in options.entities) {
+            await this._generator.fs.copyTplAsync(
+                this._generator.templatePath('entity/ItemEntity.cs'),
+                this._generator.destinationPath(path.join(options.paths.src.domain, `Entities`, `${entity}.cs`)),
+                {
+                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.Entities`,
+                    name: entity
+                }
+            );
+        }
     }
 }

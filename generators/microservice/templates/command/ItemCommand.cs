@@ -1,9 +1,9 @@
 ﻿namespace <%= ns %>;
 
 [DtoGenerator]
-public record <%= useCase %>Command(Guid Id) : IRequest;
+public record <%= name %>Command(Guid Id) : IRequest;
 
-public class Validator : AbstractValidator<<%= useCase %>Command>
+public class Validator : AbstractValidator<<%= name %>Command>
 {
     public Validator()
     {

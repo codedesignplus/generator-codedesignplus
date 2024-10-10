@@ -8,7 +8,7 @@ import DomainEventGenerator from './domainEvent.mjs';
 import EntityGenerator from './entity.mjs';
 import RepositoryGenerator from './repository.mjs';
 import MicroserviceGenerator from './microservice.mjs';
-import UseCaseGenerator from './useCase.mjs';
+import WizardGenerator from './wizard.mjs'; 
 
 export default class Core {
 
@@ -34,7 +34,7 @@ export default class Core {
             {
                 type: 'input',
                 name: 'organization',
-                message: 'Your organization name',
+                message: 'What is your organization\'s name?',
                 default: content.organization,
             },
             {
@@ -42,7 +42,7 @@ export default class Core {
                 name: 'resource',
                 message: 'Select the resource create:',
                 choices: [
-                    'Use Case',
+                    'Wizard',
                     'Aggregate',
                     'Async Worker',
                     'Microservice',
@@ -62,7 +62,7 @@ export default class Core {
         ]);
 
         const generatorsMap = {
-            'Use Case': UseCaseGenerator,
+            'Wizard': WizardGenerator,
             'Microservice': MicroserviceGenerator,
             'Domain Event': DomainEventGenerator,
             'Entity': EntityGenerator,

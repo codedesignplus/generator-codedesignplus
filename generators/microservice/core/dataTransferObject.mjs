@@ -1,3 +1,5 @@
+import path from 'path';
+
 export default class DtoGenerator {
 
     constructor(utils, generator) {
@@ -17,15 +19,13 @@ export default class DtoGenerator {
         ]);
     }
 
-    async generate() {
-        const content = await this._utils.readArchetypeMetadata();
-
+    async generate(options) {
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('data-transfer-object/ItemDto.cs'),
-            this._generator.destinationPath(`${content.name}Dto.cs`),
+            this._generator.destinationPath(path.join(options.paths.src.application, `${options.aggregateName}`, `DataTransferObjects`, `${options.aggregateName}Dto.cs`)),
             {
-                ns: `${content.organization}.Net.Microservice.${content.name}.Domain.DataTransferObjects`,
-                name: this._answers.name
+                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Application.DataTransferObjects`,
+                name: options.aggregateName
             }
         );
     }

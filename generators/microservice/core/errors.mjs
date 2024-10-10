@@ -20,6 +20,18 @@ export default class ErrorsGenerator {
         ]);
     }
 
+    async internalGenerate(to, layer, organization) {
+
+        await this._generator.fs.copyTplAsync(
+            this._generator.templatePath('errors/Error.cs'),
+            this._generator.destinationPath(`${to}/Errors.cs`),
+            {
+                ns: `${organization}.Net.Microservice.${layer}`,
+                code: `${this._getCode(layer)} : UnknownError`,
+            }
+        );
+    }
+
     async generate() {
         const content = await this._utils.readArchetypeMetadata();
 
@@ -33,9 +45,9 @@ export default class ErrorsGenerator {
         );
     }
 
-    _getCode() {
+    _getCode(layer) {
         const layers = { 'Domain': '000', 'Application': '100', 'Infrastructure': '200' };
 
-        return layers[this._answers.layer];
+        return layers[layer || this._answers.layer];
     }
 }

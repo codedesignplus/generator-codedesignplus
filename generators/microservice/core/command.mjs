@@ -26,29 +26,30 @@ export default class CommandGenerator {
         ]);
     }
 
-    async generate() {
-        const content = await this._utils.readArchetypeMetadata();
+    async generate(options) {
 
-        const namespace = `${content.organization}.Net.Microservice.${content.name}.Application.${content.name}.Commands.${this._answers.useCase}`;
+        for (const command in options.commands) {
+            const ns = `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${options.aggregateName}.Commands.${command}`;
 
-        await this._generator.fs.copyTplAsync(
-            this._generator.templatePath('command/ItemCommand.cs'),
-            this._generator.destinationPath(path.join(this._answers.useCase, `${this._answers.useCase}Command.cs`)),
-            {
-                ns: namespace,
-                name: this._answers.name,
-                useCase: this._answers.useCase
-            }
-        );
+            await this._generator.fs.copyTplAsync(
+                this._generator.templatePath('command/ItemCommand.cs'),
+                this._generator.destinationPath(path.join(options.paths.src.application, options.aggregateName, `Commands`, command, `${command}Command.cs`)),
+                {
+                    ns: ns,
+                    name: command,
+                    aggregate: options.aggregateName,
+                }
+            );
 
-        await this._generator.fs.copyTplAsync(
-            this._generator.templatePath('command/ItemCommandHandler.cs'),
-            this._generator.destinationPath(path.join(this._answers.useCase, `${this._answers.useCase}CommandHandler.cs`)),
-            {
-                ns: namespace,
-                name: this._answers.name,
-                useCase: this._answers.useCase
-            }
-        );
+            await this._generator.fs.copyTplAsync(
+                this._generator.templatePath('command/ItemCommandHandler.cs'),
+                this._generator.destinationPath(path.join(options.paths.src.application, options.aggregateName, `Commands`, command, `${command}CommandHandler.cs`)),
+                {
+                    ns: ns,
+                    name: command,
+                    aggregate: options.aggregateName,
+                }
+            );
+        }
     }
 }

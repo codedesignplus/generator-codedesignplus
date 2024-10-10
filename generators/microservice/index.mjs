@@ -6,9 +6,9 @@ export default class extends Generator {
     constructor(args, opts) {
         super(args, opts);
 
-        const utils = new Utils(this);
+        this._utils = new Utils(this);
 
-        this._core = new Core(utils, this);
+        this._core = new Core(this._utils, this);
     }
 
     async prompting() {
@@ -16,7 +16,11 @@ export default class extends Generator {
     }
 
     async writing() {
-        await this._core.generator.generate();
+        await this._utils.setPathBase();
+
+        this.log('Path base: ', this.destinationRoot());
+
+         await this._core.generator.generate();
     }
 };
 

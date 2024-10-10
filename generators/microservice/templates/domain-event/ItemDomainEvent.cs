@@ -1,6 +1,6 @@
 ﻿namespace <%= ns %>;
 
-[EventKey<<%= entity %>>(1, "<%= verb %>")]
+[EventKey<<%= entity %>>(1, "<%= name %>")]
 public class <%= name %>DomainEvent(
      Guid aggregateId,
      Guid? eventId = null,

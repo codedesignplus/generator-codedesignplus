@@ -1,3 +1,4 @@
+import path from 'path';
 export default class RepositoryGenerator {
 
     constructor(utils, generator) {
@@ -23,15 +24,28 @@ export default class RepositoryGenerator {
         ]);
     }
 
-    async generate() {
-        const content = await this._utils.readArchetypeMetadata();
+    async generate(options) {
 
+        if (!options.createRepositoryForAggregate)
+            return;
+
+        //Create Interface Repository        
         await this._generator.fs.copyTplAsync(
-            this._generator.templatePath(`repository/${this._answers.isInterface ? 'I' : ''}ItemRepository.cs`),
-            this._generator.destinationPath(`${this._answers.isInterface ? 'I' : ''}${this._answers.name}Repository.cs`),
+            this._generator.templatePath(`repository/IItemRepository.cs`),
+            this._generator.destinationPath(path.join(options.paths.src.domain, `Repositories`, `I${options.aggregateName}Repository.cs`)),
             {
-                ns: `${content.organization}.Net.Microservice.${content.name}.${this._answers.isInterface ? 'Domain' : 'Infrastructure'}.Repositories`,
-                name: this._answers.name,
+                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.Repositories`,
+                name: options.aggregateName,
+            }
+        );
+
+        //Create Implementation
+        await this._generator.fs.copyTplAsync(
+            this._generator.templatePath(`repository/ItemRepository.cs`),
+            this._generator.destinationPath(path.join(options.paths.src.infrastructure, `Repositories`, `${options.aggregateName}Repository.cs`)),
+            {
+                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Infrastructure.Repositories`,
+                name: options.aggregateName,
             }
         );
     }

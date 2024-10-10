@@ -1,4 +1,4 @@
 ﻿namespace <%= ns %>;
 
-public record <%= useCase %>Query(Guid Id) : IRequest<<%= name %>Dto>;
+public record <%= name %>Query(Guid Id) : IRequest<<%= aggregate %>Dto>;
 

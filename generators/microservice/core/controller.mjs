@@ -1,3 +1,4 @@
+import path from 'path';
 export default class ControllerGenerator {
 
     constructor(utils, generator) {
@@ -17,16 +18,16 @@ export default class ControllerGenerator {
         ]);
     }
 
-    async generate() {
-        const content = await this._utils.readArchetypeMetadata();
+    async generate(options) {
 
-        await this._generator.fs.copyTplAsync(
-            this._generator.templatePath('controller/ItemController.cs'),
-            this._generator.destinationPath(`${content.name}Controller.cs`),
-            {
-                ns: `${content.organization}.Net.Microservice.${content.name}.Rest.Controllers`,
-                name: this._answers.name
-            }
-        );
+        if (options.createControllerForAggregate)
+            await this._generator.fs.copyTplAsync(
+                this._generator.templatePath('controller/ItemController.cs'),
+                this._generator.destinationPath(path.join(options.paths.src.rest, `Controllers`, `${options.aggregateName}Controller.cs`)),
+                {
+                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Rest.Controllers`,
+                    name: options.aggregateName
+                }
+            );
     }
 }

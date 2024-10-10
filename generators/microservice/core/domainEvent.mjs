@@ -1,3 +1,4 @@
+import path from 'path';
 export default class DomainEventGenerator {
 
     constructor(utils, generator) {
@@ -28,18 +29,19 @@ export default class DomainEventGenerator {
         ]);
     }
 
-    async generate() {
-        const content = await this._utils.readArchetypeMetadata();
+    async generate(options) {
 
-        await this._generator.fs.copyTplAsync(
-            this._generator.templatePath('domain-event/ItemDomainEvent.cs'),
-            this._generator.destinationPath(`${this._answers.name}DomainEvent.cs`),
-            {
-                ns: `${content.organization}.Net.Microservice.${content.name}.Domain.DomainEvents`,
-                name: this._answers.name,
-                entity: this._answers.entity,
-                verb: this._answers.verb
-            }
-        );
+        for (const domainEvent in options.domainEvents) {
+            await this._generator.fs.copyTplAsync(
+                this._generator.templatePath('domain-event/ItemDomainEvent.cs'),
+                this._generator.destinationPath(path.join(options.paths.src.domain, `DomainEvents`, `${domainEvent}DomainEvent.cs`)),
+                {
+                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.DomainEvents`,
+                    name: domainEvent,
+                    entity: options.aggregateName
+                }
+            );
+        }
+
     }
 }

@@ -2,12 +2,14 @@ import { glob } from 'glob';
 import path from 'path';
 import replace from 'gulp-replace';
 import { makeDirectory } from 'make-dir';
+import ErrorsGenerator from './errors.mjs';
 
 export default class MicroserviceGenerator {
 
     constructor(utils, generator) {
         this._utils = utils;
         this._generator = generator;
+        this._errorGenerator = new ErrorsGenerator(utils, generator);
     }
 
     async prompt() {
@@ -32,9 +34,15 @@ export default class MicroserviceGenerator {
 
         const destination = path.join(this._generator.destinationRoot(), namespace);
 
+        const replaceStreamGlobalUsing = replace(/global using CodeDesignPlus\.Net\.Microservice\.(Application|Domain|Infrastructure).*;/g, '');
         const replaceStreamNamespace = replace(/CodeDesignPlus\.Net\.Microservice(?!\.Commons)/g, namespace);
+        const replaceStreamConfigure = replace(/public static void Configure\(\)\s*{\s*([^}]*)}/g, 'public static void Configure() { }');
+        const replaceStreamOrderNamespace = replace(/\.Order\./g, this._answers.name);
 
+        this._generator.queueTransformStream(replaceStreamGlobalUsing);
         this._generator.queueTransformStream(replaceStreamNamespace);
+        this._generator.queueTransformStream(replaceStreamConfigure);
+        this._generator.queueTransformStream(replaceStreamOrderNamespace);
 
         const ignores = ['**/bin/**', '**/obj/**'];
 
@@ -56,12 +64,16 @@ export default class MicroserviceGenerator {
             await this._createEmptyFolders(destination);
         }
 
-        this._generator.fs.writeJSON(`${destination}/archetype.json`, {
+        await this._generator.fs.writeJSON(`${destination}/archetype.json`, {
             "name": this._answers.name,
             "description": "Custom Microservice",
             "version": "1.0.0",
             "organization": this._generator.answers.organization
         }, { spaces: 2 });
+
+        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Domain`), 'Domain', this._generator.answers.organization);
+        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Application`), 'Application', this._generator.answers.organization);
+        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Infrastructure`), 'Infrastructure', this._generator.answers.organization);
     }
 
 
@@ -171,26 +183,26 @@ export default class MicroserviceGenerator {
             makeDirectory(path.join(domainPath, 'DomainEvents')),
             makeDirectory(path.join(domainPath, 'ValueObjects')),
             makeDirectory(path.join(infrastructurePath, 'Repositories')),
-            makeDirectory(path.join(entrypointsPath, `AsyncWorker`, 'Consumers')),
-            makeDirectory(path.join(entrypointsPath, `gRpc`, 'Protos')),
-            makeDirectory(path.join(entrypointsPath, `gRpc`, 'Services')),
-            makeDirectory(path.join(entrypointsPath, `Rest`, 'Controllers')),
-            makeDirectory(path.join(testsIntegrationPath, `AsyncWorker.Test`, 'Consumers')),
-            makeDirectory(path.join(testsIntegrationPath, `gRpc.Test`, 'Protos')),
-            makeDirectory(path.join(testsIntegrationPath, `gRpc.Test`, 'Services')),
-            makeDirectory(path.join(testsIntegrationPath, `Rest.Test`, 'Controllers')),
-            makeDirectory(path.join(testsUnitPath, `Application.Test`, this._answers.name, 'Commands')),
-            makeDirectory(path.join(testsUnitPath, `Application.Test`, this._answers.name, 'Queries')),
-            makeDirectory(path.join(testsUnitPath, `Application.Test`, this._answers.name, 'DataTransferObjects')),
-            makeDirectory(path.join(testsUnitPath, `Infrastructure.Test`, 'Repositories')),
-            makeDirectory(path.join(testsUnitPath, `Domain.Test`, 'DataTransferObjects')),
-            makeDirectory(path.join(testsUnitPath, `Domain.Test`, 'Enums')),
-            makeDirectory(path.join(testsUnitPath, `Domain.Test`, 'Repositories')),
-            makeDirectory(path.join(testsUnitPath, `Domain.Test`, 'Entities')),
-            makeDirectory(path.join(testsUnitPath, `Domain.Test`, 'DomainEvents')),
-            makeDirectory(path.join(testsUnitPath, `AsyncWorker.Test`, 'Consumers')),
-            makeDirectory(path.join(testsUnitPath, `gRpc.Test`, 'Services')),
-            makeDirectory(path.join(testsUnitPath, `Rest.Test`, 'Controllers'))
+            makeDirectory(path.join(`${entrypointsPath}.AsyncWorker`, 'Consumers')),
+            makeDirectory(path.join(`${entrypointsPath}.gRpc`, 'Protos')),
+            makeDirectory(path.join(`${entrypointsPath}.gRpc`, 'Services')),
+            makeDirectory(path.join(`${entrypointsPath}.Rest`, 'Controllers')),
+            makeDirectory(path.join(`${testsIntegrationPath}.AsyncWorker.Test`, 'Consumers')),
+            makeDirectory(path.join(`${testsIntegrationPath}.gRpc.Test`, 'Protos')),
+            makeDirectory(path.join(`${testsIntegrationPath}.gRpc.Test`, 'Services')),
+            makeDirectory(path.join(`${testsIntegrationPath}.Rest.Test`, 'Controllers')),
+            makeDirectory(path.join(`${testsUnitPath}.Application.Test`, this._answers.name, 'Commands')),
+            makeDirectory(path.join(`${testsUnitPath}.Application.Test`, this._answers.name, 'Queries')),
+            makeDirectory(path.join(`${testsUnitPath}.Application.Test`, this._answers.name, 'DataTransferObjects')),
+            makeDirectory(path.join(`${testsUnitPath}.Infrastructure.Test`, 'Repositories')),
+            makeDirectory(path.join(`${testsUnitPath}.Domain.Test`, 'DataTransferObjects')),
+            makeDirectory(path.join(`${testsUnitPath}.Domain.Test`, 'Enums')),
+            makeDirectory(path.join(`${testsUnitPath}.Domain.Test`, 'Repositories')),
+            makeDirectory(path.join(`${testsUnitPath}.Domain.Test`, 'Entities')),
+            makeDirectory(path.join(`${testsUnitPath}.Domain.Test`, 'DomainEvents')),
+            makeDirectory(path.join(`${testsUnitPath}.AsyncWorker.Test`, 'Consumers')),
+            makeDirectory(path.join(`${testsUnitPath}.gRpc.Test`, 'Services')),
+            makeDirectory(path.join(`${testsUnitPath}.Rest.Test`, 'Controllers'))
         ]);
     }
 }

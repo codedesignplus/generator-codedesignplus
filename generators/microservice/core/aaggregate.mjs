@@ -1,3 +1,5 @@
+import path from 'path';
+
 export default class AggregateGenerator {
 
     constructor(utils, generator) {
@@ -15,16 +17,13 @@ export default class AggregateGenerator {
         ]);
     }
 
-    async generate() {
-
-        const content = await this._utils.readArchetypeMetadata();
-
+    async generate(options) {
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('aggregate/ItemAggregate.cs'),
-            this._generator.destinationPath(`${content.name}Aggregate.cs`),
+            this._generator.destinationPath(path.join(options.paths.src.domain , `${options.aggregateName}Aggregate.cs`)),
             {
-                ns: `${content.organization}.Net.Microservice.${content.name}.Domain`,
-                name: this._answers.name
+                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain`,
+                name: options.aggregateName
             }
         );
     }

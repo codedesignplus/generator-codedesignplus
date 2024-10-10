@@ -2,5 +2,5 @@ namespace <%= ns %>;
 
 public class Errors: IErrorCodes
 {    
-    public const string UnknownError = <% code %>;
+    public const string UnknownError = "<%= code %>";
 }
