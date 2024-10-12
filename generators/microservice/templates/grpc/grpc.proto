@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = <%= ns %>;
+
+package <%= name %>;
+
+
+service <%= name %> {
+  rpc Get<%= name %> (stream Get<%= name %>Request) returns (stream Get<%= name %>Response);
+}
+
+message Get<%= name %>Request {
+  string Id = 1;
+}
+
+message Get<%= name %>Response {
+
+}

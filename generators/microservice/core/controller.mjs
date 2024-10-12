@@ -7,15 +7,23 @@ export default class ControllerGenerator {
     }
 
     async prompt() {
-        this._answers = await this._generator.prompt([
+        const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'name',
-                message: 'Your controller name',
-                default: this.name,
-                store: true,
+                name: 'microserviceName',
+                message: 'What is the name of your microservice?'
+            },
+            {
+                type: 'input',
+                name: 'controller',
+                message: 'What is the name of the controller you want to create?'
             }
         ]);
+
+        return {
+            microserviceName: answers.microserviceName,
+            controller: answers.controller
+        }
     }
 
     async generate(options) {
@@ -23,10 +31,10 @@ export default class ControllerGenerator {
         if (options.createControllerForAggregate)
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('controller/ItemController.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.rest, `Controllers`, `${options.aggregateName}Controller.cs`)),
+                this._generator.destinationPath(path.join(options.paths.src.rest, `Controllers`, `${options.controller}Controller.cs`)),
                 {
                     ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Rest.Controllers`,
-                    name: options.aggregateName
+                    name: options.controller
                 }
             );
     }

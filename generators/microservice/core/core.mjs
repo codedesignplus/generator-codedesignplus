@@ -1,4 +1,4 @@
-import AggregateGenerator from './aaggregate.mjs';
+import AggregateGenerator from './aggregate.mjs';
 import CommandGenerator from './command.mjs';
 import QueryGenerator from './query.mjs';
 import ConsumerGenerator from './consumer.mjs';
@@ -9,6 +9,8 @@ import EntityGenerator from './entity.mjs';
 import RepositoryGenerator from './repository.mjs';
 import MicroserviceGenerator from './microservice.mjs';
 import WizardGenerator from './wizard.mjs'; 
+import ValueObjectGenerator from './valueObject.mjs';
+import ProtoGenerator from './proto.mjs';
 
 export default class Core {
 
@@ -52,7 +54,7 @@ export default class Core {
                     'Data Transfer Object',
                     'Domain Event',
                     'Entity',
-                    'gRpc',
+                    'Proto',
                     'Query',
                     'Repository',
                     'Rest',
@@ -72,7 +74,9 @@ export default class Core {
             'Command': CommandGenerator,
             'Query': QueryGenerator,
             'Consumer': ConsumerGenerator,
-            'Controller': ControllerGenerator
+            'Controller': ControllerGenerator,
+            'Value Object': ValueObjectGenerator,
+            'Proto': ProtoGenerator
         };
 
         const selectedResource = this._generator.answers.resource;
@@ -82,8 +86,8 @@ export default class Core {
             throw new Error(`The resource ${selectedResource} is not supported`);
 
         const generatorInstance = new generatorClass(this._utils, this._generator);
-        await generatorInstance.prompt();
+        const answers = await generatorInstance.prompt();
 
-        this.generator = generatorInstance;
+        return [generatorInstance, answers];
     }
 }

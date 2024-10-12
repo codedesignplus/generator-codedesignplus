@@ -7,21 +7,24 @@ export default class RepositoryGenerator {
     }
 
     async prompt() {
-        this._answers = await this._generator.prompt([
+        const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'name',
-                message: 'Your repository name',
-                default: this.name,
-                store: true
-            },
+                name: 'microserviceName',
+                message: 'What is the name of your microservice?'
+            },            
             {
-                type: 'confirm',
-                name: 'isInterface',
-                message: 'Is a interface repository?',
-                default: '',
+                type: 'input',
+                name: 'repository',
+                message: 'What is the name of the repository you want to create?'
             }
         ]);
+
+        return {
+            microserviceName: answers.microserviceName,
+            repository: answers.repository,
+            createRepositoryForAggregate: true
+        }
     }
 
     async generate(options) {
@@ -32,20 +35,20 @@ export default class RepositoryGenerator {
         //Create Interface Repository        
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath(`repository/IItemRepository.cs`),
-            this._generator.destinationPath(path.join(options.paths.src.domain, `Repositories`, `I${options.aggregateName}Repository.cs`)),
+            this._generator.destinationPath(path.join(options.paths.src.domain, `Repositories`, `I${options.repository}Repository.cs`)),
             {
                 ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.Repositories`,
-                name: options.aggregateName,
+                name: options.repository,
             }
         );
 
         //Create Implementation
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath(`repository/ItemRepository.cs`),
-            this._generator.destinationPath(path.join(options.paths.src.infrastructure, `Repositories`, `${options.aggregateName}Repository.cs`)),
+            this._generator.destinationPath(path.join(options.paths.src.infrastructure, `Repositories`, `${options.repository}Repository.cs`)),
             {
                 ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Infrastructure.Repositories`,
-                name: options.aggregateName,
+                name: options.repository,
             }
         );
     }

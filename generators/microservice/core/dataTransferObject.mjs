@@ -1,4 +1,5 @@
 import path from 'path';
+import { glob } from 'glob';
 
 export default class DtoGenerator {
 
@@ -8,24 +9,41 @@ export default class DtoGenerator {
     }
 
     async prompt() {
-        this._answers = await this._generator.prompt([
+        const aggregates = glob.sync('**/*{Aggregate,Entity}.cs').map(x => path.basename(x, '.cs'));
+        
+        const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'name',
-                message: 'Your data transfer object name',
-                default: this.name,
-                store: true,
+                name: 'microserviceName',
+                message: 'What is the name of your microservice?'
+            },
+            {
+                type: 'list',
+                name: 'entity',
+                message: 'Select the entity or aggregate you want to associate with the data transfer object:',
+                choices: aggregates,
+            },
+            {
+                type: 'input',
+                name: 'dataTransferObject',
+                message: 'What is the name of the data transfer object you want to create?'
             }
         ]);
+
+        return {
+            microserviceName: answers.microserviceName,
+            aggregateName: answers.entity,
+            dataTransferObject: answers.dataTransferObject
+        }
     }
 
     async generate(options) {
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('data-transfer-object/ItemDto.cs'),
-            this._generator.destinationPath(path.join(options.paths.src.application, `${options.aggregateName}`, `DataTransferObjects`, `${options.aggregateName}Dto.cs`)),
+            this._generator.destinationPath(path.join(options.paths.src.application, `${options.aggregateName}`, `DataTransferObjects`, `${options.dataTransferObject}Dto.cs`)),
             {
                 ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Application.DataTransferObjects`,
-                name: options.aggregateName
+                name: options.dataTransferObject
             }
         );
     }

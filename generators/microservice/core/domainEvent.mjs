@@ -1,4 +1,6 @@
+import { glob } from 'glob';
 import path from 'path';
+
 export default class DomainEventGenerator {
 
     constructor(utils, generator) {
@@ -7,37 +9,43 @@ export default class DomainEventGenerator {
     }
 
     async prompt() {
-        this._answers = await this._generator.prompt([
+        const aggregates = glob.sync('**/*{Aggregate,Entity}.cs').map(x => path.basename(x, '.cs'));
+
+        const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'name',
-                message: 'Your domain event name',
-                store: true,
+                name: 'microserviceName',
+                message: 'What is the name of your microservice?'
             },
             {
-                type: 'input',
+                type: 'list',
                 name: 'entity',
-                message: 'Your aggregate or entity name',
-                store: true,
+                message: 'Select the entity or aggregate you want to associate with the domain event:',
+                choices: aggregates,
             },
             {
                 type: 'input',
-                name: 'verb',
-                message: 'Your verb domain event name',
-                store: true,
+                name: 'domainEvents',
+                message: 'Enter the names of the domain events you want to create, separated by commas (e.g., Event1, Event2).'
             }
         ]);
+
+        return {
+            microserviceName: answers.microserviceName,
+            aggregateName: answers.entity,
+            domainEvents: answers.domainEvents,
+        }
     }
 
     async generate(options) {
 
-        for (const domainEvent in options.domainEvents) {
+        for (const key in options.domainEvents) {
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('domain-event/ItemDomainEvent.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.domain, `DomainEvents`, `${domainEvent}DomainEvent.cs`)),
+                this._generator.destinationPath(path.join(options.paths.src.domain, `DomainEvents`, `${options.domainEvents[key]}DomainEvent.cs`)),
                 {
                     ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.DomainEvents`,
-                    name: domainEvent,
+                    name: options.domainEvents[key],
                     entity: options.aggregateName
                 }
             );
