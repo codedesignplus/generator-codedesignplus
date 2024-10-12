@@ -1,5 +1,6 @@
 import { findUp } from 'find-up';
 import path from 'path';
+import { glob } from 'glob';
 
 export default class Utils {
     constructor(generator) {
@@ -81,5 +82,28 @@ export default class Utils {
         };
 
         return options;
+    }
+
+    async addUsing(src, ns) {
+
+        const filePath = path.join(this._generator.destinationRoot(), src, 'Usings.cs');
+
+        let content = this._generator.fs.read(filePath);
+
+        const lineToAdd = `global using ${ns};`;
+
+        if (!content.includes(lineToAdd)) {
+            content += `\n${lineToAdd}`;
+            this._generator.fs.write(filePath, content, { flag:'w', mode: 0o666 });
+        }
+    }
+
+    async getClassName(path) {
+        const content = this._generator.fs.read(path);
+
+        const classNameMatch = content.match(/public class (\w+)/);
+        const className = classNameMatch[1];
+
+        return className;
     }
 }
