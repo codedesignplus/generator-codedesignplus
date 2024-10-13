@@ -21,13 +21,15 @@ export default class Core {
 
 
     async prompt() {
-        let content = {};
+        let defaultValues = {};
 
         try {
-            content = await this._utils.readArchetypeMetadata();
+            defaultValues = await this._utils.readArchetypeMetadata();
+
+            console.log('values', defaultValues)
         }
         catch (error) {
-            content = {
+            defaultValues = {
                 organization: 'CodeDesignPlus'
             };
         }
@@ -37,7 +39,7 @@ export default class Core {
                 type: 'input',
                 name: 'organization',
                 message: 'What is your organization\'s name?',
-                default: content.organization,
+                default: defaultValues.organization,
             },
             {
                 type: 'list',
@@ -86,7 +88,7 @@ export default class Core {
             throw new Error(`The resource ${selectedResource} is not supported`);
 
         const generatorInstance = new generatorClass(this._utils, this._generator);
-        const answers = await generatorInstance.prompt();
+        const answers = await generatorInstance.prompt(defaultValues);
 
         return [generatorInstance, answers];
     }

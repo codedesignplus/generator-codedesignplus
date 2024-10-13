@@ -7,13 +7,14 @@ export default class ProtoGenerator {
         this._generator = generator;
     }
 
-    async prompt() {
+    async prompt(defaultValues) {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
                 name: 'microserviceName',
-                message: 'What is the name of your microservice?'
-            },            
+                message: 'What is the name of your microservice?',
+                default: defaultValues.microservice
+            },
             {
                 type: 'input',
                 name: 'proto',
@@ -23,18 +24,21 @@ export default class ProtoGenerator {
 
         return {
             microserviceName: answers.microserviceName,
-            proto: answers.proto
+            proto: answers.proto,
+            createProtoForAggregate: true
         }
     }
 
     async generate(options) {
-        await this._generator.fs.copyTplAsync(
-            this._generator.templatePath('grpc/grpc.proto'),
-            this._generator.destinationPath(path.join(options.paths.src.grpc, 'Protos', `${options.proto.toLowerCase() }.proto`)),
-            {
-                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.gRpc`,
-                name: options.proto
-            }
-        );
+        if (options.createProtoForAggregate) {
+            await this._generator.fs.copyTplAsync(
+                this._generator.templatePath('grpc/grpc.proto'),
+                this._generator.destinationPath(path.join(options.paths.src.grpc, 'Protos', `${options.proto.toLowerCase()}.proto`)),
+                {
+                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.gRpc`,
+                    name: options.proto
+                }
+            );
+        }
     }
 }

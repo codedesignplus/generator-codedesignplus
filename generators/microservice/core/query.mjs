@@ -9,7 +9,7 @@ export default class QueryGenerator {
         this._generator = generator;
     }
 
-    async prompt() {
+    async prompt(defaultValues) {
         const aggregates = glob.sync('**/*{Aggregate,Entity}.cs').map(x => path.basename(x, '.cs'));
 
         const repositories = glob.sync('**/I*Repository.cs').map(x => path.basename(x, '.cs'));
@@ -18,7 +18,8 @@ export default class QueryGenerator {
             {
                 type: 'input',
                 name: 'microserviceName',
-                message: 'What is the name of your microservice?'
+                message: 'What is the name of your microservice?',
+                default: defaultValues.microservice
             },
             {
                 type: 'list',

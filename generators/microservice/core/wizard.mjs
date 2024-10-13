@@ -16,12 +16,13 @@ export default class WizardGenerator {
         this._generator = generator;
     }
 
-    async prompt() {
+    async prompt(defaultValues) {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
                 name: 'microserviceName',
-                message: 'What is the name of your microservice?'
+                message: 'What is the name of your microservice?',
+                default: defaultValues.microservice
             },
             {
                 type: 'input',
@@ -45,7 +46,7 @@ export default class WizardGenerator {
             },
             {
                 type: 'confirm',
-                name: 'repository',
+                name: 'enableRepository',
                 message: 'Do you want to create a repository for the aggregate?'
             },
             {
@@ -60,13 +61,13 @@ export default class WizardGenerator {
             },
             {
                 type: 'confirm',
-                name: 'controller',
+                name: 'createControllerForAggregate',
                 message: 'Do you want to create the controller for the aggregate?'
             },
             {
                 type: 'confirm',
-                name: 'service',
-                message: 'Do you want to create the service for the aggregate?'
+                name: 'createProtoForAggregate',
+                message: 'Do you want to create the proto for the aggregate?'
             }
         ]);
 
@@ -75,10 +76,25 @@ export default class WizardGenerator {
         answers['controller'] = answers.aggregate;
         answers['proto'] = answers.aggregate;
 
-        return answers;
+        return {
+            microserviceName: answers.microserviceName,
+            aggregateName: answers.aggregate,
+            domainEvents: answers.domainEvents,
+            entities: answers.entities,
+            valueObjects: answers.valueObjects,
+            createRepositoryForAggregate: answers.enableRepository,
+            commands: answers.commands,
+            queries: answers.queries,
+            createControllerForAggregate: answers.createControllerForAggregate,
+            createProtoForAggregate: answers.createProtoForAggregate,
+            repository: answers.repository,
+            dataTransferObject: answers.dataTransferObject,
+            controller: answers.controller,
+            proto: answers.proto
+        };
     }
 
-    async generate() {
+    async generate(options) {
         const generatorsMap = {
             'Aggregate': AggregateGenerator,
             'Domain Event': DomainEventGenerator,
@@ -95,7 +111,7 @@ export default class WizardGenerator {
         for (const key in generatorsMap) {
             const generator = new generatorsMap[key](this._utils, this._generator);
 
-            await generator.generate(this._answers);
+            await generator.generate(options);
         }
     }
 }

@@ -8,14 +8,15 @@ export default class DtoGenerator {
         this._generator = generator;
     }
 
-    async prompt() {
+    async prompt(defaultValues) {
         const aggregates = glob.sync('**/*Aggregate.cs').map(x => path.basename(x, '.cs'));
-        
+
         const answers = await this._generator.prompt([
             {
                 type: 'input',
                 name: 'microserviceName',
-                message: 'What is the name of your microservice?'
+                message: 'What is the name of your microservice?',
+                default: defaultValues.microservice
             },
             {
                 type: 'list',
@@ -38,19 +39,14 @@ export default class DtoGenerator {
     }
 
     async generate(options) {
-        const aggregate = glob.sync(`**/${options.aggregateName}Aggregate.cs`)[0];
-
-        const nameClass = (await this._utils.getClassName(aggregate)).replace(/(Aggregate|Entity)/g, '');
 
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('data-transfer-object/ItemDto.cs'),
-            this._generator.destinationPath(path.join(options.paths.src.application, `${nameClass}`, `DataTransferObjects`, `${options.dataTransferObject}Dto.cs`)),
+            this._generator.destinationPath(path.join(options.paths.src.application, `${options.aggregateName}`, `DataTransferObjects`, `${options.dataTransferObject}Dto.cs`)),
             {
-                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${nameClass}.DataTransferObjects`,
+                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${options.aggregateName}.DataTransferObjects`,
                 name: options.dataTransferObject
             }
         );
-
-        await this._utils.addUsing(options.paths.src.application, `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${nameClass}.DataTransferObjects`);
     }
 }

@@ -3,6 +3,7 @@ import path from 'path';
 import replace from 'gulp-replace';
 import { makeDirectory } from 'make-dir';
 import ErrorsGenerator from './errors.mjs';
+import WizardGenerator from './wizard.mjs';
 
 export default class MicroserviceGenerator {
 
@@ -10,43 +11,52 @@ export default class MicroserviceGenerator {
         this._utils = utils;
         this._generator = generator;
         this._errorGenerator = new ErrorsGenerator(utils, generator);
+        this._wizard = new WizardGenerator(utils, generator);
     }
 
-    async prompt() {
-        this._answers = await this._generator.prompt([
-            {
-                type: 'input',
-                name: 'name',
-                message: 'Your microservice name',
-            },
+    async prompt(defaultValues) {
+        const answersMicroservice = await this._generator.prompt([
             {
                 type: 'confirm',
                 name: 'enableExample',
                 message: 'Would you like to include an example?',
             }
         ]);
+
+        let answers = {
+            enableExample: answersMicroservice.enableExample,
+        };
+
+        if (!answers.enableExample) {
+            const answersWizard = await this._wizard.prompt(defaultValues);
+
+            answers = {
+                ...answers,
+                ...answersWizard
+            }
+        }
+
+        return answers;
     }
 
-    async generate() {
-        const namespace = `${this._generator.answers.organization}.Net.Microservice.${this._answers.name}`;
+    async generate(options) {
+        const namespace = `${options.organization}.Net.Microservice.${options.microserviceName}`;
 
         const template = this._generator.templatePath('microservice');
 
         const destination = path.join(this._generator.destinationRoot(), namespace);
 
-        const replaceStreamGlobalUsing = replace(/global using CodeDesignPlus\.Net\.Microservice\.(Application|Domain|Infrastructure).*;/g, '');
         const replaceStreamNamespace = replace(/CodeDesignPlus\.Net\.Microservice(?!\.Commons)/g, namespace);
         const replaceStreamConfigure = replace(/public static void Configure\(\)\s*{\s*([^}]*)}/g, 'public static void Configure() { }');
-        const replaceStreamOrderNamespace = replace(/\.Order\./g, this._answers.name);
+        const replaceStreamOrderNamespace = replace(/\.Order\./g, `.${options.aggregateName}.`);
 
-        this._generator.queueTransformStream(replaceStreamGlobalUsing);
         this._generator.queueTransformStream(replaceStreamNamespace);
         this._generator.queueTransformStream(replaceStreamConfigure);
         this._generator.queueTransformStream(replaceStreamOrderNamespace);
 
         const ignores = ['**/bin/**', '**/obj/**'];
 
-        if (!this._answers.enableExample) {
+        if (!options.enableExample) {
             this._ignoreFilesExample(ignores);
         }
 
@@ -55,25 +65,29 @@ export default class MicroserviceGenerator {
         for (const i in files) {
 
             const src = path.resolve(template, files[i]);
-            const dest = path.resolve(destination, files[i].replace(/CodeDesignPlus\.Net\.Microservice/g, namespace).replace(/Order/g, this._answers.name));
+            const dest = path.resolve(destination, files[i].replace(/CodeDesignPlus\.Net\.Microservice/g, namespace).replace(/Order/g, options.microserviceName));
 
             await this._generator.fs.copyAsync(src, dest, { overwrite: false, errorOnExist: false });
         }
 
-        if (!this._answers.enableExample) {
-            await this._createEmptyFolders(destination);
-        }
+        // if (!options.enableExample) {
+        //     await this._createEmptyFolders(destination, options.microserviceName);
+        // }
 
         await this._generator.fs.writeJSON(`${destination}/archetype.json`, {
-            "name": this._answers.name,
+            "microservice": options.microserviceName,
             "description": "Custom Microservice",
             "version": "1.0.0",
-            "organization": this._generator.answers.organization
+            "organization": options.organization
         }, { spaces: 2 });
 
-        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Domain`), 'Domain', this._generator.answers.organization);
-        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Application`), 'Application', this._generator.answers.organization);
-        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Infrastructure`), 'Infrastructure', this._generator.answers.organization);
+        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Domain`), 'Domain', options.organization);
+        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Application`), 'Application', options.organization);
+        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Infrastructure`), 'Infrastructure', options.organization);
+
+        this._generator.destinationRoot(destination);
+
+        await this._wizard.generate(options);
     }
 
 
@@ -163,9 +177,9 @@ export default class MicroserviceGenerator {
         }
     }
 
-    _createEmptyFolders(destination) {
-        const baseNamespace = `CodeDesignPlus.Net.Microservice.${this._answers.name}`;
-        const applicationPath = path.join(destination, 'src', 'domain', `${baseNamespace}.Application`, this._answers.name);
+    _createEmptyFolders(destination, microserviceName) {
+        const baseNamespace = `CodeDesignPlus.Net.Microservice.${microserviceName}`;
+        const applicationPath = path.join(destination, 'src', 'domain', `${baseNamespace}.Application`, microserviceName);
         const domainPath = path.join(destination, 'src', 'domain', `${baseNamespace}.Domain`);
         const infrastructurePath = path.join(destination, 'src', 'domain', `${baseNamespace}.Infrastructure`);
         const entrypointsPath = path.join(destination, 'src', 'entrypoints', `${baseNamespace}`);
@@ -191,9 +205,9 @@ export default class MicroserviceGenerator {
             makeDirectory(path.join(`${testsIntegrationPath}.gRpc.Test`, 'Protos')),
             makeDirectory(path.join(`${testsIntegrationPath}.gRpc.Test`, 'Services')),
             makeDirectory(path.join(`${testsIntegrationPath}.Rest.Test`, 'Controllers')),
-            makeDirectory(path.join(`${testsUnitPath}.Application.Test`, this._answers.name, 'Commands')),
-            makeDirectory(path.join(`${testsUnitPath}.Application.Test`, this._answers.name, 'Queries')),
-            makeDirectory(path.join(`${testsUnitPath}.Application.Test`, this._answers.name, 'DataTransferObjects')),
+            makeDirectory(path.join(`${testsUnitPath}.Application.Test`, microserviceName, 'Commands')),
+            makeDirectory(path.join(`${testsUnitPath}.Application.Test`, microserviceName, 'Queries')),
+            makeDirectory(path.join(`${testsUnitPath}.Application.Test`, microserviceName, 'DataTransferObjects')),
             makeDirectory(path.join(`${testsUnitPath}.Infrastructure.Test`, 'Repositories')),
             makeDirectory(path.join(`${testsUnitPath}.Domain.Test`, 'DataTransferObjects')),
             makeDirectory(path.join(`${testsUnitPath}.Domain.Test`, 'Enums')),

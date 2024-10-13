@@ -7,12 +7,13 @@ export default class AggregateGenerator {
         this._generator = generator;
     }
 
-    async prompt() {
+    async prompt(defaultValues) {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
                 name: 'microserviceName',
-                message: 'What is the name of your microservice?'
+                message: 'What is the name of your microservice?',
+                default: defaultValues.microservice
             },            
             {
                 type: 'input',

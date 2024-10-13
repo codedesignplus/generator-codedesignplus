@@ -11,7 +11,7 @@ export default class Utils {
         const filePath = await findUp('archetype.json');
 
         if (!filePath) {
-            throw new Error('No se encontró el archivo archetype.json');
+            return this._generator.destinationRoot();
         }
 
         const pathBaseDir = path.dirname(filePath);
@@ -35,15 +35,16 @@ export default class Utils {
         const options = {
             "organization": this._generator.answers.organization,
             "microserviceName": answers.microserviceName,
+            "enableExample": answers.enableExample,
             "aggregateName": answers.aggregateName?.replace(/(Aggregate|Entity)/g, ''),
             "domainEvents": answers.domainEvents?.split(',').map(x => x.trim()) ?? [],
             "entities": answers.entities?.split(',').map(x => x.trim()) ?? [],
             "valueObjects": answers.valueObjects?.split(',').map(x => x.trim()) ?? [],
-            "createRepositoryForAggregate": answers.repository,
+            "createRepositoryForAggregate": answers.createRepositoryForAggregate,
             "commands": answers.commands?.split(',').map(x => x.trim()) ?? [],
             "queries": answers.queries?.split(',').map(x => x.trim()) ?? [],
-            "createControllerForAggregate": answers.controller,
-            "createServiceForAggregate": answers.service,
+            "createControllerForAggregate": answers.createControllerForAggregate,
+            "createProtoForAggregate": answers.createProtoForAggregate,
             "solution": `${this._generator.answers.organization}.Net.Microservice.${answers.microserviceName}`,
             "paths": {
                 "src": {},
@@ -80,6 +81,9 @@ export default class Utils {
             "grpc": path.join('tests', 'integration', `${options.solution}.gRpc.Test`),
             "asyncWorker": path.join('tests', 'integration', `${options.solution}.AsyncWorker.Test`)
         };
+
+
+        console.log('options', options);
 
         return options;
     }
