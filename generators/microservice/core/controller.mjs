@@ -33,10 +33,10 @@ export default class ControllerGenerator {
         if (options.createControllerForAggregate)
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('controller/ItemController.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.rest, `Controllers`, `${options.controller}Controller.cs`)),
+                this._generator.destinationPath(path.join(options.paths.src.rest, `Controllers`, options.controller.file)),
                 {
                     ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Rest.Controllers`,
-                    name: options.controller
+                    name: options.controller.fullname
                 }
             );
     }

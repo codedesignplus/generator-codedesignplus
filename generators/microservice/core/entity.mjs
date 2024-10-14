@@ -29,12 +29,14 @@ export default class EntityGenerator {
 
     async generate(options) {        
         for (const key in options.entities) {
+            const entity = options.entities[key];
+
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('entity/ItemEntity.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.domain, `Entities`, `${options.entities[key]}Entity.cs`)),
+                this._generator.destinationPath(path.join(options.paths.src.domain, `Entities`, entity.file)),
                 {
                     ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.Entities`,
-                    name: options.entities[key]
+                    name: entity.fullname
                 }
             );
         }

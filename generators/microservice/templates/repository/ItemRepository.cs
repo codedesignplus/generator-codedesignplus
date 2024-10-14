@@ -1,7 +1,7 @@
 ﻿namespace <%= ns %>;
 
-public class <%= name %>Repository(IServiceProvider serviceProvider, IOptions<MongoOptions> mongoOptions, ILogger<<%= name %>Repository> logger) 
-    : RepositoryBase(serviceProvider, mongoOptions, logger), I<%= name %>Repository
+public class <%= name %>(IServiceProvider serviceProvider, IOptions<MongoOptions> mongoOptions, ILogger<<%= name %>> logger) 
+    : RepositoryBase(serviceProvider, mongoOptions, logger), <%= interface %>
 {
    
 }

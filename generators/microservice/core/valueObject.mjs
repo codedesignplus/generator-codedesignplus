@@ -34,10 +34,10 @@ export default class ValueObjectGenerator {
             
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('value-object/ItemValueObject.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.domain, `ValueObjects`, `${valueObject}.cs`)),
+                this._generator.destinationPath(path.join(options.paths.src.domain, `ValueObjects`, valueObject.file)),
                 {
                     ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.ValueObjects`,
-                    name: valueObject
+                    name: valueObject.fullname
                 }
             );
         }

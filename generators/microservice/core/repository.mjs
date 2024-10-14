@@ -36,20 +36,21 @@ export default class RepositoryGenerator {
         //Create Interface Repository        
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath(`repository/IItemRepository.cs`),
-            this._generator.destinationPath(path.join(options.paths.src.domain, `Repositories`, `I${options.repository}Repository.cs`)),
+            this._generator.destinationPath(path.join(options.paths.src.domain, `Repositories`, options.repository.fileInterface)),
             {
                 ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.Repositories`,
-                name: options.repository,
+                name: options.repository.interface,
             }
         );
 
         //Create Implementation
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath(`repository/ItemRepository.cs`),
-            this._generator.destinationPath(path.join(options.paths.src.infrastructure, `Repositories`, `${options.repository}Repository.cs`)),
+            this._generator.destinationPath(path.join(options.paths.src.infrastructure, `Repositories`, options.repository.file)),
             {
                 ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Infrastructure.Repositories`,
-                name: options.repository,
+                name: options.repository.fullname,
+                interface: options.repository.interface
             }
         );
     }

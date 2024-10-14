@@ -1,6 +1,6 @@
 ﻿namespace <%= ns %>;
 
-public class <%= name %>Entity : IEntityBase
+public class <%= name %> : IEntityBase
 {
     public Guid Id { get; set; }
 }

@@ -54,28 +54,30 @@ export default class QueryGenerator {
         await new DtoGenerator(this._utils, this._generator).generate(options);        
 
         for (const key in options.queries) {
-            const query = options.queries[key];
+            const handler = options.queries[key];
+            const query = handler.query;
 
-            const ns = `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${options.aggregateName}.Queries.${query}`;
+            const ns = `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${options.aggregate.name}.Queries.${query.name}`;
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('query/ItemQuery.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.application, options.aggregateName, `Queries`, query, `${query}Query.cs`)),
+                this._generator.destinationPath(path.join(options.paths.src.application, options.aggregate.name, `Queries`, query.name, query.file)),
                 {
                     ns: ns,
-                    name: query,
-                    dto: options.dataTransferObject
+                    name: query.fullname,
+                    dto: options.dataTransferObject.fullname
                 }
             );
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('query/ItemQueryHandler.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.application, options.aggregateName, `Queries`, query, `${query}QueryHandler.cs`)),
+                this._generator.destinationPath(path.join(options.paths.src.application, options.aggregate.name, `Queries`, query.name, handler.file)),
                 {
                     ns: ns,
-                    name: query,
-                    dto: options.dataTransferObject,
-                    repository: options.repository
+                    name: query.fullname,
+                    handler: handler.fullname,
+                    dto: options.dataTransferObject.fullname,
+                    repository: options.repository.interface
                 }
             );
         }

@@ -14,7 +14,7 @@ export default class AggregateGenerator {
                 name: 'microserviceName',
                 message: 'What is the name of your microservice?',
                 default: defaultValues.microservice
-            },            
+            },
             {
                 type: 'input',
                 name: 'aggregateName',
@@ -31,10 +31,10 @@ export default class AggregateGenerator {
     async generate(options) {
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('aggregate/ItemAggregate.cs'),
-            this._generator.destinationPath(path.join(options.paths.src.domain , `${options.aggregateName}Aggregate.cs`)),
+            this._generator.destinationPath(path.join(options.paths.src.domain, options.aggregate.file)),
             {
                 ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain`,
-                name: options.aggregateName
+                name: options.aggregate.fullname
             }
         );
     }

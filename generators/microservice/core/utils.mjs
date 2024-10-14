@@ -1,6 +1,17 @@
 import { findUp } from 'find-up';
 import path from 'path';
 import { glob } from 'glob';
+import { getAggregate } from '../types/aggregate.mjs';
+import { getCommands } from '../types/command.mjs';
+import { getQueries } from '../types/query.mjs'
+import { getDomainEvents } from '../types/domainEvents.mjs';
+import { getEntities } from '../types/entity.mjs';
+import { getValueObjects } from '../types/valueObject.mjs';
+import { getRepository } from '../types/repository.mjs'
+import { getDto } from '../types/dataTransferObject.mjs';
+import { getController } from '../types/controller.mjs';
+import { getProto } from '../types/proto.mjs';
+
 
 export default class Utils {
     constructor(generator) {
@@ -36,13 +47,13 @@ export default class Utils {
             "organization": this._generator.answers.organization,
             "microserviceName": answers.microserviceName,
             "enableExample": answers.enableExample,
-            "aggregateName": answers.aggregateName?.replace(/(Aggregate|Entity)/g, ''),
-            "domainEvents": answers.domainEvents?.split(',').map(x => x.trim()) ?? [],
-            "entities": answers.entities?.split(',').map(x => x.trim()) ?? [],
-            "valueObjects": answers.valueObjects?.split(',').map(x => x.trim()) ?? [],
+            "aggregate": getAggregate(answers.aggregateName),
+            "domainEvents": getDomainEvents(answers.domainEvents),
+            "entities": getEntities(answers.entities),
+            "valueObjects": getValueObjects(answers.valueObjects),
             "createRepositoryForAggregate": answers.createRepositoryForAggregate,
-            "commands": answers.commands?.split(',').map(x => x.trim()) ?? [],
-            "queries": answers.queries?.split(',').map(x => x.trim()) ?? [],
+            "commands": getCommands(answers.commands),
+            "queries": getQueries(answers.queries),
             "createControllerForAggregate": answers.createControllerForAggregate,
             "createProtoForAggregate": answers.createProtoForAggregate,
             "solution": `${this._generator.answers.organization}.Net.Microservice.${answers.microserviceName}`,
@@ -51,10 +62,10 @@ export default class Utils {
                 "tests": {},
                 "integrationTests": {}
             },
-            "repository": answers.repository?.replace(/(Aggregate|Entity)/g, ''),
-            "dataTransferObject": answers.dataTransferObject?.replace(/(Aggregate|Entity|Dto)/g, ''),
-            "controller": answers.controller?.replace(/(Aggregate|Entity)/g, ''),
-            "proto": answers.proto?.replace(/(Aggregate|Entity)/g, '')
+            "repository": getRepository(answers.repository),
+            "dataTransferObject": getDto(answers.dataTransferObject),
+            "controller": getController(answers.controller),
+            "proto": getProto(answers.proto)
         };
 
         options.paths.src = {
@@ -98,7 +109,7 @@ export default class Utils {
 
         if (!content.includes(lineToAdd)) {
             content += `\n${lineToAdd}`;
-            this._generator.fs.write(filePath, content, { flag:'w', mode: 0o666 });
+            this._generator.fs.write(filePath, content, { flag: 'w', mode: 0o666 });
         }
     }
 

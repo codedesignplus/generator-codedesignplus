@@ -20,13 +20,13 @@ export default class ErrorsGenerator {
         ]);
     }
 
-    async internalGenerate(to, layer, organization) {
+    async internalGenerate(to, layer, options) {
 
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('errors/Error.cs'),
             this._generator.destinationPath(`${to}/Errors.cs`),
             {
-                ns: `${organization}.Net.Microservice.${layer}`,
+                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.${layer}`,
                 code: `${this._getCode(layer)} : UnknownError`,
             }
         );

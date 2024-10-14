@@ -1,6 +1,6 @@
 namespace <%= ns %>;
 
-public class <%= name %>Dto: IDtoBase
+public class <%= name %>: IDtoBase
 {
     public required Guid Id { get; set; }
 }

@@ -1,9 +1,9 @@
 ﻿namespace <%= ns %>;
 
-public class <%= name %>QueryHandler(I<%= repository %>Repository repository, IMapper mapper) : IRequestHandler<<%= name %>Query, <%= dto %>Dto>
+public class <%= handler %>(<%= repository %> repository, IMapper mapper) : IRequestHandler<<%= name %>, <%= dto %>>
 {
-    public Task<<%= dto %>Dto> Handle(<%= name %>Query request, CancellationToken cancellationToken)
+    public Task<<%= dto %>> Handle(<%= name %> request, CancellationToken cancellationToken)
     {
-        return Task.FromResult<<%= dto %>Dto>(default!);
+        return Task.FromResult<<%= dto %>>(default!);
     }
 }

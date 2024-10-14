@@ -51,26 +51,29 @@ export default class CommandGenerator {
     async generate(options) {
 
         for (const key in options.commands) {
-            const command = options.commands[key];
+            const handler = options.commands[key];
+            const command = handler.command;
 
-            const ns = `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${options.aggregateName}.Commands.${command}`;
+            const ns = `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${options.aggregate.name}.Commands.${command.name}`;
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('command/ItemCommand.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.application, options.aggregateName, `Commands`, command, `${command}Command.cs`)),
+                this._generator.destinationPath(path.join(options.paths.src.application, options.aggregate.name, `Commands`, command.name, command.file)),
                 {
                     ns: ns,
-                    name: command
+                    name: command.fullname,
+
                 }
             );
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('command/ItemCommandHandler.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.application, options.aggregateName, `Commands`, command, `${command}CommandHandler.cs`)),
+                this._generator.destinationPath(path.join(options.paths.src.application, options.aggregate.name, `Commands`, command.name, handler.file)),
                 {
-                    ns: ns,
-                    name: command,
-                    repository: options.repository
+                    ns: ns, 
+                    name: command.fullname,
+                    handler: handler.fullname,
+                    repository: options.repository.interface
                 }
             );
         }

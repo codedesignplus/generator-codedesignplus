@@ -2,7 +2,7 @@
 
 [Route("api/[controller]")]
 [ApiController]
-public class <%= name %>Controller(IMediator mediator, IMapper mapper) : ControllerBase
+public class <%= name %>(IMediator mediator, IMapper mapper) : ControllerBase
 {
     
 }

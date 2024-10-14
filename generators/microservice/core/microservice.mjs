@@ -4,6 +4,7 @@ import replace from 'gulp-replace';
 import { makeDirectory } from 'make-dir';
 import ErrorsGenerator from './errors.mjs';
 import WizardGenerator from './wizard.mjs';
+import fs from 'fs/promises';
 
 export default class MicroserviceGenerator {
 
@@ -46,14 +47,6 @@ export default class MicroserviceGenerator {
 
         const destination = path.join(this._generator.destinationRoot(), namespace);
 
-        const replaceStreamNamespace = replace(/CodeDesignPlus\.Net\.Microservice(?!\.Commons)/g, namespace);
-        const replaceStreamConfigure = replace(/public static void Configure\(\)\s*{\s*([^}]*)}/g, 'public static void Configure() { }');
-        const replaceStreamOrderNamespace = replace(/\.Order\./g, `.${options.aggregateName}.`);
-
-        this._generator.queueTransformStream(replaceStreamNamespace);
-        this._generator.queueTransformStream(replaceStreamConfigure);
-        this._generator.queueTransformStream(replaceStreamOrderNamespace);
-
         const ignores = ['**/bin/**', '**/obj/**'];
 
         if (!options.enableExample) {
@@ -63,11 +56,26 @@ export default class MicroserviceGenerator {
         const files = glob.sync('**', { dot: true, nodir: true, cwd: template, ignore: ignores });
 
         for (const i in files) {
+            const file = files[i];
+            const src = path.resolve(template, file);
+            const dest = path.resolve(destination, file.replace(/CodeDesignPlus\.Net\.Microservice/g, namespace).replace(/Order/g, options.microserviceName));
 
-            const src = path.resolve(template, files[i]);
-            const dest = path.resolve(destination, files[i].replace(/CodeDesignPlus\.Net\.Microservice/g, namespace).replace(/Order/g, options.microserviceName));
+            const content = await fs.readFile(src, {
+                encoding: 'utf-8'
+            });
 
-            await this._generator.fs.copyAsync(src, dest, { overwrite: false, errorOnExist: false });
+            let transformedContent = content
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.Domain\.Enums;/g, '')
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.Domain\.DataTransferObjects;/g, '')
+                .replace(/CodeDesignPlus\.Net\.Microservice(?!\.Commons)/g, namespace)
+                .replace(/public static void Configure\(\)\s*{\s*([^}]*)}/g, 'public static void Configure() { }')
+                .replace(/\.Order\./g, `.${options.aggregate.name}.`);
+
+
+            await fs.mkdir(path.dirname(dest), { recursive: true });
+            await fs.writeFile(dest, transformedContent, {
+                encoding: 'utf-8'
+            });
         }
 
         // if (!options.enableExample) {
@@ -81,9 +89,9 @@ export default class MicroserviceGenerator {
             "organization": options.organization
         }, { spaces: 2 });
 
-        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Domain`), 'Domain', options.organization);
-        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Application`), 'Application', options.organization);
-        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Infrastructure`), 'Infrastructure', options.organization);
+        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Domain`), 'Domain', options);
+        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Application`), 'Application', options);
+        await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Infrastructure`), 'Infrastructure', options);
 
         this._generator.destinationRoot(destination);
 

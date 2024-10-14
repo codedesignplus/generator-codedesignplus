@@ -1,6 +1,6 @@
 namespace <%= ns %>;
 
-public interface I<%= name %>Repository : IRepositoryBase
+public interface <%= name %> : IRepositoryBase
 {
 
 }

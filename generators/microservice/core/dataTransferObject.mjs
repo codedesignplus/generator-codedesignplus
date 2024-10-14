@@ -42,10 +42,10 @@ export default class DtoGenerator {
 
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('data-transfer-object/ItemDto.cs'),
-            this._generator.destinationPath(path.join(options.paths.src.application, `${options.aggregateName}`, `DataTransferObjects`, `${options.dataTransferObject}Dto.cs`)),
+            this._generator.destinationPath(path.join(options.paths.src.application, options.aggregate.name, `DataTransferObjects`, options.dataTransferObject.file)),
             {
-                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${options.aggregateName}.DataTransferObjects`,
-                name: options.dataTransferObject
+                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${options.aggregate.name}.DataTransferObjects`,
+                name: options.dataTransferObject.fullname
             }
         );
     }

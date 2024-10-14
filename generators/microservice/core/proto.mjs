@@ -33,10 +33,10 @@ export default class ProtoGenerator {
         if (options.createProtoForAggregate) {
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('grpc/grpc.proto'),
-                this._generator.destinationPath(path.join(options.paths.src.grpc, 'Protos', `${options.proto.toLowerCase()}.proto`)),
+                this._generator.destinationPath(path.join(options.paths.src.grpc, 'Protos', options.proto.file)),
                 {
                     ns: `${options.organization}.Net.Microservice.${options.microserviceName}.gRpc`,
-                    name: options.proto
+                    name: options.proto.fullname
                 }
             );
         }

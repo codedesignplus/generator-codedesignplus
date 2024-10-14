@@ -1,8 +1,8 @@
 ﻿namespace <%= ns %>;
 
-public class <%= name %>Aggregate(Guid id) : AggregateRoot(id)
+public class <%= name %>(Guid id) : AggregateRoot(id)
 {
-    public static <%= name %>Aggregate Create(Guid id, Guid tenant, Guid createBy)
+    public static <%= name %> Create(Guid id, Guid tenant, Guid createBy)
     {
        return default;
     }

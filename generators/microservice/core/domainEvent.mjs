@@ -41,13 +41,15 @@ export default class DomainEventGenerator {
     async generate(options) {
 
         for (const key in options.domainEvents) {
+            const domainEvent = options.domainEvents[key];
+
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('domain-event/ItemDomainEvent.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.domain, `DomainEvents`, `${options.domainEvents[key]}DomainEvent.cs`)),
+                this._generator.destinationPath(path.join(options.paths.src.domain, `DomainEvents`, domainEvent.file)),
                 {
                     ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.DomainEvents`,
-                    name: options.domainEvents[key],
-                    entity: options.aggregateName
+                    name: domainEvent.fullname,
+                    entity: options.aggregate.fullname
                 }
             );
         }
