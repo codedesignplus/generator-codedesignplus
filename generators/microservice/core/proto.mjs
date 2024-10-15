@@ -39,6 +39,24 @@ export default class ProtoGenerator {
                     name: options.proto.fullname
                 }
             );
+
+            await this._generator.fs.copyTplAsync(
+                this._generator.templatePath('grpc/grpc.proto'),
+                this._generator.destinationPath(path.join(options.paths.integrationTests.grpc, 'Protos', options.proto.file)),
+                {
+                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.gRpc.Test`,
+                    name: options.proto.fullname
+                }
+            );
+
+            await this._generator.fs.copyTplAsync(
+                this._generator.templatePath('grpc/ItemService.cs'),
+                this._generator.destinationPath(path.join(options.paths.src.grpc, 'Services', `${options.proto.name}Service.cs`)),
+                {
+                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.gRpc.Services`,
+                    name: options.proto.name
+                }
+            );
         }
     }
 }

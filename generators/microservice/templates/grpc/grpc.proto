@@ -4,7 +4,7 @@ syntax = "proto3";
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/empty.proto";
 
-option csharp_namespace = <%= ns %>;
+option csharp_namespace = "<%= ns %>";
 
 package <%= name %>;
 

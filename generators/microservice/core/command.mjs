@@ -76,6 +76,8 @@ export default class CommandGenerator {
                     repository: options.repository.interface
                 }
             );
+
+            this._utils.addUsing(options.paths.src.rest, ns);
         }
     }
 }

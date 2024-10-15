@@ -80,6 +80,8 @@ export default class QueryGenerator {
                     repository: options.repository.interface
                 }
             );
+            
+            this._utils.addUsing(options.paths.src.rest, ns);
         }
     }
 }

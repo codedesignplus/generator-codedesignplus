@@ -65,11 +65,23 @@ export default class MicroserviceGenerator {
             });
 
             let transformedContent = content
+                .replace(/Protos\\orders.proto/g, `Protos\\${options.proto.file}`)
                 .replace(/global using CodeDesignPlus\.Net\.Microservice\.Domain\.Enums;/g, '')
                 .replace(/global using CodeDesignPlus\.Net\.Microservice\.Domain\.DataTransferObjects;/g, '')
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.AsyncWorker\.Consumers;/g, '')
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.AddProductToOrder;/g, '')
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.CancelOrder;/g, '')
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.CompleteOrder;/g, '')
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.CreateOrder;/g, '')
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.RemoveProduct;/g, '')
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.UpdateQuantityProduct;/g, '')
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Queries\.FindOrderById;/g, '')
+                .replace(/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Queries\.GetAllOrders;/g, '')
+                .replace(/app\.MapGrpcService<OrdersService>\(\)/g, `app.MapGrpcService<${options.proto.name}Service>()`)
                 .replace(/CodeDesignPlus\.Net\.Microservice(?!\.Commons)/g, namespace)
                 .replace(/public static void Configure\(\)\s*{\s*([^}]*)}/g, 'public static void Configure() { }')
                 .replace(/\.Order\./g, `.${options.aggregate.name}.`);
+        
 
 
             await fs.mkdir(path.dirname(dest), { recursive: true });
