@@ -41,8 +41,6 @@ export default class Utils {
     }
 
     async getOptions(answers) {
-        console.log('answers', answers);
-
         const options = {
             "organization": this._generator.answers.organization,
             "microserviceName": answers.microserviceName,
@@ -92,9 +90,6 @@ export default class Utils {
             "grpc": path.join('tests', 'integration', `${options.solution}.gRpc.Test`),
             "asyncWorker": path.join('tests', 'integration', `${options.solution}.AsyncWorker.Test`)
         };
-
-
-        console.log('options', options);
 
         return options;
     }

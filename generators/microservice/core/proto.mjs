@@ -61,11 +61,11 @@ export default class ProtoGenerator {
                 }
             );
 
-            const grpcProject = new Xml(`${options.paths.src.grpc}/${solution}.csproj`);
+            const grpcProject = new Xml(`${this._generator.destinationPath()}/${options.paths.src.grpc}/${solution}.csproj`);
 
             await grpcProject.addProtobuf(`Protos\\${options.proto.file}`);
             
-            const grpcTestProject = new Xml(`${options.paths.integrationTests.grpc}/${solution}.Test.csproj`);
+            const grpcTestProject = new Xml(`${this._generator.destinationPath()}/${options.paths.integrationTests.grpc}/${solution}.Test.csproj`);
             
             await grpcTestProject.addProtobuf(`Protos\\${options.proto.file}`);
         }

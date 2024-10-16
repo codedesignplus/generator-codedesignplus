@@ -25,8 +25,6 @@ export default class Core {
 
         try {
             defaultValues = await this._utils.readArchetypeMetadata();
-
-            console.log('values', defaultValues)
         }
         catch (error) {
             defaultValues = {
