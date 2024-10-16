@@ -10,5 +10,9 @@ export class DomainEventModel {
 }
 
 export function getDomainEvents(items) {
-    return items?.split(',').map(x => new DomainEventModel(x)) ?? []
+    if (!items) {
+        return [];
+    }
+
+    return items.split(',').map(x => new DomainEventModel(x));
 }

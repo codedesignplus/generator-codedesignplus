@@ -9,7 +9,7 @@ export default class DomainEventGenerator {
     }
 
     async prompt(defaultValues) {
-        const aggregates = glob.sync('**/*{Aggregate,Entity}.cs').map(x => path.basename(x, '.cs'));
+        const aggregates = glob.sync('**/*Aggregate.cs').map(x => path.basename(x, '.cs'));
 
         const answers = await this._generator.prompt([
             {
@@ -21,7 +21,7 @@ export default class DomainEventGenerator {
             {
                 type: 'list',
                 name: 'entity',
-                message: 'Select the entity or aggregate you want to associate with the domain event:',
+                message: 'Select the aggregate you want to associate with the domain event:',
                 choices: aggregates,
             },
             {
@@ -33,7 +33,7 @@ export default class DomainEventGenerator {
 
         return {
             microserviceName: answers.microserviceName,
-            aggregateName: answers.entity,
+            aggregateName: answers.entity.replace('Aggregate', ''),
             domainEvents: answers.domainEvents,
         }
     }

@@ -1,4 +1,5 @@
 import path from 'path';
+import Xml from './xml.mjs';
 
 export default class ProtoGenerator {
 
@@ -31,11 +32,13 @@ export default class ProtoGenerator {
 
     async generate(options) {
         if (options.createProtoForAggregate) {
+            const solution = `${options.organization}.Net.Microservice.${options.microserviceName}.gRpc`;
+
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('grpc/grpc.proto'),
                 this._generator.destinationPath(path.join(options.paths.src.grpc, 'Protos', options.proto.file)),
                 {
-                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.gRpc`,
+                    ns: solution,
                     name: options.proto.fullname
                 }
             );
@@ -44,7 +47,7 @@ export default class ProtoGenerator {
                 this._generator.templatePath('grpc/grpc.proto'),
                 this._generator.destinationPath(path.join(options.paths.integrationTests.grpc, 'Protos', options.proto.file)),
                 {
-                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.gRpc.Test`,
+                    ns: `${solution}.Test`,
                     name: options.proto.fullname
                 }
             );
@@ -53,10 +56,18 @@ export default class ProtoGenerator {
                 this._generator.templatePath('grpc/ItemService.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.grpc, 'Services', `${options.proto.name}Service.cs`)),
                 {
-                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.gRpc.Services`,
+                    ns: `${solution}.Services`,
                     name: options.proto.name
                 }
             );
+
+            const grpcProject = new Xml(`${options.paths.src.grpc}/${solution}.csproj`);
+
+            await grpcProject.addProtobuf(`Protos\\${options.proto.file}`);
+            
+            const grpcTestProject = new Xml(`${options.paths.integrationTests.grpc}/${solution}.Test.csproj`);
+            
+            await grpcTestProject.addProtobuf(`Protos\\${options.proto.file}`);
         }
     }
 }

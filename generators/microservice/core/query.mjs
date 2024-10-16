@@ -10,7 +10,7 @@ export default class QueryGenerator {
     }
 
     async prompt(defaultValues) {
-        const aggregates = glob.sync('**/*{Aggregate,Entity}.cs').map(x => path.basename(x, '.cs'));
+        const aggregates = glob.sync('**/*Aggregate.cs').map(x => path.basename(x, '.cs'));
 
         const repositories = glob.sync('**/I*Repository.cs').map(x => path.basename(x, '.cs'));
         
@@ -23,8 +23,8 @@ export default class QueryGenerator {
             },
             {
                 type: 'list',
-                name: 'entity',
-                message: 'Select the entity or aggregate you want to associate with queries:',
+                name: 'aggregate',
+                message: 'Select the aggregate you want to associate with queries:',
                 choices: aggregates,
             },
             {
@@ -40,12 +40,16 @@ export default class QueryGenerator {
             },
         ]);
 
+        
+        const match = answers.repository.match(/I(.*)Repository/);
+        const name = match ? match[1] : null
+
         return {
             microserviceName: answers.microserviceName,
-            aggregateName: answers.entity,
+            aggregateName: answers.aggregate.replace('Aggregate', ''),
             queries: answers.queries,
-            repository: answers.repository,
-            dataTransferObject: answers.entity
+            repository: name,
+            dataTransferObject: answers.aggregate.replace('Aggregate', '')
         }
     }
 

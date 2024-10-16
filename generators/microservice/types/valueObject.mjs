@@ -10,5 +10,9 @@ export class ValueObjectModel {
 }
 
 export function getValueObjects(items) {
-    return items?.split(',').map(x => new ValueObjectModel(x)) ?? []
+    if (!items) {
+        return [];
+    }
+    
+    return items.split(',').map(x => new ValueObjectModel(x));
 }

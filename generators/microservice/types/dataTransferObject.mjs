@@ -9,5 +9,9 @@ export class DataTransferObjectModel {
     }
 }
 export function getDto(name) {
+    if (!name) {
+        return null;
+    }
+
     return new DataTransferObjectModel(name);
 }

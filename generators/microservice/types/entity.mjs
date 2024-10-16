@@ -10,5 +10,8 @@ export class EntityModel {
 }
 
 export function getEntities(items) {
-    return items?.split(',').map(x => new EntityModel(x)) ?? []
+    if (!items) {
+        return [];
+    }
+    return items.split(',').map(x => new EntityModel(x));
 }

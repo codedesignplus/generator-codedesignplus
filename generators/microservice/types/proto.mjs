@@ -9,5 +9,8 @@ export class ProtoModel {
     }
 }
 export function getProto(name) {
+    if (!name) {
+        return null;
+    }
     return new ProtoModel(name);
 }

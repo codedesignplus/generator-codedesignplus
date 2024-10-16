@@ -65,6 +65,7 @@ export default class MicroserviceGenerator {
             });
 
             let transformedContent = content
+                .replace(/<Protobuf Include="Protos\\org.proto" GrpcServices="Server" \/>/g, ``)
                 .replace(/Protos\\orders.proto/g, `Protos\\${options.proto.file}`)
                 .replace(/global using CodeDesignPlus\.Net\.Microservice\.Domain\.Enums;/g, '')
                 .replace(/global using CodeDesignPlus\.Net\.Microservice\.Domain\.DataTransferObjects;/g, '')

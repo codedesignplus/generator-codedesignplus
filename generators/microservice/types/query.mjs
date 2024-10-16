@@ -22,5 +22,9 @@ export class QueryHandlerModel {
 }
 
 export function getQueries(items) {
-    return items?.split(',').map(x => new QueryHandlerModel(x)) ?? []
+    if (!items) {
+        return [];
+    }
+
+    return items?.split(',').map(x => new QueryHandlerModel(x));
 }

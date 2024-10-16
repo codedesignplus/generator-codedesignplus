@@ -9,5 +9,9 @@ export class AggregateModel {
     }
 }
 export function getAggregate(name) {
+    if(!name) {
+        return null;
+    }
+    
     return new AggregateModel(name);
 }

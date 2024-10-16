@@ -22,5 +22,9 @@ export class CommandHandlerModel {
 }
 
 export function getCommands(items) {
-    return items?.split(',').map(x => new CommandHandlerModel(x)) ?? []
+    if (!items) {
+        return [];
+    }
+
+    return items.split(',').map(x => new CommandHandlerModel(x));
 }

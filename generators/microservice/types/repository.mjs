@@ -11,5 +11,9 @@ export class RepositoryModel {
     }
 }
 export function getRepository(name) {
+    if (!name) {
+        return null
+    }
+    
     return new RepositoryModel(name);
 }

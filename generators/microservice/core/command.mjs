@@ -10,7 +10,7 @@ export default class CommandGenerator {
 
 
     async prompt(defaultValues) {
-        const aggregates = glob.sync('**/*{Aggregate,Entity}.cs').map(x => path.basename(x, '.cs'));
+        const aggregates = glob.sync('**/*Aggregate.cs').map(x => path.basename(x, '.cs'));
 
         const repositories = glob.sync('**/I*Repository.cs').map(x => path.basename(x, '.cs'));
 
@@ -23,8 +23,8 @@ export default class CommandGenerator {
             },
             {
                 type: 'list',
-                name: 'entity',
-                message: 'Select the entity or aggregate you want to associate with commands:',
+                name: 'aggregate',
+                message: 'Select the aggregate you want to associate with commands:',
                 choices: aggregates,
             },
             {
@@ -40,11 +40,14 @@ export default class CommandGenerator {
             },
         ]);
 
+        const match = answers.repository.match(/I(.*)Repository/);
+        const name = match ? match[1] : null
+
         return {
             microserviceName: answers.microserviceName,
-            aggregateName: answers.entity,
+            aggregateName: answers.aggregate.replace('Aggregate', ''),
             commands: answers.commands,
-            repository: answers.repository,
+            repository: name,
         }
     }
 
@@ -70,7 +73,7 @@ export default class CommandGenerator {
                 this._generator.templatePath('command/ItemCommandHandler.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.application, options.aggregate.name, `Commands`, command.name, handler.file)),
                 {
-                    ns: ns, 
+                    ns: ns,
                     name: command.fullname,
                     handler: handler.fullname,
                     repository: options.repository.interface

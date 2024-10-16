@@ -9,5 +9,9 @@ export class ControllerModel {
     }
 }
 export function getController(name) {
+    if (!name) {
+        return null;
+    }
+
     return new ControllerModel(name);
 }
