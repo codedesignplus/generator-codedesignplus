@@ -17,6 +17,45 @@ export default class WizardGenerator {
     }
 
     async prompt(defaultValues) {
+
+        const { isCrud } = await this._generator.prompt([
+            {
+                type: 'confirm',
+                name: 'isCrud',
+                message: 'Do you want to generate a CRUD?'
+            }
+        ]);
+
+        if (isCrud) {
+            const { microservice, aggregate } = await this._generator.prompt([
+                {
+                    type: 'input',
+                    name: 'microservice',
+                    message: 'What is the name of your microservice?',
+                    default: defaultValues.microservice
+                },
+                {
+                    type: 'input',
+                    name: 'aggregate',
+                    message: 'What is the name of the aggregate you want to create?'
+                }]);
+
+            return {
+                microservice: microservice,
+                aggregate: aggregate,
+                domainEvents: `${aggregate}Created, ${aggregate}Updated, ${aggregate}Deleted`,
+                createRepositoryForAggregate: true,
+                commands: `Create${aggregate}, Update${aggregate}, Delete${aggregate}`,
+                queries: `Get${aggregate}ById, GetAll${aggregate}`,
+                createControllerForAggregate: true,
+                createProtoForAggregate: true,
+                repository: aggregate,
+                dataTransferObject: aggregate,
+                controller: aggregate,
+                proto: aggregate
+            }
+        }
+
         const answers = await this._generator.prompt([
             {
                 type: 'input',
@@ -71,11 +110,6 @@ export default class WizardGenerator {
             }
         ]);
 
-        answers['repository'] = answers.aggregate;
-        answers['dataTransferObject'] = answers.aggregate;
-        answers['controller'] = answers.aggregate;
-        answers['proto'] = answers.aggregate;
-
         return {
             microservice: answers.microservice,
             aggregate: answers.aggregate,
@@ -87,10 +121,10 @@ export default class WizardGenerator {
             queries: answers.queries,
             createControllerForAggregate: answers.createControllerForAggregate,
             createProtoForAggregate: answers.createProtoForAggregate,
-            repository: answers.repository,
-            dataTransferObject: answers.dataTransferObject,
-            controller: answers.controller,
-            proto: answers.proto
+            repository: answers.aggregate,
+            dataTransferObject: answers.aggregate,
+            controller: answers.aggregate,
+            proto: answers.aggregate
         };
     }
 
@@ -108,10 +142,10 @@ export default class WizardGenerator {
             'Proto': ProtoGenerator
         };
 
-        for (const key in generatorsMap) {    
-            
+        for (const key in generatorsMap) {
+
             this._generator.log(`Generating ${key}...`);
-            
+
             const generator = new generatorsMap[key](this._utils, this._generator);
 
             await generator.generate(options);
