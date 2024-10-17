@@ -57,7 +57,7 @@ export default class CommandGenerator {
             const handler = options.commands[key];
             const command = handler.command;
 
-            const ns = `${options.organization}.Net.Microservice.${options.microservice}.Application.${options.aggregate.name}.Commands.${command.name}`;
+            const ns = `${options.solution}.Application.${options.aggregate.name}.Commands.${command.name}`;
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('command/ItemCommand.cs'),

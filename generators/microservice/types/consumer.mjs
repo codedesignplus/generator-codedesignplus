@@ -10,9 +10,10 @@ export class ConsumerModel extends BaseModel {
         this.file = `${this.fullname}.cs`;
 
         this.isEntityOrAggregate = data.isEntityOrAggregate;
-        this.entity = `${this._validate(data.entity, '(Entity|Aggregate)')}${this.isEntityOrAggregate === 'Entity' ? 'Entity' : 'Aggregate'}`;
+        this.entity = `${this.name}${this.isEntityOrAggregate === 'Entity' ? 'Entity' : 'Aggregate'}`;
         this.action = data.action.toLowerCase();
         this.domainEvent = `${this._validate(data.domainEvent, 'DomainEvent')}DomainEvent`;
+        this.command = this._toPascalCase(data.action);
     }
 
     static from(value) {

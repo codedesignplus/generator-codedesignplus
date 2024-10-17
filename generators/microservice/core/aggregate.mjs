@@ -28,16 +28,12 @@ export default class AggregateGenerator {
         }
     }
 
-    async generate(options) {
-        console.log('Creating aggregate...');
-
-        console.log('Options Aggregate', options);
-        
+    async generate(options) {        
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('aggregate/ItemAggregate.cs'),
             this._generator.destinationPath(path.join(options.paths.src.domain, options.aggregate.file)),
             {
-                ns: `${options.organization}.Net.Microservice.${options.microservice}.Domain`,
+                ns: `${options.solution}.Domain`,
                 name: options.aggregate.fullname
             }
         );

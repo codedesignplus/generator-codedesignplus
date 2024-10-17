@@ -25,8 +25,6 @@ export default class extends Generator {
 
         const options = await this._utils.getOptions(this._answers);
 
-        console.log('Options', options);
-
         await this._generator.generate(options);
         
         this._dotnet.removeProjects(options);

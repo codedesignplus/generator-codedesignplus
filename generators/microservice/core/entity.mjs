@@ -28,6 +28,10 @@ export default class EntityGenerator {
     }
 
     async generate(options) {        
+        console.log('Creating entity...');
+
+        console.log('Options Entity', options);
+        
         for (const key in options.entities) {
             const entity = options.entities[key];
 
@@ -35,7 +39,7 @@ export default class EntityGenerator {
                 this._generator.templatePath('entity/ItemEntity.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.domain, `Entities`, entity.file)),
                 {
-                    ns: `${options.organization}.Net.Microservice.${options.microservice}.Domain.Entities`,
+                    ns: `${options.solution}.Domain.Entities`,
                     name: entity.fullname
                 }
             );

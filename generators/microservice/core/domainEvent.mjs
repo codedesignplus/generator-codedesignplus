@@ -47,7 +47,7 @@ export default class DomainEventGenerator {
                 this._generator.templatePath('domain-event/ItemDomainEvent.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.domain, `DomainEvents`, domainEvent.file)),
                 {
-                    ns: `${options.organization}.Net.Microservice.${options.microservice}.Domain.DomainEvents`,
+                    ns: `${options.solution}.Domain.DomainEvents`,
                     name: domainEvent.fullname,
                     entity: options.aggregate.fullname
                 }

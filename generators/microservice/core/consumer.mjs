@@ -1,7 +1,9 @@
 import EntityGenerator from './entity.mjs';
 import DomainEventGenerator from './domainEvent.mjs';
 import AggregateGenerator from './aggregate.mjs';
-import { AggregateModel, DomainEventModel, EntityModel } from '../types/index.mjs';
+import RepositoryGenerator from './repository.mjs';
+import CommandGenerator from './command.mjs';
+import { AggregateModel, DomainEventModel, EntityModel, RepositoryModel, CommandHandlerModel } from '../types/index.mjs';
 import path from 'path';
 
 export default class ConsumerGenerator {
@@ -12,6 +14,8 @@ export default class ConsumerGenerator {
         this._entityGenerator = new EntityGenerator(this._utils, this._generator);
         this._domainEventGenerator = new DomainEventGenerator(this._utils, this._generator);
         this._aggregateGenerator = new AggregateGenerator(this._utils, this._generator);
+        this._repositoryGenerator = new RepositoryGenerator(this._utils, this._generator);
+        this._commandGenerator = new CommandGenerator(this._utils, this._generator);
     }
 
     async prompt() {
@@ -26,12 +30,6 @@ export default class ConsumerGenerator {
                 type: 'input',
                 name: 'consumer',
                 message: 'What is the name of your consumer?',
-                default: 'Org'
-            },
-            {
-                type: 'input',
-                name: 'entity',
-                message: 'What is the name of the entity or aggregate you want to associate?',
                 default: 'Org'
             },
             {
@@ -51,7 +49,6 @@ export default class ConsumerGenerator {
         return {
             isEntityOrAggregate: answer.isEntityOrAggregate,
             consumer: answer.consumer,
-            entity: answer.entity,
             action: answer.action,
             domainEvent: answer.domainEvent
         }
@@ -60,12 +57,19 @@ export default class ConsumerGenerator {
     async generate(options) {
         if (options.createConsumer) {
 
-            console.log('Creating consumer...');
+            options = {
+                ...options,
+                entities: EntityModel.from(options.consumer.name),
+                aggregate: AggregateModel.from(options.consumer.name),
+                domainEvents: DomainEventModel.from(options.consumer.domainEvent),
+                createRepositoryForAggregate: true,
+                repository: RepositoryModel.from(options.consumer.name),
+                commands: CommandHandlerModel.from(options.consumer.command)
+            }
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('consumer/ItemHandler.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.asyncWorker, `Consumers`, options.consumer.file)),
-
                 {
                     ns: `${options.solution}.AsyncWorker.Consumers`,
                     name: options.consumer.fullname,
@@ -75,22 +79,20 @@ export default class ConsumerGenerator {
                 }
             );
 
-            console.log(`Consumer ${options.consumer.fullname} created successfully!`);
-
-            switch (options.isEntityOrAggregate) {
+            switch (options.consumer.isEntityOrAggregate) {
                 case 'Entity':
-                    await this._entityGenerator.generate({ ...options, entities: [new EntityModel(options.consumer.entity)]  });
+                    await this._entityGenerator.generate(options);
                     break;
                 case 'Aggregate':
-                    await this._aggregateGenerator.generate({ ...options, aggregate: new AggregateModel(options.consumer.entity) });
+                    await this._aggregateGenerator.generate(options);
                     break;
             }
 
-            console.log(`Entity ${options.consumer.entity} created successfully!`);
+            await this._repositoryGenerator.generate(options);
 
-            await this._domainEventGenerator.generate({ ...options, domainEvents: [new DomainEventModel(options.consumer.domainEvent)] });
+            await this._commandGenerator.generate(options);
 
-            console.log(`Domain Event ${options.consumer.domainEvent} created successfully!`);
+            await this._domainEventGenerator.generate(options);
         }
     }
 }

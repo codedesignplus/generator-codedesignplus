@@ -189,9 +189,6 @@ export default class WizardGenerator {
         };
 
         for (const key in generatorsMap) {
-
-            console.log(`Generating ${key}...`);
-
             const generator = new generatorsMap[key](this._utils, this._generator);
 
             await generator.generate(options);
