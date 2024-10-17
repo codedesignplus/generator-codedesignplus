@@ -1,17 +1,16 @@
-export class AggregateModel {
-    constructor(name) {
-        name = name.trim();
+import BaseModel from "./base.mjs";
+
+export class AggregateModel extends BaseModel {
+    constructor(aggregate) {
+        super();
 
         this.sufix = 'Aggregate';
-        this.name = name;
+        this.name = this._validate(aggregate, this.sufix);
         this.fullname = `${this.name}${this.sufix}`;
         this.file = `${this.fullname}.cs`;
     }
-}
-export function getAggregate(name) {
-    if(!name) {
-        return null;
+
+    static from(value) {
+        return new AggregateModel(value);
     }
-    
-    return new AggregateModel(name);
 }

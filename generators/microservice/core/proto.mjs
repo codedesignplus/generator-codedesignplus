@@ -12,7 +12,7 @@ export default class ProtoGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microserviceName',
+                name: 'microservice',
                 message: 'What is the name of your microservice?',
                 default: defaultValues.microservice
             },
@@ -24,7 +24,7 @@ export default class ProtoGenerator {
         ]);
 
         return {
-            microserviceName: answers.microserviceName,
+            microservice: answers.microservice,
             proto: answers.proto,
             createProtoForAggregate: true
         }
@@ -32,7 +32,7 @@ export default class ProtoGenerator {
 
     async generate(options) {
         if (options.createProtoForAggregate) {
-            const solution = `${options.organization}.Net.Microservice.${options.microserviceName}.gRpc`;
+            const solution = `${options.organization}.Net.Microservice.${options.microservice}.gRpc`;
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('grpc/grpc.proto'),

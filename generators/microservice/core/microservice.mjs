@@ -1,7 +1,5 @@
 import { glob } from 'glob';
 import path from 'path';
-import replace from 'gulp-replace';
-import { makeDirectory } from 'make-dir';
 import ErrorsGenerator from './errors.mjs';
 import WizardGenerator from './wizard.mjs';
 import fs from 'fs/promises';
@@ -16,57 +14,55 @@ export default class MicroserviceGenerator {
     }
 
     async prompt(defaultValues) {
-        const { enableExample } = await this._generator.prompt([
+        const { isExample } = await this._generator.prompt([
             {
                 type: 'confirm',
-                name: 'enableExample',
+                name: 'isExample',
                 message: 'Would you like to include an example?',
             }
         ]);
 
-        if (enableExample) {
-            const { microserviceName } = await this._generator.prompt([
+        if (isExample) {
+            const { microservice } = await this._generator.prompt([
                 {
                     type: 'input',
-                    name: 'microserviceName',
+                    name: 'microservice',
                     message: 'What is the name of your microservice?',
                     default: defaultValues.microservice
                 }
             ]);
 
             return {
-                enableExample: enableExample,
-                microserviceName: microserviceName
+                isExample: isExample,
+                microservice: microservice
             }
         }
 
         const answersWizard = await this._wizard.prompt(defaultValues);
 
         return {
-            enableExample: enableExample,
+            isExample: isExample,
             ...answersWizard
         }
     }
 
     async generate(options) {
-        const namespace = `${options.organization}.Net.Microservice.${options.microserviceName}`;
+        const namespace = `${options.organization}.Net.Microservice.${options.microservice}`;
 
         const template = this._generator.templatePath('microservice');
 
         const destination = path.join(this._generator.destinationRoot(), namespace);
 
-        const ignores = this._getIgnores(options.enableExample);
+        const ignores = this._getIgnores(options.isExample);
 
         const files = glob.sync('**', { dot: true, nodir: true, cwd: template, ignore: ignores });
 
         await this._generateFiles(options, namespace, template, destination, files);
 
-        if (!options.enableExample) {
-            await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Domain`), 'Domain', options);
-            await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Application`), 'Application', options);
-            await this._errorGenerator.internalGenerate(path.join(destination, 'src', 'domain', `${namespace}.Infrastructure`), 'Infrastructure', options);
-
+        if (!options.isExample) {
             this._generator.destinationRoot(destination);
+
+            await this._errorGenerator.generate(options);
 
             await this._wizard.generate(options);
         }
@@ -80,7 +76,7 @@ export default class MicroserviceGenerator {
         for (const i in files) {
             const file = files[i];
             const src = path.resolve(template, file);
-            const dest = path.resolve(destination, file.replace(/CodeDesignPlus\.Net\.Microservice/g, namespace).replace(/Order/g, options.microserviceName));
+            const dest = path.resolve(destination, file.replace(/CodeDesignPlus\.Net\.Microservice/g, namespace).replace(/Order/g, options.microservice));
 
             const content = await fs.readFile(src, { encoding: 'utf-8' });
 
@@ -91,16 +87,30 @@ export default class MicroserviceGenerator {
         }
     }
 
+    async _createMetadataFile(destination, options) {
+        await this._generator.fs.writeJSON(`${destination}/archetype.json`, {
+            "microservice": options.microservice,
+            "description": "Custom Microservice",
+            "version": "1.0.0",
+            "organization": options.organization
+        }, { spaces: 2 });
+    }
+
     _getTransformations(options, namespace) {
-        const transformations = [
+        let transformations = [
             [/CodeDesignPlus\.Net\.Microservice(?!\.Commons)/g, namespace],
         ];
 
-        if (options.enableExample)
+        if (options.isExample)
             return transformations;
 
+        if(options.entities.length === 0)
+            transformations = [[/global using CodeDesignPlus\.Net\.Microservice\.Domain\.Entities;/g, ''], ...transformations];
+
+        if(options.domainEvents.length === 0)
+            transformations = [[/global using CodeDesignPlus\.Net\.Microservice\.Domain\.DomainEvents;/g, ''], ...transformations];
+
         return [
-            [/Order/g, options.aggregate.name],
             [/public static void Configure\(\)\s*{\s*([^}]*)}/g, 'public static void Configure() { }'],
             [/<Protobuf Include="Protos\\org.proto" GrpcServices="Server" \/>/g, ''],
             [/Protos\\orders.proto/g, `Protos\\${options.proto.file}`],
@@ -116,24 +126,15 @@ export default class MicroserviceGenerator {
             [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Queries\.FindOrderById;/g, ''],
             [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Queries\.GetAllOrders;/g, ''],
             [/app\.MapGrpcService<OrdersService>\(\)/g, `app.MapGrpcService<${options.proto.name}Service>()`],
+            [/Order/g, options.aggregate.name],
             ...transformations
         ]
     }
 
-
-    async _createMetadataFile(destination, options) {
-        await this._generator.fs.writeJSON(`${destination}/archetype.json`, {
-            "microservice": options.microserviceName,
-            "description": "Custom Microservice",
-            "version": "1.0.0",
-            "organization": options.organization
-        }, { spaces: 2 });
-    }
-
-    _getIgnores(enableExample) {
+    _getIgnores(isExample) {
         const ignores = ['**/bin/**', '**/obj/**'];
 
-        if (enableExample)
+        if (isExample)
             return ignores;
 
         const items = {

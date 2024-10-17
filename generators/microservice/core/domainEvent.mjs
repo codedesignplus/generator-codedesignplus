@@ -14,7 +14,7 @@ export default class DomainEventGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microserviceName',
+                name: 'microservice',
                 message: 'What is the name of your microservice?',
                 default: defaultValues.microservice
             },
@@ -32,8 +32,8 @@ export default class DomainEventGenerator {
         ]);
 
         return {
-            microserviceName: answers.microserviceName,
-            aggregateName: answers.entity.replace('Aggregate', ''),
+            microservice: answers.microservice,
+            aggregate: answers.entity.replace('Aggregate', ''),
             domainEvents: answers.domainEvents,
         }
     }
@@ -47,7 +47,7 @@ export default class DomainEventGenerator {
                 this._generator.templatePath('domain-event/ItemDomainEvent.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.domain, `DomainEvents`, domainEvent.file)),
                 {
-                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.DomainEvents`,
+                    ns: `${options.organization}.Net.Microservice.${options.microservice}.Domain.DomainEvents`,
                     name: domainEvent.fullname,
                     entity: options.aggregate.fullname
                 }

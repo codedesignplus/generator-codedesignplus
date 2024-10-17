@@ -10,7 +10,7 @@ export default class EntityGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microserviceName',
+                name: 'microservice',
                 message: 'What is the name of your microservice?',
                 default: defaultValues.microservice
             },
@@ -22,7 +22,7 @@ export default class EntityGenerator {
         ]);
 
         return {
-            microserviceName: answers.microserviceName,
+            microservice: answers.microservice,
             entities: answers.entities,
         }
     }
@@ -35,7 +35,7 @@ export default class EntityGenerator {
                 this._generator.templatePath('entity/ItemEntity.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.domain, `Entities`, entity.file)),
                 {
-                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.Entities`,
+                    ns: `${options.organization}.Net.Microservice.${options.microservice}.Domain.Entities`,
                     name: entity.fullname
                 }
             );

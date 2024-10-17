@@ -11,20 +11,20 @@ export default class AggregateGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microserviceName',
+                name: 'microservice',
                 message: 'What is the name of your microservice?',
                 default: defaultValues.microservice
             },
             {
                 type: 'input',
-                name: 'aggregateName',
+                name: 'aggregate',
                 message: 'What is the name of the aggregate you want to create?'
             }
         ]);
 
         return {
-            microserviceName: answers.microserviceName,
-            aggregateName: answers.aggregateName
+            microservice: answers.microservice,
+            aggregate: answers.aggregate
         }
     }
 
@@ -33,7 +33,7 @@ export default class AggregateGenerator {
             this._generator.templatePath('aggregate/ItemAggregate.cs'),
             this._generator.destinationPath(path.join(options.paths.src.domain, options.aggregate.file)),
             {
-                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain`,
+                ns: `${options.organization}.Net.Microservice.${options.microservice}.Domain`,
                 name: options.aggregate.fullname
             }
         );

@@ -17,7 +17,7 @@ export default class CommandGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microserviceName',
+                name: 'microservice',
                 message: 'What is the name of your microservice?',
                 default: defaultValues.microservice
             },
@@ -44,8 +44,8 @@ export default class CommandGenerator {
         const name = match ? match[1] : null
 
         return {
-            microserviceName: answers.microserviceName,
-            aggregateName: answers.aggregate.replace('Aggregate', ''),
+            microservice: answers.microservice,
+            aggregate: answers.aggregate.replace('Aggregate', ''),
             commands: answers.commands,
             repository: name,
         }
@@ -57,7 +57,7 @@ export default class CommandGenerator {
             const handler = options.commands[key];
             const command = handler.command;
 
-            const ns = `${options.organization}.Net.Microservice.${options.microserviceName}.Application.${options.aggregate.name}.Commands.${command.name}`;
+            const ns = `${options.organization}.Net.Microservice.${options.microservice}.Application.${options.aggregate.name}.Commands.${command.name}`;
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('command/ItemCommand.cs'),

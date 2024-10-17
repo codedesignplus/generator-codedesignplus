@@ -20,7 +20,7 @@ export default class WizardGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microserviceName',
+                name: 'microservice',
                 message: 'What is the name of your microservice?',
                 default: defaultValues.microservice
             },
@@ -77,8 +77,8 @@ export default class WizardGenerator {
         answers['proto'] = answers.aggregate;
 
         return {
-            microserviceName: answers.microserviceName,
-            aggregateName: answers.aggregate,
+            microservice: answers.microservice,
+            aggregate: answers.aggregate,
             domainEvents: answers.domainEvents,
             entities: answers.entities,
             valueObjects: answers.valueObjects,
@@ -108,8 +108,9 @@ export default class WizardGenerator {
             'Proto': ProtoGenerator
         };
 
-        for (const key in generatorsMap) {
-            console.log('Generator', key);
+        for (const key in generatorsMap) {    
+            
+            this._generator.log(`Generating ${key}...`);
             
             const generator = new generatorsMap[key](this._utils, this._generator);
 

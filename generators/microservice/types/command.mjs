@@ -1,30 +1,38 @@
-export class CommandModel {
-    constructor(name) {
-        name = name.trim();
+import BaseModel from "./base.mjs";
+
+export class CommandModel extends BaseModel {
+    constructor(command) {
+        super();
 
         this.sufix = 'Command';
-        this.name = name;
+        this.name = this._validate(command, this.sufix);
         this.fullname = `${this.name}${this.sufix}`;
         this.file = `${this.fullname}.cs`;
     }
+
+    static from(value) {
+        return new CommandModel(value);
+    }
 }
 
-export class CommandHandlerModel {
-    constructor(name) {
-        name = name.trim();
+export class CommandHandlerModel extends BaseModel {
+    constructor(command) {
+        super();
 
         this.sufix = 'CommandHandler';
-        this.name = name;
+        this.name = this._validate(command, this.sufix);
         this.fullname = `${this.name}${this.sufix}`;
-        this.command = new CommandModel(name);
+        this.command = CommandModel.from(command);
         this.file = `${this.fullname}.cs`;
     }
-}
+    
+    static from(value) {
+        if(!value)
+            return [];
 
-export function getCommands(items) {
-    if (!items) {
-        return [];
+        if (typeof value === 'string' && value.includes(','))
+            return value.split(',').map(x => new CommandHandlerModel(x));
+
+        return [new CommandHandlerModel(value)];
     }
-
-    return items.split(',').map(x => new CommandHandlerModel(x));
 }

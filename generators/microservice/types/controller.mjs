@@ -1,17 +1,17 @@
-export class ControllerModel {
-    constructor(name) {
-        name = name.trim();
+import BaseModel from "./base.mjs";
 
+export class ControllerModel extends BaseModel {
+
+    constructor(controller) {
+        super();
+        
         this.sufix = 'Controller';
-        this.name = name;
+        this.name = this._validate(controller, this.sufix);
         this.fullname = `${this.name}${this.sufix}`;
         this.file = `${this.fullname}.cs`;
     }
-}
-export function getController(name) {
-    if (!name) {
-        return null;
-    }
 
-    return new ControllerModel(name);
+    static from(value) {
+        return new ControllerModel(value);
+    }
 }

@@ -1,17 +1,21 @@
-export class EntityModel {
-    constructor(name) {
-        name = name.trim();
+import BaseModel from './base.mjs';
 
+export class EntityModel extends BaseModel {
+    constructor(entity) {
+        super();
         this.sufix = 'Entity';
-        this.name = name;
+        this.name = this._validate(entity, this.sufix);
         this.fullname = `${this.name}${this.sufix}`;
         this.file = `${this.fullname}.cs`;
     }
-}
+    
+    static from(value) {
+        if(!value)
+            return [];
+        
+        if (typeof value === 'string' && value.includes(','))
+            return value.split(',').map(x => new EntityModel(x));
 
-export function getEntities(items) {
-    if (!items) {
-        return [];
+        return [new EntityModel(value)];
     }
-    return items.split(',').map(x => new EntityModel(x));
 }

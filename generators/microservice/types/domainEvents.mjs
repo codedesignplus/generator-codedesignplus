@@ -1,18 +1,22 @@
-export class DomainEventModel {
-    constructor(name) {
-        name = name.trim();
+import BaseModel from "./base.mjs";
+
+export class DomainEventModel extends BaseModel {
+    constructor(domainEvent) {
+        super();
 
         this.sufix = 'DomainEvent';
-        this.name = name;
+        this.name = this._validate(domainEvent, this.sufix);
         this.fullname = `${this.name}${this.sufix}`;
         this.file = `${this.fullname}.cs`;
     }
-}
 
-export function getDomainEvents(items) {
-    if (!items) {
-        return [];
+    static from(value) {
+        if(!value)
+            return [];
+
+        if (typeof value === 'string' && value.includes(','))
+            return value.split(',').map(x => new DomainEventModel(x));
+
+        return [new DomainEventModel(value)];
     }
-
-    return items.split(',').map(x => new DomainEventModel(x));
 }

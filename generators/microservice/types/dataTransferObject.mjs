@@ -1,17 +1,16 @@
-export class DataTransferObjectModel {
-    constructor(name) {
-        name = name.trim();
+import BaseModel from "./base.mjs";
+
+export class DataTransferObjectModel extends BaseModel {
+    constructor(dto) {
+        super();
 
         this.sufix = 'Dto';
-        this.name = name;
+        this.name = this._validate(dto, "(Dto|DataTransferObject)");
         this.fullname = `${this.name}${this.sufix}`;
         this.file = `${this.fullname}.cs`;
     }
-}
-export function getDto(name) {
-    if (!name) {
-        return null;
-    }
 
-    return new DataTransferObjectModel(name);
+    static from(value) {
+        return new DataTransferObjectModel(value);
+    }
 }

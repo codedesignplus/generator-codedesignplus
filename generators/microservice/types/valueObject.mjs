@@ -1,18 +1,23 @@
-export class ValueObjectModel {
-    constructor(name) {
-        name = name.trim();
+import BaseModel from "./base.mjs";
+
+export class ValueObjectModel  extends BaseModel {
+    constructor(valueObject) {
+
+        super();
 
         this.sufix = '';
-        this.name = name;
+        this.name = this._validate(valueObject, "(Vo|ValueObject)");
         this.fullname = `${this.name}${this.sufix}`;
         this.file = `${this.fullname}.cs`;
     }
-}
-
-export function getValueObjects(items) {
-    if (!items) {
-        return [];
-    }
     
-    return items.split(',').map(x => new ValueObjectModel(x));
+    static from(value) {
+        if(!value)
+            return [];
+
+        if (typeof value === 'string' && value.includes(','))
+            return value.split(',').map(x => new ValueObjectModel(x));
+
+        return [new ValueObjectModel(value)];
+    }
 }

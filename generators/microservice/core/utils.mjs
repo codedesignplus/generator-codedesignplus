@@ -1,16 +1,17 @@
 import { findUp } from 'find-up';
 import path from 'path';
-import { glob } from 'glob';
-import { getAggregate } from '../types/aggregate.mjs';
-import { getCommands } from '../types/command.mjs';
-import { getQueries } from '../types/query.mjs'
-import { getDomainEvents } from '../types/domainEvents.mjs';
-import { getEntities } from '../types/entity.mjs';
-import { getValueObjects } from '../types/valueObject.mjs';
-import { getRepository } from '../types/repository.mjs'
-import { getDto } from '../types/dataTransferObject.mjs';
-import { getController } from '../types/controller.mjs';
-import { getProto } from '../types/proto.mjs';
+import {
+    AggregateModel,
+    CommandHandlerModel,
+    ControllerModel,
+    DataTransferObjectModel,
+    DomainEventModel,
+    EntityModel,
+    ProtoModel,
+    QueryHandlerModel,
+    RepositoryModel,
+    ValueObjectModel
+} from '../types/index.mjs';
 
 
 export default class Utils {
@@ -33,63 +34,62 @@ export default class Utils {
     async readArchetypeMetadata() {
         const archetypeFile = await findUp('archetype.json');
 
-        if (!archetypeFile) {
+        if (!archetypeFile)
             throw new Error('No se encontró el archivo archetype.json');
-        }
 
         return await this._generator.fs.readJSON(archetypeFile);
     }
 
     async getOptions(answers) {
-        const options = {
+        const solution = `${this._generator.answers.organization}.Net.Microservice.${answers.microservice}`;
+
+        let options = {
             "organization": this._generator.answers.organization,
-            "microserviceName": answers.microserviceName,
-            "enableExample": answers.enableExample,
-            "aggregate": getAggregate(answers.aggregateName),
-            "domainEvents": getDomainEvents(answers.domainEvents),
-            "entities": getEntities(answers.entities),
-            "valueObjects": getValueObjects(answers.valueObjects),
-            "createRepositoryForAggregate": answers.createRepositoryForAggregate,
-            "commands": getCommands(answers.commands),
-            "queries": getQueries(answers.queries),
-            "createControllerForAggregate": answers.createControllerForAggregate,
-            "createProtoForAggregate": answers.createProtoForAggregate,
-            "solution": `${this._generator.answers.organization}.Net.Microservice.${answers.microserviceName}`,
+            "microservice": answers.microservice,
+            "isExample": answers.isExample,
+            "solution": solution,
             "paths": {
-                "src": {},
-                "tests": {},
-                "integrationTests": {}
+                "src": {
+                    "domain": path.join('src', 'domain', `${solution}.Domain`),
+                    "application": path.join('src', 'domain', `${solution}.Application`),
+                    "infrastructure": path.join('src', 'domain', `${solution}.Infrastructure`),
+                    "rest": path.join('src', 'entrypoints', `${solution}.Rest`),
+                    "grpc": path.join('src', 'entrypoints', `${solution}.gRpc`),
+                    "asyncWorker": path.join('src', 'entrypoints', `${solution}.AsyncWorker`)
+                },
+                "tests": {
+                    "domain": path.join('tests', 'unit', `${solution}.Domain.Test`),
+                    "application": path.join('tests', 'unit', `${solution}.Application.Test`),
+                    "infrastructure": path.join('tests', 'unit', `${solution}.Infrastructure.Test`),
+                    "rest": path.join('tests', 'unit', `${solution}.Rest.Test`),
+                    "grpc": path.join('tests', 'unit', `${solution}.gRpc.Test`),
+                    "asyncWorker": path.join('tests', 'unit', `${solution}.AsyncWorker.Test`)
+                },
+                "integrationTests": {
+                    "rest": path.join('tests', 'integration', `${solution}.Rest.Test`),
+                    "grpc": path.join('tests', 'integration', `${solution}.gRpc.Test`),
+                    "asyncWorker": path.join('tests', 'integration', `${solution}.AsyncWorker.Test`)
+                }
             },
-            "repository": getRepository(answers.repository),
-            "dataTransferObject": getDto(answers.dataTransferObject),
-            "controller": getController(answers.controller),
-            "proto": getProto(answers.proto)
         };
 
-        options.paths.src = {
-            "domain": path.join('src', 'domain', `${options.solution}.Domain`),
-            "application": path.join('src', 'domain', `${options.solution}.Application`),
-            "infrastructure": path.join('src', 'domain', `${options.solution}.Infrastructure`),
-            "rest": path.join('src', 'entrypoints', `${options.solution}.Rest`),
-            "grpc": path.join('src', 'entrypoints', `${options.solution}.gRpc`),
-            "asyncWorker": path.join('src', 'entrypoints', `${options.solution}.AsyncWorker`)
-        };
-
-
-        options.paths.tests = {
-            "domain": path.join('tests', 'unit', `${options.solution}.Domain.Test`),
-            "application": path.join('tests', 'unit', `${options.solution}.Application.Test`),
-            "infrastructure": path.join('tests', 'unit', `${options.solution}.Infrastructure.Test`),
-            "rest": path.join('tests', 'unit', `${options.solution}.Rest.Test`),
-            "grpc": path.join('tests', 'unit', `${options.solution}.gRpc.Test`),
-            "asyncWorker": path.join('tests', 'unit', `${options.solution}.AsyncWorker.Test`)
-        };
-
-        options.paths.integrationTests = {
-            "rest": path.join('tests', 'integration', `${options.solution}.Rest.Test`),
-            "grpc": path.join('tests', 'integration', `${options.solution}.gRpc.Test`),
-            "asyncWorker": path.join('tests', 'integration', `${options.solution}.AsyncWorker.Test`)
-        };
+        if (!options.isExample)
+            options = {
+                ...options,
+                "aggregate": AggregateModel.from(answers.aggregate),
+                "domainEvents": DomainEventModel.from(answers.domainEvents),
+                "entities": EntityModel.from(answers.entities),
+                "valueObjects": ValueObjectModel.from(answers.valueObjects),
+                "createRepositoryForAggregate": answers.createRepositoryForAggregate,
+                "commands": CommandHandlerModel.from(answers.commands),
+                "queries": QueryHandlerModel.from(answers.queries),
+                "createControllerForAggregate": answers.createControllerForAggregate,
+                "createProtoForAggregate": answers.createProtoForAggregate,
+                "repository": RepositoryModel.from(answers.repository),
+                "dataTransferObject": DataTransferObjectModel.from(answers.dataTransferObject),
+                "controller": ControllerModel.from(answers.controller),
+                "proto": ProtoModel.from(answers.proto)
+            }
 
         return options;
     }

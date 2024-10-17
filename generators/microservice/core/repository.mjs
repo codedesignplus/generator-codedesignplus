@@ -10,7 +10,7 @@ export default class RepositoryGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microserviceName',
+                name: 'microservice',
                 message: 'What is the name of your microservice?',
                 default: defaultValues.microservice
             },            
@@ -22,7 +22,7 @@ export default class RepositoryGenerator {
         ]);
 
         return {
-            microserviceName: answers.microserviceName,
+            microservice: answers.microservice,
             repository: answers.repository,
             createRepositoryForAggregate: true
         }
@@ -38,7 +38,7 @@ export default class RepositoryGenerator {
             this._generator.templatePath(`repository/IItemRepository.cs`),
             this._generator.destinationPath(path.join(options.paths.src.domain, `Repositories`, options.repository.fileInterface)),
             {
-                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.Repositories`,
+                ns: `${options.organization}.Net.Microservice.${options.microservice}.Domain.Repositories`,
                 name: options.repository.interface,
             }
         );
@@ -48,7 +48,7 @@ export default class RepositoryGenerator {
             this._generator.templatePath(`repository/ItemRepository.cs`),
             this._generator.destinationPath(path.join(options.paths.src.infrastructure, `Repositories`, options.repository.file)),
             {
-                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Infrastructure.Repositories`,
+                ns: `${options.organization}.Net.Microservice.${options.microservice}.Infrastructure.Repositories`,
                 name: options.repository.fullname,
                 interface: options.repository.interface
             }

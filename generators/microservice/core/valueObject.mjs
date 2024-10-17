@@ -11,7 +11,7 @@ export default class ValueObjectGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microserviceName',
+                name: 'microservice',
                 message: 'What is the name of your microservice?',
                 default: defaultValues.microservice
             },
@@ -23,7 +23,7 @@ export default class ValueObjectGenerator {
         ]);
 
         return {
-            microserviceName: answers.microserviceName,
+            microservice: answers.microservice,
             valueObjects: answers.valueObjects,
         }
     }
@@ -36,7 +36,7 @@ export default class ValueObjectGenerator {
                 this._generator.templatePath('value-object/ItemValueObject.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.domain, `ValueObjects`, valueObject.file)),
                 {
-                    ns: `${options.organization}.Net.Microservice.${options.microserviceName}.Domain.ValueObjects`,
+                    ns: `${options.organization}.Net.Microservice.${options.microservice}.Domain.ValueObjects`,
                     name: valueObject.fullname
                 }
             );

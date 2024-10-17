@@ -20,34 +20,33 @@ export default class ErrorsGenerator {
         ]);
     }
 
-    async internalGenerate(to, layer, options) {
-
-        await this._generator.fs.copyTplAsync(
-            this._generator.templatePath('errors/Error.cs'),
-            this._generator.destinationPath(`${to}/Errors.cs`),
-            {
-                ns: `${options.organization}.Net.Microservice.${options.microserviceName}.${layer}`,
-                code: `${this._getCode(layer)} : UnknownError`,
+    async generate(options) {
+        const layers = {
+            'Domain': {
+                "code": '000',
+                "destination": options.paths.src.domain
+            },
+            'Application': {
+                "code": '100',
+                "destination": options.paths.src.application
+            },
+            'Infrastructure': {
+                "code": '200',
+                "destination": options.paths.src.infrastructure
             }
-        );
-    }
+        };
 
-    async generate() {
-        const content = await this._utils.readArchetypeMetadata();
+        for (const layer in layers) {
+            const { code, destination } = layers[layer];
 
-        await this._generator.fs.copyTplAsync(
-            this._generator.templatePath('errors/ItemEntity.cs'),
-            this._generator.destinationPath(`Errors.cs`),
-            {
-                ns: `${content.organization}.Net.Microservice.${content.name}.${this._answers.layer}`,
-                code: `${this._getCode()} : UnknownError`,
-            }
-        );
-    }
-
-    _getCode(layer) {
-        const layers = { 'Domain': '000', 'Application': '100', 'Infrastructure': '200' };
-
-        return layers[layer || this._answers.layer];
+            this._generator.fs.copyTplAsync(
+                this._generator.templatePath('errors/Error.cs'),
+                this._generator.destinationPath(`${destination}/Errors.cs`),
+                {
+                    ns: `${options.solution}.${layer}`,
+                    code: `${code} : UnknownError`,
+                }
+            );
+        }
     }
 }

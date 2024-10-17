@@ -1,16 +1,16 @@
-export class ProtoModel {
-    constructor(name) {
-        name = name.trim();
+import BaseModel from "./base.mjs";
+
+export class ProtoModel extends BaseModel {
+    constructor(proto) {
+        super();
 
         this.sufix = '';
-        this.name = name;
+        this.name = this._validate(proto, this.sufix);
         this.fullname = `${this.name}${this.sufix}`;
         this.file = `${this.fullname}.proto`.toLowerCase();
     }
-}
-export function getProto(name) {
-    if (!name) {
-        return null;
+
+    static from(value) {
+        return new ProtoModel(value);
     }
-    return new ProtoModel(name);
 }
