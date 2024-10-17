@@ -13,12 +13,6 @@ export default class DtoGenerator {
 
         const answers = await this._generator.prompt([
             {
-                type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },
-            {
                 type: 'list',
                 name: 'aggregate',
                 message: 'Select the aggregate you want to associate with the data transfer object:',
@@ -32,7 +26,6 @@ export default class DtoGenerator {
         ]);
 
         return {
-            microservice: answers.microservice,
             aggregate: answers.aggregate.replace('Aggregate', ''),
             dataTransferObject: answers.dataTransferObject
         }
@@ -40,7 +33,7 @@ export default class DtoGenerator {
 
     async generate(options) {
 
-        const ns = `${options.organization}.Net.Microservice.${options.microservice}.Application.${options.aggregate.name}.DataTransferObjects`;
+        const ns = `${options.solution}.Application.${options.aggregate.name}.DataTransferObjects`;
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('data-transfer-object/ItemDto.cs'),
             this._generator.destinationPath(path.join(options.paths.src.application, options.aggregate.name, `DataTransferObjects`, options.dataTransferObject.file)),
@@ -51,5 +44,10 @@ export default class DtoGenerator {
         );
 
         this._utils.addUsing(options.paths.src.application, ns);
+    }
+
+    getArguments() {
+        this._generator.argument('aggregate', { type: String, alias: 'a', required: true });
+        this._generator.argument('dataTransferObject', { type: String, alias: 'dto', required: true });
     }
 }

@@ -11,9 +11,17 @@ export default class extends Generator {
         this._utils = new Utils(this);
         this._core = new Core(this._utils, this);
         this._dotnet = new DotNet(this);
+
+        const [generator, answers] = this._core.arguments();
+
+        this._answers = answers;
+        this._generator = generator;
     }
 
     async prompting() {
+        if (this._answers && this._generator) 
+            return;
+
         const [generator, answers] = await this._core.prompt();
 
         this._answers = answers;
@@ -26,7 +34,7 @@ export default class extends Generator {
         const options = await this._utils.getOptions(this._answers);
 
         await this._generator.generate(options);
-        
+
         this._dotnet.removeProjects(options);
     }
 };

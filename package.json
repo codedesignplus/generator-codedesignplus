@@ -24,6 +24,8 @@
   },
   "devDependencies": {
     "@types/xml2js": "^0.4.14",
+    "boxen": "^8.0.1",
+    "figlet": "^1.8.0",
     "find-up": "^7.0.0",
     "glob": "^11.0.0",
     "gulp-replace": "^1.1.4",

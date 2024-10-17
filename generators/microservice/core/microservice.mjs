@@ -22,23 +22,12 @@ export default class MicroserviceGenerator {
             }
         ]);
 
-        if (isExample) {
-            const { microservice } = await this._generator.prompt([
-                {
-                    type: 'input',
-                    name: 'microservice',
-                    message: 'What is the name of your microservice?',
-                    default: defaultValues.microservice
-                }
-            ]);
-
+        if (isExample)
             return {
-                isExample: isExample,
-                microservice: microservice
+                isExample: isExample
             }
-        }
 
-        const answersWizard = await this._wizard.prompt(defaultValues);
+        const answersWizard = await this._wizard._prompt(defaultValues);
 
         return {
             isExample: isExample,
@@ -96,6 +85,10 @@ export default class MicroserviceGenerator {
         }, { spaces: 2 });
     }
 
+    getArguments() {
+        this._generator.argument('isExample', { type: Boolean, required: false });
+    }
+
     _getTransformations(options, namespace) {
         let transformations = [
             [/CodeDesignPlus\.Net\.Microservice(?!\.Commons)/g, namespace],
@@ -104,10 +97,10 @@ export default class MicroserviceGenerator {
         if (options.isExample)
             return transformations;
 
-        if(options.entities.length === 0)
+        if (options.entities.length === 0)
             transformations = [[/global using CodeDesignPlus\.Net\.Microservice\.Domain\.Entities;/g, ''], ...transformations];
 
-        if(options.domainEvents.length === 0)
+        if (options.domainEvents.length === 0)
             transformations = [[/global using CodeDesignPlus\.Net\.Microservice\.Domain\.DomainEvents;/g, ''], ...transformations];
 
         return [

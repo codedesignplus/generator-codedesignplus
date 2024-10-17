@@ -5,7 +5,7 @@ public class <%= name %>(ILogger<<%= name %>> logger) : IEventHandler<<%= domain
 {
     public Task HandleAsync(<%= domainEvent %> data, CancellationToken token)
     {
-        logger.LogInformation("<%= domainEvent %> Recived, {Json}", JsonConvert.SerializeObject(data));
+        logger.LogInformation("<%= domainEvent %> Recived, {Json}", JsonSerializer.Serialize(data));
 
         return Task.CompletedTask;
     }

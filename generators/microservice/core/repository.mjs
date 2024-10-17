@@ -7,13 +7,7 @@ export default class RepositoryGenerator {
     }
 
     async prompt(defaultValues) {
-        const answers = await this._generator.prompt([
-            {
-                type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },            
+        const answers = await this._generator.prompt([  
             {
                 type: 'input',
                 name: 'repository',
@@ -22,7 +16,6 @@ export default class RepositoryGenerator {
         ]);
 
         return {
-            microservice: answers.microservice,
             repository: answers.repository,
             createRepositoryForAggregate: true
         }
@@ -38,7 +31,7 @@ export default class RepositoryGenerator {
             this._generator.templatePath(`repository/IItemRepository.cs`),
             this._generator.destinationPath(path.join(options.paths.src.domain, `Repositories`, options.repository.fileInterface)),
             {
-                ns: `${options.organization}.Net.Microservice.${options.microservice}.Domain.Repositories`,
+                ns: `${options.solution}.Domain.Repositories`,
                 name: options.repository.interface,
             }
         );
@@ -48,10 +41,15 @@ export default class RepositoryGenerator {
             this._generator.templatePath(`repository/ItemRepository.cs`),
             this._generator.destinationPath(path.join(options.paths.src.infrastructure, `Repositories`, options.repository.file)),
             {
-                ns: `${options.organization}.Net.Microservice.${options.microservice}.Infrastructure.Repositories`,
+                ns: `${options.solution}.Infrastructure.Repositories`,
                 name: options.repository.fullname,
                 interface: options.repository.interface
             }
         );
+    }
+
+    
+    getArguments() {
+        this._generator.argument('repository', { type: String, alias: 'r', required: true });
     }
 }

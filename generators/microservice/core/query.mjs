@@ -16,12 +16,6 @@ export default class QueryGenerator {
         
         const answers = await this._generator.prompt([
             {
-                type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },
-            {
                 type: 'list',
                 name: 'aggregate',
                 message: 'Select the aggregate you want to associate with queries:',
@@ -45,11 +39,10 @@ export default class QueryGenerator {
         const name = match ? match[1] : null
 
         return {
-            microservice: answers.microservice,
-            aggregate: answers.aggregate.replace('Aggregate', ''),
+            aggregate: answers.aggregate,
             queries: answers.queries,
             repository: name,
-            dataTransferObject: answers.aggregate.replace('Aggregate', '')
+            dataTransferObject: answers.aggregate
         }
     }
 
@@ -61,7 +54,7 @@ export default class QueryGenerator {
             const handler = options.queries[key];
             const query = handler.query;
 
-            const ns = `${options.organization}.Net.Microservice.${options.microservice}.Application.${options.aggregate.name}.Queries.${query.name}`;
+            const ns = `${options.solution}.Application.${options.aggregate.name}.Queries.${query.name}`;
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('query/ItemQuery.cs'),
@@ -87,5 +80,11 @@ export default class QueryGenerator {
             
             this._utils.addUsing(options.paths.src.rest, ns);
         }
+    }
+
+    getArguments() {
+        this._generator.argument('aggregate', { type: String, alias: 'a', required: true });
+        this._generator.argument('repository', { type: String, alias: 'r', required: true });
+        this._generator.argument('queries', { type: String, alias: 'q', required: true });
     }
 }

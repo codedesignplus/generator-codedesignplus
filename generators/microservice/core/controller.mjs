@@ -10,19 +10,12 @@ export default class ControllerGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },
-            {
-                type: 'input',
                 name: 'controller',
                 message: 'What is the name of the controller you want to create?'
             }
         ]);
 
         return {
-            microservice: answers.microservice,
             controller: answers.controller,
             createControllerForAggregate: true
         }
@@ -35,9 +28,14 @@ export default class ControllerGenerator {
                 this._generator.templatePath('controller/ItemController.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.rest, `Controllers`, options.controller.file)),
                 {
-                    ns: `${options.organization}.Net.Microservice.${options.microservice}.Rest.Controllers`,
+                    ns: `${options.solution}.Rest.Controllers`,
                     name: options.controller.fullname
                 }
             );
+    }
+
+
+    getArguments() {
+        this.argument('controller', { type: String, alias: 'cr', required: true });
     }
 }

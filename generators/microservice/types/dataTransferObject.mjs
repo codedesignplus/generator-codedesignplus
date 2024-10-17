@@ -11,6 +11,9 @@ export class DataTransferObjectModel extends BaseModel {
     }
 
     static from(value) {
+        if (!value)
+            return null;
+
         return new DataTransferObjectModel(value);
     }
 }

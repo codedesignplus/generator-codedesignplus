@@ -11,19 +11,12 @@ export default class ValueObjectGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },
-            {
-                type: 'input',
                 name: 'valueObjects',
                 message: 'Enter the names of the value objects you want to create, separated by commas (e.g., ValueObject1, ValueObject2).'
             },
         ]);
 
         return {
-            microservice: answers.microservice,
             valueObjects: answers.valueObjects,
         }
     }
@@ -36,10 +29,14 @@ export default class ValueObjectGenerator {
                 this._generator.templatePath('value-object/ItemValueObject.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.domain, `ValueObjects`, valueObject.file)),
                 {
-                    ns: `${options.organization}.Net.Microservice.${options.microservice}.Domain.ValueObjects`,
+                    ns: `${options.solution}.Domain.ValueObjects`,
                     name: valueObject.fullname
                 }
             );
         }
+    }
+
+    getArguments() {
+        this._generator.argument('valueObjects', { type: String, alias: 'vo', required: true });
     }
 }

@@ -8,16 +8,16 @@ export default class DotNet {
         this._generator = generator;
     }
 
-    removeProjects(options) {        
+    removeProjects(options) {
         this._generator.on('end', () => {
 
-            if(!options.createProtoForAggregate) 
+            if (!options.createProtoForAggregate)
                 this._removeProject('gRpc');
-            
-            if(!options.createControllerForAggregate) 
+
+            if (!options.createControllerForAggregate)
                 this._removeProject('Rest');
 
-            if(!options.createConsumer)
+            if (!options.createConsumer)
                 this._removeProject('AsyncWorker');
 
         });
@@ -26,30 +26,33 @@ export default class DotNet {
     _removeProject(name) {
         const cwd = this._generator.destinationRoot();
 
-        const results = spawnSync("dotnet", ["sln", "list"], { cwd: cwd, encoding: 'utf-8' });
+        const results = spawnSync("dotnet", ["sln", "list"], { cwd: cwd });
 
-        if (results.error)
+        if (results.error) 
             return;
-
-        if (results.status !== 0)
+                
+        if (results.status !== 0) 
             return;
-
-        const solutionProjects = results.stdout.trim().split('\n').slice(1).map(project => project.replace('\r', ''));
+        
+        const solutionProjects = results.stdout.toString().trim().split('\n').slice(1).map(project => project.replace('\r', ''));
         const projects = solutionProjects.filter(project => project.includes(name));
 
         for (const project of projects) {
             const removeResult = spawnSync("dotnet", ["sln", "remove", project], { cwd: cwd });
 
-            if (removeResult.error)
+            if (removeResult.error) 
                 return;
-
-            if (removeResult.status !== 0)
+        
+            if (removeResult.status !== 0) 
                 return;
 
             const projectPath = path.join(this._generator.destinationRoot(), path.dirname(project));
 
             if (fs.existsSync(projectPath))
-                fs.rmdir(projectPath, { recursive: true });
+                fs.rm(projectPath, { recursive: true }, (err) => {
+                    if (err)
+                        console.error(err);
+                });
         }
     }
 

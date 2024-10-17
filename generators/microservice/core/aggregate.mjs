@@ -7,14 +7,8 @@ export default class AggregateGenerator {
         this._generator = generator;
     }
 
-    async prompt(defaultValues) {
+    async prompt() {
         const answers = await this._generator.prompt([
-            {
-                type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },
             {
                 type: 'input',
                 name: 'aggregate',
@@ -23,7 +17,6 @@ export default class AggregateGenerator {
         ]);
 
         return {
-            microservice: answers.microservice,
             aggregate: answers.aggregate
         }
     }
@@ -37,5 +30,9 @@ export default class AggregateGenerator {
                 name: options.aggregate.fullname
             }
         );
+    }
+
+    getArguments() {
+        this._generator.argument('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to create' });
     }
 }

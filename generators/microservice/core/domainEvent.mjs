@@ -13,12 +13,6 @@ export default class DomainEventGenerator {
 
         const answers = await this._generator.prompt([
             {
-                type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },
-            {
                 type: 'list',
                 name: 'entity',
                 message: 'Select the aggregate you want to associate with the domain event:',
@@ -32,7 +26,6 @@ export default class DomainEventGenerator {
         ]);
 
         return {
-            microservice: answers.microservice,
             aggregate: answers.entity.replace('Aggregate', ''),
             domainEvents: answers.domainEvents,
         }
@@ -53,6 +46,10 @@ export default class DomainEventGenerator {
                 }
             );
         }
+    }
 
+    getArguments() {
+        this._generator.argument('entity', { type: String, alias: 'e', required: true });
+        this._generator.argument('domainEvents', { type: String, alias: 'de', required: true });
     }
 }

@@ -95,4 +95,11 @@ export default class ConsumerGenerator {
             await this._domainEventGenerator.generate(options);
         }
     }
+
+    getArguments() {
+        this.argument('isEntityOrAggregate', { type: String, required: true });
+        this.argument('consumer', { type: String, alias: 'cr', required: true });
+        this.argument('action', { type: String, alias: 'an', required: true });
+        this.argument('domainEvent', { type: String, alias: 'de', required: true });
+    }
 }

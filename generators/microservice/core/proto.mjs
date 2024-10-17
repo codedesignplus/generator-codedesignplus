@@ -12,19 +12,12 @@ export default class ProtoGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },
-            {
-                type: 'input',
                 name: 'proto',
                 message: 'What is the name of the protobuf file you want to create?'
             }
         ]);
 
         return {
-            microservice: answers.microservice,
             proto: answers.proto,
             createProtoForAggregate: true
         }
@@ -32,7 +25,7 @@ export default class ProtoGenerator {
 
     async generate(options) {
         if (options.createProtoForAggregate) {
-            const solution = `${options.organization}.Net.Microservice.${options.microservice}.gRpc`;
+            const solution = `${options.solution}.gRpc`;
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('grpc/grpc.proto'),
@@ -64,10 +57,14 @@ export default class ProtoGenerator {
             const grpcProject = new Xml(`${this._generator.destinationPath()}/${options.paths.src.grpc}/${solution}.csproj`);
 
             await grpcProject.addProtobuf(`Protos\\${options.proto.file}`);
-            
+
             const grpcTestProject = new Xml(`${this._generator.destinationPath()}/${options.paths.integrationTests.grpc}/${solution}.Test.csproj`);
-            
+
             await grpcTestProject.addProtobuf(`Protos\\${options.proto.file}`);
         }
+    }
+
+    getArguments() {
+        this._generator.argument('proto', { type: String, alias: 'p', required: true });
     }
 }

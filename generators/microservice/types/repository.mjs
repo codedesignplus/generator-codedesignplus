@@ -13,6 +13,9 @@ export class RepositoryModel extends BaseModel {
     }
 
     static from(value) {
+        if (!value)
+            return null;
+
         return new RepositoryModel(value);
     }
 }

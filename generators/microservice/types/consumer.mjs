@@ -16,7 +16,7 @@ export class ConsumerModel extends BaseModel {
         this.command = this._toPascalCase(data.action);
     }
 
-    static from(value) {
-        return new ConsumerModel(value);
+    static from(data) {
+        return new ConsumerModel(data);
     }
 }

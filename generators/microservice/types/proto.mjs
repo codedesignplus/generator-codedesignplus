@@ -11,6 +11,9 @@ export class ProtoModel extends BaseModel {
     }
 
     static from(value) {
+        if (!value)
+            return null;
+        
         return new ProtoModel(value);
     }
 }

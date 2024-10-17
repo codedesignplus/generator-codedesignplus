@@ -42,11 +42,16 @@ export default class Utils {
     }
 
     async getOptions(answers) {
-        const solution = `${this._generator.answers.organization}.Net.Microservice.${answers.microservice}`;
+        console.log(answers);
+
+        const organization = answers.template ? answers.organization : this._generator.answers.organization;
+        const microservice = answers.template ? answers.microservice : this._generator.answers.microservice;
+
+        const solution = `${organization}.Net.Microservice.${microservice}`;
 
         let options = {
-            "organization": this._generator.answers.organization,
-            "microservice": answers.microservice,
+            "organization": organization,
+            "microservice": microservice,
             "isExample": answers.isExample,
             "solution": solution,
             "paths": {
@@ -87,12 +92,14 @@ export default class Utils {
                 "createControllerForAggregate": answers.createControllerForAggregate,
                 "createProtoForAggregate": answers.createProtoForAggregate,
                 "createConsumer": answers.createConsumer,
-                "consumer": ConsumerModel.from(answers.consumer),
+                "consumer": answers.createConsumer ? ConsumerModel.from(answers.consumer) : answers.consumer,
                 "repository": RepositoryModel.from(answers.repository),
                 "dataTransferObject": DataTransferObjectModel.from(answers.dataTransferObject),
                 "controller": ControllerModel.from(answers.controller),
                 "proto": ProtoModel.from(answers.proto)
             }
+
+        console.log('--------------', options);
 
         return options;
     }

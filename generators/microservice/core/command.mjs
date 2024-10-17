@@ -16,12 +16,6 @@ export default class CommandGenerator {
 
         const answers = await this._generator.prompt([
             {
-                type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },
-            {
                 type: 'list',
                 name: 'aggregate',
                 message: 'Select the aggregate you want to associate with commands:',
@@ -44,7 +38,6 @@ export default class CommandGenerator {
         const name = match ? match[1] : null
 
         return {
-            microservice: answers.microservice,
             aggregate: answers.aggregate.replace('Aggregate', ''),
             commands: answers.commands,
             repository: name,
@@ -82,5 +75,11 @@ export default class CommandGenerator {
 
             this._utils.addUsing(options.paths.src.rest, ns);
         }
+    }
+
+    getArguments() {
+        this._generator.argument('aggregate', { type: String, alias: 'a', required: true });
+        this._generator.argument('repository', { type: String, alias: 'r', required: true });
+        this._generator.argument('commands', { type: String, alias: 'cs', required: true });
     }
 }

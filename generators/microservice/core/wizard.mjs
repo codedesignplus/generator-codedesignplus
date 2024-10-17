@@ -18,89 +18,140 @@ export default class WizardGenerator {
         this._consumerGenerator = new ConsumerGenerator(this._utils, this._generator);
     }
 
-    async prompt(defaultValues) {
+    async _prompt(defaultValues) {
+        let answers = await this._prompCrud();
 
-        let consumer = {
-            isEntityOrAggregate: null,
-            consumer: null,
-            entity: null,
-            action: null,
-            domainEvent: null
+        if (!answers.isCrud) {
+            const data = await this._prompWizard();
+
+            answers = {
+                ...answers,
+                ...data,
+                consumer: {
+                    isEntityOrAggregate: null,
+                    consumer: null,
+                    entity: null,
+                    action: null,
+                    domainEvent: null
+                }
+            }
+        }
+
+        if (answers.createConsumer)
+            answers.consumer = await this._consumerGenerator.prompt();
+
+        return {
+            aggregate: answers.aggregate,
+            domainEvents: answers.domainEvents,
+            entities: answers.entities,
+            valueObjects: answers.valueObjects,
+            createRepositoryForAggregate: answers.createRepositoryForAggregate,
+            commands: answers.commands,
+            queries: answers.queries,
+            createControllerForAggregate: answers.createControllerForAggregate,
+            createProtoForAggregate: answers.createProtoForAggregate,
+            createConsumer: answers.createConsumer,
+            consumer: answers.consumer,
+            repository: answers.aggregate,
+            dataTransferObject: answers.aggregate,
+            controller: answers.aggregate,
+            proto: answers.aggregate
+        };
+    }
+
+    async generate(options) {
+
+        const generatorsMap = {
+            'Aggregate': AggregateGenerator,
+            'Domain Event': DomainEventGenerator,
+            'Entity': EntityGenerator,
+            'Value Object': ValueObjectGenerator,
+            'Repository': RepositoryGenerator,
+            'Data Transfer Object': DtoGenerator,
+            'Command': CommandGenerator,
+            'Query': QueryGenerator,
+            'Controller': ControllerGenerator,
+            'Proto': ProtoGenerator,
+            'Consumer': ConsumerGenerator
         };
 
-        const { isCrud } = await this._generator.prompt([
+        for (const key in generatorsMap) {
+
+            console.log(`Generating ${key}...`);
+
+            const generator = new generatorsMap[key](this._utils, this._generator);
+
+            await generator.generate(options);
+        }
+    }
+
+    getArguments() {
+        this.argument('isCrud', { type: Boolean, required: false });
+
+        this.argument('aggregate', { type: String, alias: 'a', required: true });
+        this.argument('createControllerForAggregate', { type: Boolean, required: true });
+        this.argument('createProtoForAggregate', { type: String, required: true });
+        this.argument('createConsumer', { type: String, required: true });
+
+        // Consumer
+
+        this.argument('aggregate', { type: String, alias: 'a', required: true });
+        this.argument('domainEvents', { type: String, alias: 'de', required: false });
+        this.argument('entities', { type: String, alias: 'e', required: false });
+        this.argument('enableRepository', { type: Boolean, required: false });
+        this.argument('commands', { type: String, alias: 'cs', required: false });
+        this.argument('queries', { type: String, alias: 'q', required: false });
+        this.argument('createControllerForAggregate', { type: Boolean, required: false });
+        this.argument('createProtoForAggregate', { type: Boolean, required: false });
+        this.argument('createConsumer', { type: Boolean, required: false });
+
+        // Consumer
+    }
+
+    async _prompCrud() {
+        const answers = await this._generator.prompt([
             {
                 type: 'confirm',
                 name: 'isCrud',
                 message: 'Do you want to generate a CRUD?'
-            }
-        ]);
-
-        if (isCrud) {
-            const answers = await this._generator.prompt([
-                {
-                    type: 'input',
-                    name: 'microservice',
-                    message: 'What is the name of your microservice?',
-                    default: defaultValues.microservice
-                },
-                {
-                    type: 'input',
-                    name: 'aggregate',
-                    message: 'What is the name of the aggregate you want to create?'
-                },
-                {
-                    type: 'confirm',
-                    name: 'createControllerForAggregate',
-                    message: 'Do you want to create the controller for the aggregate?'
-                },
-                {
-                    type: 'confirm',
-                    name: 'createProtoForAggregate',
-                    message: 'Do you want to create the proto for the aggregate?'
-                },
-                {
-                    type: 'confirm',
-                    name: 'createConsumer',
-                    message: 'Do you want to create the consumers?'
-                }
-            ]);
-
-            if (answers.createConsumer) {
-                consumer = await this._consumerGenerator.prompt();
-            }
-
-            return {
-                microservice: answers.microservice,
-                aggregate: answers.aggregate,
-                domainEvents: `${answers.aggregate}Created, ${answers.aggregate}Updated, ${answers.aggregate}Deleted`,
-                createRepositoryForAggregate: true,
-                commands: `Create${answers.aggregate}, Update${answers.aggregate}, Delete${answers.aggregate}`,
-                queries: `Get${answers.aggregate}ById, GetAll${answers.aggregate}`,
-                createControllerForAggregate: answers.createControllerForAggregate,
-                createProtoForAggregate: answers.createProtoForAggregate,
-                createConsumer: answers.createConsumer,
-                consumer: consumer,
-                repository: answers.aggregate,
-                dataTransferObject: answers.aggregate,
-                controller: answers.aggregate,
-                proto: answers.aggregate,
-            }
-        }
-
-        const answers = await this._generator.prompt([
-            {
-                type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
             },
             {
                 type: 'input',
                 name: 'aggregate',
-                message: 'What is the name of the aggregate you want to create?',
-                default: defaultValues.microservice
+                message: 'What is the name of the aggregate you want to create?'
             },
+            {
+                type: 'confirm',
+                name: 'createControllerForAggregate',
+                message: 'Do you want to create the controller for the aggregate?'
+            },
+            {
+                type: 'confirm',
+                name: 'createProtoForAggregate',
+                message: 'Do you want to create the proto for the aggregate?'
+            },
+            {
+                type: 'confirm',
+                name: 'createConsumer',
+                message: 'Do you want to create the consumers?'
+            }
+        ])
+
+        return {
+            aggregate: answers.aggregate,
+            domainEvents: `${answers.aggregate}Created, ${answers.aggregate}Updated, ${answers.aggregate}Deleted`,
+            createRepositoryForAggregate: true,
+            commands: `Create${answers.aggregate}, Update${answers.aggregate}, Delete${answers.aggregate}`,
+            queries: `Get${answers.aggregate}ById, GetAll${answers.aggregate}`,
+            createProtoForAggregate: answers.createProtoForAggregate,
+            createControllerForAggregate: answers.createControllerForAggregate,
+            createConsumer: answers.createConsumer,
+            isCrud: answers.isCrud
+        };
+    }
+
+    async _prompWizard() {
+        const data = await this._generator.prompt([
             {
                 type: 'input',
                 name: 'domainEvents',
@@ -118,7 +169,7 @@ export default class WizardGenerator {
             },
             {
                 type: 'confirm',
-                name: 'enableRepository',
+                name: 'createRepositoryForAggregate',
                 message: 'Do you want to create a repository for the aggregate?'
             },
             {
@@ -130,68 +181,16 @@ export default class WizardGenerator {
                 type: 'input',
                 name: 'queries',
                 message: 'Enter the names of the queries you want to create, separated by commas (e.g., Query1, Query2).'
-            },
-            {
-                type: 'confirm',
-                name: 'createControllerForAggregate',
-                message: 'Do you want to create the controller for the aggregate?'
-            },
-            {
-                type: 'confirm',
-                name: 'createProtoForAggregate',
-                message: 'Do you want to create the proto for the aggregate?'
-            },
-            {
-                type: 'confirm',
-                name: 'createConsumer',
-                message: 'Do you want to create the consumers for the other aggregate?'
             }
         ]);
-        
-        if (answers.createConsumer) {
-            consumer = await this._consumerGenerator.prompt();
-        }
 
         return {
-            microservice: answers.microservice,
-            aggregate: answers.aggregate,
-            domainEvents: answers.domainEvents,
-            entities: answers.entities,
-            valueObjects: answers.valueObjects,
-            createRepositoryForAggregate: answers.enableRepository,
-            commands: answers.commands,
-            queries: answers.queries,
-            createControllerForAggregate: answers.createControllerForAggregate,
-            createProtoForAggregate: answers.createProtoForAggregate,
-            createConsumer: answers.createConsumer,
-            consumer: consumer,
-            repository: answers.aggregate,
-            dataTransferObject: answers.aggregate,
-            controller: answers.aggregate,
-            proto: answers.aggregate
+            domainEvents: data.domainEvents,
+            entities: data.entities,
+            valueObjects: data.valueObjects,
+            createRepositoryForAggregate: data.createRepositoryForAggregate,
+            commands: data.commands,
+            queries: data.queries,
         };
-    }
-
-    async generate(options) {        
-
-        const generatorsMap = {
-            'Aggregate': AggregateGenerator,
-            'Domain Event': DomainEventGenerator,
-            'Entity': EntityGenerator,
-            'Value Object': ValueObjectGenerator,
-            'Repository': RepositoryGenerator,
-            'Data Transfer Object': DtoGenerator,
-            'Command': CommandGenerator,
-            'Query': QueryGenerator,
-            'Controller': ControllerGenerator,
-            'Proto': ProtoGenerator,
-            'Consumer': ConsumerGenerator
-        };
-
-        for (const key in generatorsMap) {
-            const generator = new generatorsMap[key](this._utils, this._generator);
-
-            await generator.generate(options);
-        }
     }
 }

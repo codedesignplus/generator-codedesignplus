@@ -10,28 +10,17 @@ export default class EntityGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },
-            {
-                type: 'input',
                 name: 'entities',
                 message: 'Enter the names of the entities you want to create, separated by commas (e.g., Entity1, Entity2).'
             },
         ]);
 
         return {
-            microservice: answers.microservice,
             entities: answers.entities,
         }
     }
 
-    async generate(options) {        
-        console.log('Creating entity...');
-
-        console.log('Options Entity', options);
-        
+    async generate(options) {
         for (const key in options.entities) {
             const entity = options.entities[key];
 
@@ -44,5 +33,10 @@ export default class EntityGenerator {
                 }
             );
         }
+    }
+
+
+    getArguments() {
+        this._generator.argument('entities', { type: String, alias: 'e', required: true });
     }
 }
