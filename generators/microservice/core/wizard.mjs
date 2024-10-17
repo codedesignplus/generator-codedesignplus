@@ -8,15 +8,25 @@ import DomainEventGenerator from './domainEvent.mjs';
 import EntityGenerator from './entity.mjs';
 import RepositoryGenerator from './repository.mjs';
 import ProtoGenerator from './proto.mjs';
+import ConsumerGenerator from './consumer.mjs';
 
 export default class WizardGenerator {
 
     constructor(utils, generator) {
         this._utils = utils;
         this._generator = generator;
+        this._consumerGenerator = new ConsumerGenerator(this._utils, this._generator);
     }
 
     async prompt(defaultValues) {
+
+        let consumer = {
+            isEntityOrAggregate: null,
+            consumer: null,
+            entity: null,
+            action: null,
+            domainEvent: null
+        };
 
         const { isCrud } = await this._generator.prompt([
             {
@@ -27,7 +37,7 @@ export default class WizardGenerator {
         ]);
 
         if (isCrud) {
-            const { microservice, aggregate } = await this._generator.prompt([
+            const answers = await this._generator.prompt([
                 {
                     type: 'input',
                     name: 'microservice',
@@ -38,21 +48,43 @@ export default class WizardGenerator {
                     type: 'input',
                     name: 'aggregate',
                     message: 'What is the name of the aggregate you want to create?'
-                }]);
+                },
+                {
+                    type: 'confirm',
+                    name: 'createControllerForAggregate',
+                    message: 'Do you want to create the controller for the aggregate?'
+                },
+                {
+                    type: 'confirm',
+                    name: 'createProtoForAggregate',
+                    message: 'Do you want to create the proto for the aggregate?'
+                },
+                {
+                    type: 'confirm',
+                    name: 'createConsumer',
+                    message: 'Do you want to create the consumers?'
+                }
+            ]);
+
+            if (answers.createConsumer) {
+                consumer = await this._consumerGenerator.prompt();
+            }
 
             return {
-                microservice: microservice,
-                aggregate: aggregate,
-                domainEvents: `${aggregate}Created, ${aggregate}Updated, ${aggregate}Deleted`,
+                microservice: answers.microservice,
+                aggregate: answers.aggregate,
+                domainEvents: `${answers.aggregate}Created, ${answers.aggregate}Updated, ${answers.aggregate}Deleted`,
                 createRepositoryForAggregate: true,
-                commands: `Create${aggregate}, Update${aggregate}, Delete${aggregate}`,
-                queries: `Get${aggregate}ById, GetAll${aggregate}`,
-                createControllerForAggregate: true,
-                createProtoForAggregate: true,
-                repository: aggregate,
-                dataTransferObject: aggregate,
-                controller: aggregate,
-                proto: aggregate
+                commands: `Create${answers.aggregate}, Update${answers.aggregate}, Delete${answers.aggregate}`,
+                queries: `Get${answers.aggregate}ById, GetAll${answers.aggregate}`,
+                createControllerForAggregate: answers.createControllerForAggregate,
+                createProtoForAggregate: answers.createProtoForAggregate,
+                createConsumer: answers.createConsumer,
+                consumer: consumer,
+                repository: answers.aggregate,
+                dataTransferObject: answers.aggregate,
+                controller: answers.aggregate,
+                proto: answers.aggregate,
             }
         }
 
@@ -66,7 +98,8 @@ export default class WizardGenerator {
             {
                 type: 'input',
                 name: 'aggregate',
-                message: 'What is the name of the aggregate you want to create?'
+                message: 'What is the name of the aggregate you want to create?',
+                default: defaultValues.microservice
             },
             {
                 type: 'input',
@@ -107,8 +140,17 @@ export default class WizardGenerator {
                 type: 'confirm',
                 name: 'createProtoForAggregate',
                 message: 'Do you want to create the proto for the aggregate?'
+            },
+            {
+                type: 'confirm',
+                name: 'createConsumer',
+                message: 'Do you want to create the consumers for the other aggregate?'
             }
         ]);
+        
+        if (answers.createConsumer) {
+            consumer = await this._consumerGenerator.prompt();
+        }
 
         return {
             microservice: answers.microservice,
@@ -121,6 +163,8 @@ export default class WizardGenerator {
             queries: answers.queries,
             createControllerForAggregate: answers.createControllerForAggregate,
             createProtoForAggregate: answers.createProtoForAggregate,
+            createConsumer: answers.createConsumer,
+            consumer: consumer,
             repository: answers.aggregate,
             dataTransferObject: answers.aggregate,
             controller: answers.aggregate,
@@ -128,7 +172,8 @@ export default class WizardGenerator {
         };
     }
 
-    async generate(options) {
+    async generate(options) {        
+
         const generatorsMap = {
             'Aggregate': AggregateGenerator,
             'Domain Event': DomainEventGenerator,
@@ -139,12 +184,13 @@ export default class WizardGenerator {
             'Command': CommandGenerator,
             'Query': QueryGenerator,
             'Controller': ControllerGenerator,
-            'Proto': ProtoGenerator
+            'Proto': ProtoGenerator,
+            'Consumer': ConsumerGenerator
         };
 
         for (const key in generatorsMap) {
 
-            this._generator.log(`Generating ${key}...`);
+            console.log(`Generating ${key}...`);
 
             const generator = new generatorsMap[key](this._utils, this._generator);
 

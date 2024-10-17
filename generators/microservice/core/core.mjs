@@ -28,7 +28,8 @@ export default class Core {
         }
         catch (error) {
             defaultValues = {
-                organization: 'CodeDesignPlus'
+                organization: 'CodeDesignPlus',
+                microservice: 'Stage'
             };
         }
 

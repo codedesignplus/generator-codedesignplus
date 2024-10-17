@@ -29,6 +29,10 @@ export default class AggregateGenerator {
     }
 
     async generate(options) {
+        console.log('Creating aggregate...');
+
+        console.log('Options Aggregate', options);
+        
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('aggregate/ItemAggregate.cs'),
             this._generator.destinationPath(path.join(options.paths.src.domain, options.aggregate.file)),

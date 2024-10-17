@@ -10,7 +10,8 @@ import {
     ProtoModel,
     QueryHandlerModel,
     RepositoryModel,
-    ValueObjectModel
+    ValueObjectModel,
+    ConsumerModel
 } from '../types/index.mjs';
 
 
@@ -85,6 +86,8 @@ export default class Utils {
                 "queries": QueryHandlerModel.from(answers.queries),
                 "createControllerForAggregate": answers.createControllerForAggregate,
                 "createProtoForAggregate": answers.createProtoForAggregate,
+                "createConsumer": answers.createConsumer,
+                "consumer": ConsumerModel.from(answers.consumer),
                 "repository": RepositoryModel.from(answers.repository),
                 "dataTransferObject": DataTransferObjectModel.from(answers.dataTransferObject),
                 "controller": ControllerModel.from(answers.controller),

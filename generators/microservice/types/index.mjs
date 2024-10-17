@@ -8,6 +8,7 @@ import { ProtoModel } from "./proto.mjs";
 import { QueryHandlerModel } from "./query.mjs";
 import { RepositoryModel } from "./repository.mjs";
 import { ValueObjectModel } from "./valueObject.mjs";
+import { ConsumerModel } from "./consumer.mjs";
 
 export {
     AggregateModel,
@@ -19,5 +20,6 @@ export {
     ProtoModel,
     QueryHandlerModel,
     RepositoryModel,
-    ValueObjectModel
+    ValueObjectModel,
+    ConsumerModel
 };
