@@ -19,7 +19,7 @@ export default class extends Generator {
     }
 
     async prompting() {
-        if (this._answers && this._generator) 
+        if (this._answers && this._generator)
             return;
 
         const [generator, answers] = await this._core.prompt();
@@ -35,7 +35,9 @@ export default class extends Generator {
 
         await this._generator.generate(options);
 
-        this._dotnet.removeProjects(options);
+        if (this._generator.name === 'microservice'){
+            this._dotnet.removeProjects(options);
+        }
     }
 };
 

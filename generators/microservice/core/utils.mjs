@@ -42,8 +42,6 @@ export default class Utils {
     }
 
     async getOptions(answers) {
-        console.log(answers);
-
         const organization = answers.template ? answers.organization : this._generator.answers.organization;
         const microservice = answers.template ? answers.microservice : this._generator.answers.microservice;
 
@@ -86,11 +84,10 @@ export default class Utils {
                 "domainEvents": DomainEventModel.from(answers.domainEvents),
                 "entities": EntityModel.from(answers.entities),
                 "valueObjects": ValueObjectModel.from(answers.valueObjects),
-                "createRepositoryForAggregate": answers.createRepositoryForAggregate,
                 "commands": CommandHandlerModel.from(answers.commands),
                 "queries": QueryHandlerModel.from(answers.queries),
-                "createControllerForAggregate": answers.createControllerForAggregate,
-                "createProtoForAggregate": answers.createProtoForAggregate,
+                "createController": answers.createController,
+                "createProto": answers.createProto,
                 "createConsumer": answers.createConsumer,
                 "consumer": answers.createConsumer ? ConsumerModel.from(answers.consumer) : answers.consumer,
                 "repository": RepositoryModel.from(answers.repository),
@@ -98,8 +95,6 @@ export default class Utils {
                 "controller": ControllerModel.from(answers.controller),
                 "proto": ProtoModel.from(answers.proto)
             }
-
-        console.log('--------------', options);
 
         return options;
     }

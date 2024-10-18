@@ -4,6 +4,7 @@ export default class EntityGenerator {
     constructor(utils, generator) {
         this._utils = utils;
         this._generator = generator;
+        this.name = 'entity';
     }
 
     async prompt(defaultValues) {
@@ -37,6 +38,6 @@ export default class EntityGenerator {
 
 
     getArguments() {
-        this._generator.argument('entities', { type: String, alias: 'e', required: true });
+        this._generator.argument('entities', { type: String, alias: 'e', required: true, description: 'Enter the names of the entities you want to create, separated by commas (e.g., Entity1, Entity2).' });
     }
 }

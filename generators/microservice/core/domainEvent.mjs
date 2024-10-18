@@ -6,6 +6,7 @@ export default class DomainEventGenerator {
     constructor(utils, generator) {
         this._utils = utils;
         this._generator = generator;
+        this.name = 'domainEvent';
     }
 
     async prompt(defaultValues) {
@@ -14,7 +15,7 @@ export default class DomainEventGenerator {
         const answers = await this._generator.prompt([
             {
                 type: 'list',
-                name: 'entity',
+                name: 'aggregate',
                 message: 'Select the aggregate you want to associate with the domain event:',
                 choices: aggregates,
             },
@@ -26,7 +27,7 @@ export default class DomainEventGenerator {
         ]);
 
         return {
-            aggregate: answers.entity.replace('Aggregate', ''),
+            aggregate: answers.aggregate.replace('Aggregate', ''),
             domainEvents: answers.domainEvents,
         }
     }
@@ -49,7 +50,7 @@ export default class DomainEventGenerator {
     }
 
     getArguments() {
-        this._generator.argument('entity', { type: String, alias: 'e', required: true });
-        this._generator.argument('domainEvents', { type: String, alias: 'de', required: true });
+        this._generator.argument('aggregate', { type: String, alias: 'e', required: true, description: 'The name of the aggregate to associate with the domain event.' });
+        this._generator.argument('domainEvents', { type: String, alias: 'de', required: true, description: 'The names of the domain events to create, separated by commas. (e.g., OrgCreated, OrgUpdated)' });
     }
 }

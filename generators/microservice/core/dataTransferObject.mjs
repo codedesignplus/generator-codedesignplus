@@ -6,6 +6,7 @@ export default class DtoGenerator {
     constructor(utils, generator) {
         this._utils = utils;
         this._generator = generator;
+        this.name = 'dataTransferObject';
     }
 
     async prompt(defaultValues) {

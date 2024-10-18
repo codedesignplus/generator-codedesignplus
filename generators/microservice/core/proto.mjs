@@ -6,6 +6,7 @@ export default class ProtoGenerator {
     constructor(utils, generator) {
         this._utils = utils;
         this._generator = generator;
+        this.name = 'proto';
     }
 
     async prompt(defaultValues) {
@@ -19,12 +20,12 @@ export default class ProtoGenerator {
 
         return {
             proto: answers.proto,
-            createProtoForAggregate: true
+            createProto: true
         }
     }
 
     async generate(options) {
-        if (options.createProtoForAggregate) {
+        if (options.createProto) {
             const solution = `${options.solution}.gRpc`;
 
             await this._generator.fs.copyTplAsync(
@@ -65,6 +66,6 @@ export default class ProtoGenerator {
     }
 
     getArguments() {
-        this._generator.argument('proto', { type: String, alias: 'p', required: true });
+        this._generator.argument('proto', { type: String, alias: 'p', required: true, description: 'The name of the protobuf file to create.' });
     }
 }

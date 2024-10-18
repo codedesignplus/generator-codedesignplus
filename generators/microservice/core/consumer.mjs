@@ -16,6 +16,7 @@ export default class ConsumerGenerator {
         this._aggregateGenerator = new AggregateGenerator(this._utils, this._generator);
         this._repositoryGenerator = new RepositoryGenerator(this._utils, this._generator);
         this._commandGenerator = new CommandGenerator(this._utils, this._generator);
+        this.name = 'consumer';
     }
 
     async prompt() {
@@ -62,7 +63,6 @@ export default class ConsumerGenerator {
                 entities: EntityModel.from(options.consumer.name),
                 aggregate: AggregateModel.from(options.consumer.name),
                 domainEvents: DomainEventModel.from(options.consumer.domainEvent),
-                createRepositoryForAggregate: true,
                 repository: RepositoryModel.from(options.consumer.name),
                 commands: CommandHandlerModel.from(options.consumer.command)
             }
@@ -97,9 +97,19 @@ export default class ConsumerGenerator {
     }
 
     getArguments() {
-        this.argument('isEntityOrAggregate', { type: String, required: true });
-        this.argument('consumer', { type: String, alias: 'cr', required: true });
-        this.argument('action', { type: String, alias: 'an', required: true });
-        this.argument('domainEvent', { type: String, alias: 'de', required: true });
+        this._generator.argument('consumer.isEntityOrAggregate', { type: String, required: true, description: 'Indicates if the consumer is related to an entity or an aggregate' });
+        this._generator.argument('consumer.consumer', { type: String, required: true, description: 'The name of the consumer' });
+        this._generator.argument('consumer.action', { type: String, required: true, description: 'The action that will be associated with the consumer' });
+        this._generator.argument('consumer.domainEvent', { type: String, required: true, description: 'The domain event that will be associated with the consumer' });
+
+        this._generator.options = {
+            ...this._generator.options,
+            consumer: {
+                isEntityOrAggregate: this._generator.options['consumer.isEntityOrAggregate'],
+                consumer: this._generator.options['consumer.consumer'],
+                action: this._generator.options['consumer.action'],
+                domainEvent: this._generator.options['consumer.domainEvent']
+            }
+        };
     }
 }

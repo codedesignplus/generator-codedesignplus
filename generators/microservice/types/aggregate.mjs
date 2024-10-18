@@ -11,6 +11,9 @@ export class AggregateModel extends BaseModel {
     }
 
     static from(value) {
+        if(!value)
+            return null;
+
         return new AggregateModel(value);
     }
 }

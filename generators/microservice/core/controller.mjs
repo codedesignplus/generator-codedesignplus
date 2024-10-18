@@ -4,6 +4,7 @@ export default class ControllerGenerator {
     constructor(utils, generator) {
         this._utils = utils;
         this._generator = generator;
+        this.name = 'controller';
     }
 
     async prompt(defaultValues) {
@@ -17,13 +18,13 @@ export default class ControllerGenerator {
 
         return {
             controller: answers.controller,
-            createControllerForAggregate: true
+            createController: true
         }
     }
 
     async generate(options) {
 
-        if (options.createControllerForAggregate)
+        if (options.createController)
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('controller/ItemController.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.rest, `Controllers`, options.controller.file)),
@@ -36,6 +37,6 @@ export default class ControllerGenerator {
 
 
     getArguments() {
-        this.argument('controller', { type: String, alias: 'cr', required: true });
+        this._generator.argument('controller', { type: String, alias: 'cr', required: true, description: 'The name of the controller to create.' });
     }
 }

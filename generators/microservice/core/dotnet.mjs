@@ -11,10 +11,10 @@ export default class DotNet {
     removeProjects(options) {
         this._generator.on('end', () => {
 
-            if (!options.createProtoForAggregate)
+            if (!options.createProto)
                 this._removeProject('gRpc');
 
-            if (!options.createControllerForAggregate)
+            if (!options.createController)
                 this._removeProject('Rest');
 
             if (!options.createConsumer)

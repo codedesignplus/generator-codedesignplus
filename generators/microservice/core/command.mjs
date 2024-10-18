@@ -1,11 +1,14 @@
 import { glob } from 'glob';
 import path from 'path';
+import RepositoryGenerator from './repository.mjs';
 
 export default class CommandGenerator {
 
     constructor(utils, generator) {
         this._utils = utils;
         this._generator = generator;
+        this.name = 'command';
+        this._repositoryGenerator = new RepositoryGenerator(this._utils, this._generator);
     }
 
 
@@ -75,11 +78,13 @@ export default class CommandGenerator {
 
             this._utils.addUsing(options.paths.src.rest, ns);
         }
+
+        // await this._repositoryGenerator.generate(options);
     }
 
     getArguments() {
-        this._generator.argument('aggregate', { type: String, alias: 'a', required: true });
-        this._generator.argument('repository', { type: String, alias: 'r', required: true });
-        this._generator.argument('commands', { type: String, alias: 'cs', required: true });
+        this._generator.argument('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to associate with the commands.' });
+        this._generator.argument('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to associate with the commands.' });
+        this._generator.argument('commands', { type: String, alias: 'cs', required: true, description: 'The names of the commands to create, separated by commas. (e.g., CreateItem, UpdateItem)' });
     }
 }

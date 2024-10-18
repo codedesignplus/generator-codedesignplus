@@ -11,7 +11,18 @@ export default class MicroserviceGenerator {
         this._generator = generator;
         this._errorGenerator = new ErrorsGenerator(utils, generator);
         this._wizard = new WizardGenerator(utils, generator);
+        this.name = 'microservice';
     }
+
+    getArguments() {
+        this._generator.option('isExample', { type: Boolean, required: false, default: false, description: 'Indicates if a functional example should be included in the microservice.' });
+
+        if (this._generator.options.isExample)
+            return
+
+        this._wizard.getArguments();
+    }
+
 
     async prompt(defaultValues) {
         const { isExample } = await this._generator.prompt([
@@ -83,10 +94,6 @@ export default class MicroserviceGenerator {
             "version": "1.0.0",
             "organization": options.organization
         }, { spaces: 2 });
-    }
-
-    getArguments() {
-        this._generator.argument('isExample', { type: Boolean, required: false });
     }
 
     _getTransformations(options, namespace) {

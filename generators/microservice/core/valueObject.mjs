@@ -5,6 +5,7 @@ export default class ValueObjectGenerator {
     constructor(utils, generator) {
         this._utils = utils;
         this._generator = generator;
+        this.name = 'valueObject';
     }
 
     async prompt(defaultValues) {
@@ -37,6 +38,6 @@ export default class ValueObjectGenerator {
     }
 
     getArguments() {
-        this._generator.argument('valueObjects', { type: String, alias: 'vo', required: true });
+        this._generator.argument('valueObjects', { type: String, alias: 'vo', required: true, description: 'Value objects to create, separated by commas. (e.g., Address, Contact)' });
     }
 }

@@ -4,6 +4,7 @@ export default class RepositoryGenerator {
     constructor(utils, generator) {
         this._utils = utils;
         this._generator = generator;
+        this.name = 'repository';
     }
 
     async prompt(defaultValues) {
@@ -16,14 +17,13 @@ export default class RepositoryGenerator {
         ]);
 
         return {
-            repository: answers.repository,
-            createRepositoryForAggregate: true
+            repository: answers.repository
         }
     }
 
     async generate(options) {
 
-        if (!options.createRepositoryForAggregate)
+        if (!options.repository)
             return;
 
         //Create Interface Repository        
@@ -50,6 +50,6 @@ export default class RepositoryGenerator {
 
     
     getArguments() {
-        this._generator.argument('repository', { type: String, alias: 'r', required: true });
+        this._generator.argument('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to create.' });
     }
 }

@@ -22,31 +22,78 @@ export default class Core {
     }
 
     arguments() {
-        // Mostrar el banner con Figlet
         console.log(figlet.textSync('CodeDesignPlus'));
 
-        // Descripción del generador usando Boxen
-        console.log(boxen(
-            'This generator is designed for the CodeDesignPlus microservice archetype, version 1.0. ' +
-            'It streamlines the development process by enabling developers to easily create internal resources ' +
-            'within a microservice. Adhering to best practices, standards, and guidelines established in the archetype, ' +
-            'this tool promotes consistency and efficiency in your projects.\n\n' +
-            'Available templates (each with its own arguments):\n' +
-            '- aggregate: Create a DDD aggregate.\n' +
-            '- command: Generate a CQRS command.\n' +
-            '- consumer: Define a message consumer.\n' +
-            '- controller: Scaffold a controller following RESTful principles.\n' +
-            '- dto: Create a Data Transfer Object (DTO).\n' +
-            '- domainEvent: Define a domain event for use in event sourcing.\n' +
-            '- entity: Generate a domain entity.\n' +
-            '- microservice: Set up a basic microservice structure.\n' +
-            '- proto: Create a Protobuf definition for gRPC services.\n' +
-            '- query: Generate a CQRS query.\n' +
-            '- repository: Scaffold a repository for data persistence.\n' +
-            '- valueObject: Define a DDD value object.\n' +
-            '- wizard: Interactive wizard to guide through multiple templates.',
-            { padding: 1, margin: 1, borderStyle: 'round' }
-        ));
+        if (this._generator.options.help)
+            console.log(boxen(
+                'Welcome to the CodeDesignPlus Microservice Archetype Generator (v1.0)\n\n' +
+                'This generator helps developers quickly create resources for microservices following best practices in the CodeDesignPlus architecture.\n\n' +
+
+                '--------------------------------------------------------------------------------\n' +
+                'Available Commands:\n' +
+                '--------------------------------------------------------------------------------\n' +
+                'Domain Commands:\n' +
+                '- aggregate:    yo codedesignplus:microservice aggregate <organization> <microservice> <aggregateName>\n' +
+                '- entity:       yo codedesignplus:microservice entity <organization> <microservice> <entityName>\n' +
+                '- valueObject:  yo codedesignplus:microservice valueObject <organization> <microservice> <valueObjectName>\n' +
+                '- domainEvent:  yo codedesignplus:microservice domainEvent <organization> <microservice> <entityName> <domainEvent>\n' +
+
+                '\nInfrastructure Commands:\n' +
+                '- repository:   yo codedesignplus:microservice repository <organization> <microservice> <repositoryName>\n' +
+                '- controller:   yo codedesignplus:microservice controller <organization> <microservice> <controllerName>\n' +
+                '- proto:        yo codedesignplus:microservice proto <organization> <microservice> <protoName> --createProto\n' +
+
+                '\nConsumer Commands:\n' +
+                '- consumer:     yo codedesignplus:microservice consumer <organization> <microservice> <aggregateName> <consumerName> <action> <domainEvent> --createConsumer\n' +
+
+                '\nCqrs Commands:\n' +
+                '- command:      yo codedesignplus:microservice command <organization> <microservice> <aggregateName> <repositoryName> <commandName>\n' +
+                '- query:        yo codedesignplus:microservice query <organization> <microservice> <aggregateName> <repositoryName> <queryName>\n' +
+
+                '\nWizard (Multiple Resources at Once):\n' +
+                '- yo codedesignplus:microservice wizard <organization> <microservice> <aggregate> [--domainEvents | --entities | --commands | --queries | --createController | --createProto --createConsumer]\n' +
+                '- yo codedesignplus:microservice wizard <organization> <microservice> <aggregate> --isCrud [--createController | --createController | --createProto]\n' +
+
+                '\nMicroservices:\n' +
+                '- yo codedesignplus:microservice microservice <organization> <microservice> --isExample\n' +
+                '- yo codedesignplus:microservice microservice <organization> <microservice> <aggregate> [--domainEvents | --entities | --commands | --queries | --createController | --createProto | --createConsumer]\n' +
+                '- yo codedesignplus:microservice microservice <organization> <microservice> <aggregate> --isCrud [--createController | --createProto | --createConsumer]\n' +
+
+                '\nOther Commands:\n' +
+                '-- help:        yo codedesignplus:microservice --help\n' +
+                '-- version:     yo codedesignplus:microservice --version\n' +
+
+                '\n--------------------------------------------------------------------------------\n' +
+                'Argument and Option Values:\n' +
+                '--------------------------------------------------------------------------------\n' +
+                '<organization>   : CodeDesignPlus\n' +
+                '<microservice>   : Organization | Tower | Stage\n' +
+                '<aggregateName>  : Organization | Tower | Stage\n' +
+                '<entityName>     : User | Client | Products\n' +
+                '<valueObjectName>: Address | ContactInfo\n' +
+                '<domainEvent>    : OrganizationCreated | TowerCreated | StageCreated\n' +
+                '<repositoryName> : Organization | Tower | Stage\n' +
+                '<controllerName> : Organization | Tower | Stage\n' +
+                '<protoName>      : Organization | Tower | Stage\n' +
+                '<consumerName>   : Organization | Tower | Stage\n' +
+                '<action>         : create_organization | update_organization | delete_tower\n' +
+                '<queryName>      : GetOrganizationById | GetTowerById | GetStageById\n' +
+
+                '\n--------------------------------------------------------------------------------\n' +
+                'Option Descriptions:\n' +
+                '--------------------------------------------------------------------------------\n' +
+                '--createProto: Generates a Protocol Buffer definition for the specified aggregate, facilitating communication between services.\n' +
+                '--createConsumer: Generates a consumer for the specified aggregate, allowing it to handle domain events and perform actions related to that aggregate. When this flag is activated, the following arguments are mandatory:' +
+                '    <consumer.isEntityOrAggregate> <consumer.consumer> <consumer.action> <consumer.domainEvent>\n' +
+                '--domainEvents: Specify the domain events associated with the aggregate, enabling event-driven architecture within the microservice.\n' +
+                '--commands: Specify the commands associated with the aggregate, defining operations that can modify its state.\n' +
+                '--queries: Specify the queries associated with the aggregate, defining operations that can retrieve its state.\n' +
+                '--isCrud: Indicate that the commands for the aggregate follow CRUD (Create, Read, Update, Delete) operations.\n' +
+
+                '\n',
+
+                { padding: 1, margin: 1, borderStyle: 'round' }
+            ));
 
         this._generator.argument('template', {
             type: String,
