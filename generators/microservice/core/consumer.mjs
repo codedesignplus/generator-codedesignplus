@@ -22,10 +22,9 @@ export default class ConsumerGenerator {
     async prompt() {
         const answer = await this._generator.prompt([
             {
-                type: 'list',
-                name: 'isEntityOrAggregate',
-                message: 'Do you want to generate a consumer to entity or a aggregate?',
-                choices: ['Entity', 'Aggregate']
+                type: 'input',
+                name: 'aggregate',
+                message: 'What is the name of the aggregate?',
             },
             {
                 type: 'input',
@@ -48,7 +47,7 @@ export default class ConsumerGenerator {
         ]);
 
         return {
-            isEntityOrAggregate: answer.isEntityOrAggregate,
+            aggregate: answer.aggregate,
             consumer: answer.consumer,
             action: answer.action,
             domainEvent: answer.domainEvent
@@ -56,17 +55,18 @@ export default class ConsumerGenerator {
     }
 
     async generate(options) {
+        
         if (options.createConsumer) {
-
+            
             options = {
                 ...options,
-                entities: EntityModel.from(options.consumer.name),
-                aggregate: AggregateModel.from(options.consumer.name),
+                aggregate: AggregateModel.from(options.consumer.aggregate),
                 domainEvents: DomainEventModel.from(options.consumer.domainEvent),
-                repository: RepositoryModel.from(options.consumer.name),
-                commands: CommandHandlerModel.from(options.consumer.command)
+                repository: RepositoryModel.from(options.consumer.aggregate),
+                commands: CommandHandlerModel.from(options.consumer.command),
+                isConsumer: true
             }
-
+            
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('consumer/ItemHandler.cs'),
                 this._generator.destinationPath(path.join(options.paths.src.asyncWorker, `Consumers`, options.consumer.file)),
@@ -74,19 +74,12 @@ export default class ConsumerGenerator {
                     ns: `${options.solution}.AsyncWorker.Consumers`,
                     name: options.consumer.fullname,
                     action: options.consumer.action,
-                    entity: options.consumer.entity,
-                    domainEvent: options.consumer.domainEvent
+                    aggregate: options.consumer.aggregate,
+                    domainEvent: `${options.consumer.domainEvent}DomainEvent`
                 }
             );
 
-            switch (options.consumer.isEntityOrAggregate) {
-                case 'Entity':
-                    await this._entityGenerator.generate(options);
-                    break;
-                case 'Aggregate':
-                    await this._aggregateGenerator.generate(options);
-                    break;
-            }
+            await this._aggregateGenerator.generate(options);
 
             await this._repositoryGenerator.generate(options);
 
@@ -97,15 +90,15 @@ export default class ConsumerGenerator {
     }
 
     getArguments() {
-        this._generator.argument('consumer.isEntityOrAggregate', { type: String, required: true, description: 'Indicates if the consumer is related to an entity or an aggregate' });
         this._generator.argument('consumer.consumer', { type: String, required: true, description: 'The name of the consumer' });
+        this._generator.argument('consumer.aggregate', { type: String, required: true, description: 'The name of the aggregate' });
         this._generator.argument('consumer.action', { type: String, required: true, description: 'The action that will be associated with the consumer' });
         this._generator.argument('consumer.domainEvent', { type: String, required: true, description: 'The domain event that will be associated with the consumer' });
 
         this._generator.options = {
             ...this._generator.options,
             consumer: {
-                isEntityOrAggregate: this._generator.options['consumer.isEntityOrAggregate'],
+                aggregate: this._generator.options['consumer.aggregate'],
                 consumer: this._generator.options['consumer.consumer'],
                 action: this._generator.options['consumer.action'],
                 domainEvent: this._generator.options['consumer.domainEvent']

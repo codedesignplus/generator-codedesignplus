@@ -34,14 +34,17 @@ export default class DomainEventGenerator {
 
     async generate(options) {
 
+        const to = options.isConsumer ? options.paths.src.asyncWorker : options.paths.src.domain;
+        const ns = options.isConsumer ? `${options.solution}.AsyncWorker.DomainEvents` : `${options.solution}.Domain.DomainEvents`;
+
         for (const key in options.domainEvents) {
             const domainEvent = options.domainEvents[key];
 
             await this._generator.fs.copyTplAsync(
                 this._generator.templatePath('domain-event/ItemDomainEvent.cs'),
-                this._generator.destinationPath(path.join(options.paths.src.domain, `DomainEvents`, domainEvent.file)),
+                this._generator.destinationPath(path.join(to, `DomainEvents`, domainEvent.file)),
                 {
-                    ns: `${options.solution}.Domain.DomainEvents`,
+                    ns: ns,
                     name: domainEvent.fullname,
                     entity: options.aggregate.fullname
                 }

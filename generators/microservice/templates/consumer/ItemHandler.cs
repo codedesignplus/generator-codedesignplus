@@ -1,6 +1,6 @@
 ﻿namespace <%= ns %>;
 
-[QueueName("<%= entity %>", "<%= action %>")]
+[QueueName("<%= aggregate %>", "<%= action %>")]
 public class <%= name %>(ILogger<<%= name %>> logger) : IEventHandler<<%= domainEvent %>>
 {
     public Task HandleAsync(<%= domainEvent %> data, CancellationToken token)

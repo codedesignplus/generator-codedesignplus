@@ -89,6 +89,14 @@ export default class WizardGenerator {
         this._generator.option('createProto', { type: Boolean, required: true, description: 'Indicates whether the wizard should create a proto for the aggregate.' });
         this._generator.option('createConsumer', { type: Boolean, required: true, description: 'Indicates whether the wizard should create consumers.' });
 
+        this._generator.options = {
+            ...this._generator.options,
+            aggregate: this._generator.options.aggregate,
+            domainEvents: `${this._generator.options.aggregate}Created, ${this._generator.options.aggregate}Updated, ${this._generator.options.aggregate}Deleted`,
+            commands: `Create${this._generator.options.aggregate}, Update${this._generator.options.aggregate}, Delete${this._generator.options.aggregate}`,
+            queries: `Get${this._generator.options.aggregate}ById, GetAll${this._generator.options.aggregate}`,
+        }
+
         if (this._generator.options.createConsumer)
             this._consumerGenerator.getArguments();
 
