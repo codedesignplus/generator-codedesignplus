@@ -52,5 +52,10 @@ export default class ProtoGenerator {
 
     getArguments() {
         this._generator.option('proto-name', { type: String, alias: 'p', required: true, description: 'The name of the protobuf file to create.' });
+    
+        this._generator.options = {
+            ...this._generator.options,
+            enableGrpc: this._generator.options.protoName !== undefined && this._generator.options.protoName !== null
+        }
     }
 }

@@ -15,6 +15,7 @@ import ProtoGenerator from './proto.mjs';
 import ConsumerGenerator from './consumer.mjs';
 
 import fs from 'fs/promises';
+import { toPascalCase } from '../types/base.mjs';
 
 export default class MicroserviceGenerator {
 
@@ -34,33 +35,34 @@ export default class MicroserviceGenerator {
         this._generator.option('enable-grpc', { type: Boolean, alias: 'eg', required: true, description: 'Indicates whether the wizard should create a proto for the aggregate.' });
         this._generator.option('enable-async-worker', { type: Boolean, alias: 'eaw', required: true, description: 'Indicates whether the wizard should create consumers.' });
         this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to create.' });
-
+                
         this._appsettings.getArguments();
-
+        
         if (this._generator.options.enableAsyncWorker)
             this._consumerGenerator.getArguments();
-
+        
+        const aggregate = toPascalCase(this._generator.options.aggregate);
+        
         this._generator.options = {
             ...this._generator.options,
-            aggregate: this._generator.options.aggregate,
-            domainEvents: `${this._generator.options.aggregate}Created, ${this._generator.options.aggregate}Updated, ${this._generator.options.aggregate}Deleted`,
-            commands: `Create${this._generator.options.aggregate}, Update${this._generator.options.aggregate}, Delete${this._generator.options.aggregate}`,
-            queries: `Get${this._generator.options.aggregate}ById, GetAll${this._generator.options.aggregate}`,
+            aggregate: aggregate,
+            domainEvents: `${aggregate}Created, ${aggregate}Updated, ${aggregate}Deleted`,
+            commands: `Create${aggregate}, Update${aggregate}, Delete${aggregate}`,
+            queries: `Get${aggregate}ById, GetAll${aggregate}`,
         }
-
         if (!this._generator.options.isCrud) {
             this._generator.option('domain-events', { type: String, alias: 'de', required: false, description: 'The names of the domain events to create, separated by commas. (e.g., OrgCreated, OrgUpdated)' });
             this._generator.option('entities', { type: String, alias: 'e', required: false, description: 'The names of the entities to create, separated by commas. (e.g., Org, User)' });
             this._generator.option('commands', { type: String, alias: 'cs', required: false, description: 'The names of the commands to create, separated by commas. (e.g., CreateOrg, UpdateOrg)' });
             this._generator.option('queries', { type: String, alias: 'q', required: false, description: 'The names of the queries to create, separated by commas. (e.g., GetOrg, GetOrgs)' });
         }
-
+        
         this._generator.options = {
             ...this._generator.options,
-            repository: this._generator.options.aggregate,
-            controller: this._generator.options.aggregate,
-            dataTransferObject: this._generator.options.aggregate,
-            protoName: this._generator.options.aggregate
+            repository: aggregate,
+            controller: aggregate,
+            dataTransferObject: aggregate,
+            protoName: aggregate
         }
     }
 
@@ -152,6 +154,7 @@ export default class MicroserviceGenerator {
             [/Protos\\orders.proto/g, `Protos\\${options.proto.file}`],
             [/global using CodeDesignPlus\.Net\.Microservice\.Domain\.Enums;/g, ''],
             [/global using CodeDesignPlus\.Net\.Microservice\.Domain\.DataTransferObjects;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Domain\.ValueObjects;/g, ''],
             [/global using CodeDesignPlus\.Net\.Microservice\.AsyncWorker\.Consumers;/g, ''],
             [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.AddProductToOrder;/g, ''],
             [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.CancelOrder;/g, ''],

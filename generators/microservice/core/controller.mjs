@@ -22,5 +22,10 @@ export default class ControllerGenerator {
 
     getArguments() {
         this._generator.option('controller', { type: String, alias: 'cr', required: true, description: 'The name of the controller to create.' });
+
+        this._generator.options = {
+            ...this._generator.options,
+            enableRest: this._generator.options.controller !== undefined && this._generator.options.controller !== null,
+        }
     }
 }

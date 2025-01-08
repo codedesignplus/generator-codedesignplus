@@ -11,7 +11,7 @@ export class ConsumerModel extends BaseModel {
 
         this.aggregate =  `${this._validate(toPascalCase(data.aggregate), 'Aggregate')}`;
         this.action = data.action.toLowerCase();
-        this.domainEvent = `${this._validate(toPascalCase(data.domainEvent), 'DomainEvent')}`;
+        this.domainEvent = `${this._validate(toPascalCase(this.name), 'DomainEvent')}`;
         this.command = toPascalCase(data.action);
     }
 

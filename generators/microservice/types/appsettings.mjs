@@ -12,13 +12,13 @@ export class AppSettingsModel extends BaseModel {
         this.vault = answers.vault;
 
         this.contact = {
-            name: toPascalCase(answers.contactName),
+            name: answers.contactName,
             email: answers.contactEmail.toLowerCase()
         };
     }
 
     static from(answers, microservice, organization) {
-        if(!answers || !microservice || !organization)
+        if(!answers || !answers.contactName || !answers.contactEmail || !microservice || !organization)
             return null;
 
         return new AppSettingsModel(answers, toPascalCase(microservice), toPascalCase(organization));

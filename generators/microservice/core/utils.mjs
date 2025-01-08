@@ -44,6 +44,7 @@ export default class Utils {
     }
 
     async getOptions(answers) {
+        
         const organization = this.toPascalCase(answers.template ? answers.organization : this._generator.answers.organization);
         const microservice = this.toPascalCase(answers.template ? answers.microservice : this._generator.answers.microservice);
 

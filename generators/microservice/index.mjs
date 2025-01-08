@@ -22,14 +22,16 @@ export default class extends Generator {
     }
 
     async writing() {
-        await this._utils.setPathBase();
+        if (!this.options.help) {
+            await this._utils.setPathBase();
 
-        const options = await this._utils.getOptions(this._answers);
+            const options = await this._utils.getOptions(this._answers);
 
-        await this._generator.generate(options);
+            await this._generator.generate(options);
 
-        if (this._generator.name === 'microservice'){
-            this._dotnet.removeProjects(options);
+            if (this._generator.name === 'microservice'){
+                this._dotnet.removeProjects(options);
+            }
         }
     }
 };

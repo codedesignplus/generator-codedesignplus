@@ -1,6 +1,4 @@
-﻿using CodeDesignPlus.Net.Microservice.Domain.ValueObjects;
-
-namespace CodeDesignPlus.Net.Microservice.Application.Setup;
+﻿namespace CodeDesignPlus.Net.Microservice.Application.Setup;
 
 public static class MapsterConfigOrder
 {

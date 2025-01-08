@@ -40,7 +40,8 @@ export default class ConsumerGenerator {
                     name: options.consumer.fullname,
                     action: options.consumer.action,
                     aggregate: options.consumer.aggregate,
-                    domainEvent: `${options.consumer.domainEvent}DomainEvent`
+                    domainEvent: `${options.consumer.domainEvent}DomainEvent`,
+                    solution: options.solution
                 }
             );
 
@@ -58,7 +59,6 @@ export default class ConsumerGenerator {
         this._generator.option('consumer-name', { type: String, required: true, description: 'The name of the consumer' });
         this._generator.option('consumer-aggregate', { type: String, required: true, description: 'The name of the aggregate' });
         this._generator.option('consumer-action', { type: String, required: true, description: 'The action that will be associated with the consumer' });
-        this._generator.option('consumer-domain-event', { type: String, required: true, description: 'The domain event that will be associated with the consumer' });
 
         this._generator.options = {
             ...this._generator.options,
@@ -66,8 +66,8 @@ export default class ConsumerGenerator {
                 aggregate: this._generator.options['consumerAggregate'],
                 consumer: this._generator.options['consumerName'],
                 action: this._generator.options['consumerAction'],
-                domainEvent: this._generator.options['consumerDomainEvent']
-            }
+            },
+            enableAsyncWorker: this._generator.options.consumerName !== undefined && this._generator.options.consumerName !== null
         };
     }
 }

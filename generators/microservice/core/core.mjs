@@ -39,57 +39,21 @@ export default class Core {
 
                 '\nInfrastructure Commands:\n' +
                 '- repository:   yo codedesignplus:microservice repository <organization> <microservice> <repositoryName>\n' +
-                '- controller:   yo codedesignplus:microservice controller <organization> <microservice> <controllerName> --createController\n' +
-                '- proto:        yo codedesignplus:microservice proto <organization> <microservice> <protoName> --createProto\n' +
-                '- consumer:     yo codedesignplus:microservice consumer <organization> <microservice> <consumer.consumer> <consumer.aggregate> <consumer.action> <consumer.domainEvent> --createConsumer\n' +
+                '- controller:   yo codedesignplus:microservice controller <organization> <microservice> <controllerName> --enableRest\n' +
+                '- proto:        yo codedesignplus:microservice proto <organization> <microservice> <protoName> --enableGrpc\n' +
+                '- consumer:     yo codedesignplus:microservice consumer <organization> <microservice> <consumer.consumer> <consumer.aggregate> <consumer.action> <consumer.domainEvent> --enableAsyncWorker\n' +
 
                 '\nCQRS Commands:\n' +
                 '- command:      yo codedesignplus:microservice command <organization> <microservice> <aggregate> <repository> <commands>\n' +
                 '- query:        yo codedesignplus:microservice query <organization> <microservice> <aggregateName> <repositoryName> <queryName>\n' +
 
                 '\nMicroservices:\n' +
-                '- yo codedesignplus:microservice microservice <organization> <microservice> <description> <contactName> <contactEmail> <vault> <aggregate> [--domainEvents | --entities | --commands | --queries | --createController | --createProto | --createConsumer]\n' +
-                '- yo codedesignplus:microservice microservice <organization> <microservice> <description> <contactName> <contactEmail> <vault> <aggregate> --isCrud [--createController | --createProto | --createConsumer]\n' +
+                '- yo codedesignplus:microservice microservice <organization> <microservice> <description> <contactName> <contactEmail> <vault> <aggregate> [--domainEvents | --entities | --commands | --queries | --enableRest | --enableGrpc | --enableAsyncWorker]\n' +
+                '- 1. yo codedesignplus:microservice microservice <organization> <microservice> <description> <contactName> <contactEmail> <vault> <aggregate> --isCrud [--enableRest | --enableGrpc | --enableAsyncWorker]\n' +
 
                 '\nOther Commands:\n' +
                 '-- help:        yo codedesignplus:microservice --help\n' +
                 '-- version:     yo codedesignplus:microservice --version\n' +
-
-                '\n--------------------------------------------------------------------------------\n' +
-                'Argument and Option Values:\n' +
-                '--------------------------------------------------------------------------------\n' +
-                '<organization>         : The name of the organization or company, which is used in the namespace.\n' +
-                '<microservice>         : The name of the microservice, which is used in the namespace.\n' +
-                '<description>          : The description of the microservice.\n' +
-                '<contactName>          : The name of the contact person for the microservice.\n' +
-                '<contactEmail>         : The email of the contact person for the microservice.\n' +
-                '<vault>                : The name of the vault used in the microservice.\n' +
-                '<aggregate>            : This is the name of the aggregate root, which is the main entity in the microservice.\n' +
-                '<entities>             : The entities that are part of the aggregate root.\n' +
-                '<valueObjects>         : The value objects that are part of the aggregate root.\n' +
-                '<domainEvents>         : The domain events that are part of the aggregate root.\n' +
-                '<repository>           : The repository that is part of the aggregate root.\n' +
-                '<controller>           : The controller that is part of the aggregate root.\n' +
-                '<proto>                : The Protocol Buffer definition that is part of the aggregate root.\n' +
-                '<consumer.consumer>    : The consumer that is part of the aggregate root.\n' +
-                '<consumer.aggregate>   : The aggregate root that the consumer is associated with.\n' + 
-                '<consumer.action>      : The action that the consumer will perform.\n' +
-                '<consumer.domainEvent> : The domain event that the consumer will listen to.\n' +
-                '<commands>             : The commands that are part of the aggregate root.\n' +
-                '<queries>              : The queries that are part of the aggregate root.\n' +
-
-                '\n--------------------------------------------------------------------------------\n' +
-                'Option Descriptions:\n' +
-                '--------------------------------------------------------------------------------\n' +
-                '--createController     : Generates a controller for the specified aggregate, allowing it to handle HTTP requests.\n' +
-                '--createProto          : Generates a Protocol Buffer definition for the specified aggregate, facilitating communication between services.\n' +
-                '--createConsumer       : Generates a consumer for the specified aggregate, allowing it to handle domain events and perform actions related to that aggregate. When this flag is activated, the following arguments are mandatory:' +
-                '    <consumer.consumer> <consumer.aggregate> <consumer.action> <consumer.domainEvent>\n' +
-                '--domainEvents         : Specify the domain events associated with the aggregate, enabling event-driven architecture within the microservice.\n' +
-                '--commands             : Specify the commands associated with the aggregate, defining operations that can modify its state.\n' +
-                '--queries              : Specify the queries associated with the aggregate, defining operations that can retrieve its state.\n' +
-                '--isCrud               : Indicate that the commands for the aggregate follow CRUD (Create, Read, Update, Delete) operations.\n' +
-
                 '\n',
 
                 { padding: 1, margin: 1, borderStyle: 'round' }

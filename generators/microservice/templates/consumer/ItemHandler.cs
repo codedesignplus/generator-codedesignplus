@@ -1,4 +1,6 @@
-﻿namespace <%= ns %>;
+﻿using <%= solution %>.AsyncWorker.DomainEvents;
+
+namespace <%= ns %>;
 
 [QueueName("<%= aggregate %>", "<%= action %>")]
 public class <%= name %>(ILogger<<%= name %>> logger) : IEventHandler<<%= domainEvent %>>

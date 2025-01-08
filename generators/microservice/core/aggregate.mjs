@@ -8,7 +8,7 @@ export default class AggregateGenerator {
         this.name = 'aggregate';
     }
 
-    async generate(options) {        
+    async generate(options) {
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('aggregate/ItemAggregate.cs'),
             this._generator.destinationPath(path.join(options.paths.src.domain, options.aggregate.file)),
