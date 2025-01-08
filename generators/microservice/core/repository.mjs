@@ -7,20 +7,6 @@ export default class RepositoryGenerator {
         this.name = 'repository';
     }
 
-    async prompt(defaultValues) {
-        const answers = await this._generator.prompt([  
-            {
-                type: 'input',
-                name: 'repository',
-                message: 'What is the name of the repository you want to create?'
-            }
-        ]);
-
-        return {
-            repository: answers.repository
-        }
-    }
-
     async generate(options) {
 
         if (!options.repository)
@@ -50,6 +36,6 @@ export default class RepositoryGenerator {
 
     
     getArguments() {
-        this._generator.argument('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to create.' });
+        this._generator.option('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to create.' });
     }
 }

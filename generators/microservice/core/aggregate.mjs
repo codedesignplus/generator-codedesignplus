@@ -8,20 +8,6 @@ export default class AggregateGenerator {
         this.name = 'aggregate';
     }
 
-    async prompt() {
-        const answers = await this._generator.prompt([
-            {
-                type: 'input',
-                name: 'aggregate',
-                message: 'What is the name of the aggregate you want to create?'
-            }
-        ]);
-
-        return {
-            aggregate: answers.aggregate
-        }
-    }
-
     async generate(options) {        
         await this._generator.fs.copyTplAsync(
             this._generator.templatePath('aggregate/ItemAggregate.cs'),
@@ -34,6 +20,6 @@ export default class AggregateGenerator {
     }
 
     getArguments() {
-        this._generator.argument('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to create' });
+        this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to create' });
     }
 }

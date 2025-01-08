@@ -13,6 +13,8 @@ import {
     ValueObjectModel,
     ConsumerModel
 } from '../types/index.mjs';
+import { AppSettingsModel } from '../types/appsettings.mjs';
+
 
 
 export default class Utils {
@@ -46,11 +48,12 @@ export default class Utils {
         const microservice = answers.template ? answers.microservice : this._generator.answers.microservice;
 
         const solution = `${organization}.Net.Microservice.${microservice}`;
+        
+        console.log("answers", answers)
 
         let options = {
             "organization": organization,
             "microservice": microservice,
-            "isExample": answers.isExample,
             "solution": solution,
             "paths": {
                 "src": {
@@ -75,26 +78,25 @@ export default class Utils {
                     "asyncWorker": path.join('tests', 'integration', `${solution}.AsyncWorker.Test`)
                 }
             },
+            "aggregate": AggregateModel.from(answers.aggregate),
+            "domainEvents": DomainEventModel.from(answers.domainEvents),
+            "entities": EntityModel.from(answers.entities),
+            "valueObjects": ValueObjectModel.from(answers.valueObjects),
+            "commands": CommandHandlerModel.from(answers.commands),
+            "queries": QueryHandlerModel.from(answers.queries),
+            "createController": answers.createController,
+            "createProto": answers.createProto,
+            "createConsumer": answers.createConsumer,
+            "consumer": answers.createConsumer ? ConsumerModel.from(answers.consumer) : answers.consumer,
+            "repository": RepositoryModel.from(answers.repository),
+            "dataTransferObject": DataTransferObjectModel.from(answers.dataTransferObject),
+            "controller": ControllerModel.from(answers.controller),
+            "proto": ProtoModel.from(answers.proto),
+            "appSettings": AppSettingsModel.from(answers, microservice, organization)
         };
 
-        if (!options.isExample)
-            options = {
-                ...options,
-                "aggregate": AggregateModel.from(answers.aggregate),
-                "domainEvents": DomainEventModel.from(answers.domainEvents),
-                "entities": EntityModel.from(answers.entities),
-                "valueObjects": ValueObjectModel.from(answers.valueObjects),
-                "commands": CommandHandlerModel.from(answers.commands),
-                "queries": QueryHandlerModel.from(answers.queries),
-                "createController": answers.createController,
-                "createProto": answers.createProto,
-                "createConsumer": answers.createConsumer,
-                "consumer": answers.createConsumer ? ConsumerModel.from(answers.consumer) : answers.consumer,
-                "repository": RepositoryModel.from(answers.repository),
-                "dataTransferObject": DataTransferObjectModel.from(answers.dataTransferObject),
-                "controller": ControllerModel.from(answers.controller),
-                "proto": ProtoModel.from(answers.proto)
-            }
+
+        console.log("options", options)
 
         return options;
     }

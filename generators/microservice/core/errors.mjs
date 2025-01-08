@@ -5,21 +5,6 @@ export default class ErrorsGenerator {
         this._generator = generator;
     }
 
-    async prompt() {
-        this._answers = await this._generator.prompt([
-            {
-                type: 'list',
-                name: 'layer',
-                message: 'Select the layer',
-                choices: [
-                    'Domain',
-                    'Application',
-                    'Infrastructure'
-                ]
-            }
-        ]);
-    }
-
     async generate(options) {
         const layers = {
             'Domain': {

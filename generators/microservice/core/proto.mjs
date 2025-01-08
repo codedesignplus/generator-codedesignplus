@@ -9,21 +9,6 @@ export default class ProtoGenerator {
         this.name = 'proto';
     }
 
-    async prompt(defaultValues) {
-        const answers = await this._generator.prompt([
-            {
-                type: 'input',
-                name: 'proto',
-                message: 'What is the name of the protobuf file you want to create?'
-            }
-        ]);
-
-        return {
-            proto: answers.proto,
-            createProto: true
-        }
-    }
-
     async generate(options) {
         if (options.createProto) {
             const solution = `${options.solution}.gRpc`;
@@ -66,6 +51,6 @@ export default class ProtoGenerator {
     }
 
     getArguments() {
-        this._generator.argument('proto', { type: String, alias: 'p', required: true, description: 'The name of the protobuf file to create.' });
+        this._generator.option('proto-file', { type: String, alias: 'p', required: true, description: 'The name of the protobuf file to create.' });
     }
 }

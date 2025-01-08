@@ -19,13 +19,6 @@ export default class extends Generator {
     }
 
     async prompting() {
-        if (this._answers && this._generator)
-            return;
-
-        const [generator, answers] = await this._core.prompt();
-
-        this._answers = answers;
-        this._generator = generator;
     }
 
     async writing() {

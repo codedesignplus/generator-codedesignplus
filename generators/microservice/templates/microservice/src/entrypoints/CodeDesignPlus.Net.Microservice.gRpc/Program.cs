@@ -6,14 +6,18 @@ using CodeDesignPlus.Net.Microservice.gRpc.Services;
 using CodeDesignPlus.Net.Mongo.Extensions;
 using CodeDesignPlus.Net.Observability.Extensions;
 using CodeDesignPlus.Net.RabbitMQ.Extensions;
+using CodeDesignPlus.Net.Redis.Cache.Extensions;
 using CodeDesignPlus.Net.Redis.Extensions;
 using CodeDesignPlus.Net.Security.Extensions;
+using CodeDesignPlus.Net.Vault.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 Serilog.Debugging.SelfLog.Enable(Console.Error);
 
 builder.Host.UseSerilog();
+
+builder.Configuration.AddVault();
 
 // Add services to the container.
 builder.Services.AddGrpc(options =>
@@ -22,16 +26,18 @@ builder.Services.AddGrpc(options =>
 });
 builder.Services.AddGrpcReflection();
 
+builder.Services.AddVault(builder.Configuration);
 builder.Services.AddMapster();
 builder.Services.AddMediatR<CodeDesignPlus.Net.Microservice.Application.Startup>();
 builder.Services.AddFluentValidation();
 
 builder.Services.AddMongo<CodeDesignPlus.Net.Microservice.Infrastructure.Startup>(builder.Configuration);
 builder.Services.AddRedis(builder.Configuration);
-builder.Services.AddRabbitMQ(builder.Configuration);
+builder.Services.AddRabbitMQ<CodeDesignPlus.Net.Microservice.Domain.Startup>(builder.Configuration);
 builder.Services.AddSecurity(builder.Configuration);
 builder.Services.AddObservability(builder.Configuration, builder.Environment);
 builder.Services.AddLogger(builder.Configuration);
+builder.Services.AddCache(builder.Configuration);
 
 var app = builder.Build();
 

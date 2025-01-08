@@ -9,29 +9,6 @@ export default class DomainEventGenerator {
         this.name = 'domainEvent';
     }
 
-    async prompt(defaultValues) {
-        const aggregates = glob.sync('**/*Aggregate.cs').map(x => path.basename(x, '.cs'));
-
-        const answers = await this._generator.prompt([
-            {
-                type: 'list',
-                name: 'aggregate',
-                message: 'Select the aggregate you want to associate with the domain event:',
-                choices: aggregates,
-            },
-            {
-                type: 'input',
-                name: 'domainEvents',
-                message: 'Enter the names of the domain events you want to create, separated by commas (e.g., Event1, Event2).'
-            }
-        ]);
-
-        return {
-            aggregate: answers.aggregate.replace('Aggregate', ''),
-            domainEvents: answers.domainEvents,
-        }
-    }
-
     async generate(options) {
 
         const to = options.isConsumer ? options.paths.src.asyncWorker : options.paths.src.domain;
@@ -53,7 +30,7 @@ export default class DomainEventGenerator {
     }
 
     getArguments() {
-        this._generator.argument('aggregate', { type: String, alias: 'e', required: true, description: 'The name of the aggregate to associate with the domain event.' });
-        this._generator.argument('domainEvents', { type: String, alias: 'de', required: true, description: 'The names of the domain events to create, separated by commas. (e.g., OrgCreated, OrgUpdated)' });
+        this._generator.option('aggregate', { type: String, alias: 'e', required: true, description: 'The name of the aggregate to associate with the domain event.' });
+        this._generator.option('domainEvents', { type: String, alias: 'de', required: true, description: 'The names of the domain events to create, separated by commas. (e.g., OrgCreated, OrgUpdated)' });
     }
 }

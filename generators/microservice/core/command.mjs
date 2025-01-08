@@ -11,42 +11,6 @@ export default class CommandGenerator {
         this._repositoryGenerator = new RepositoryGenerator(this._utils, this._generator);
     }
 
-
-    async prompt(defaultValues) {
-        const aggregates = glob.sync('**/*Aggregate.cs').map(x => path.basename(x, '.cs'));
-
-        const repositories = glob.sync('**/I*Repository.cs').map(x => path.basename(x, '.cs'));
-
-        const answers = await this._generator.prompt([
-            {
-                type: 'list',
-                name: 'aggregate',
-                message: 'Select the aggregate you want to associate with commands:',
-                choices: aggregates,
-            },
-            {
-                type: 'list',
-                name: 'repository',
-                message: 'Select the repository you want to associate with commands:',
-                choices: repositories,
-            },
-            {
-                type: 'input',
-                name: 'commands',
-                message: 'Enter the names of the commands you want to create, separated by commas (e.g., Command1, Command2).'
-            },
-        ]);
-
-        const match = answers.repository.match(/I(.*)Repository/);
-        const name = match ? match[1] : null
-
-        return {
-            aggregate: answers.aggregate.replace('Aggregate', ''),
-            commands: answers.commands,
-            repository: name,
-        }
-    }
-
     async generate(options) {
 
         for (const key in options.commands) {
@@ -83,8 +47,8 @@ export default class CommandGenerator {
     }
 
     getArguments() {
-        this._generator.argument('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to associate with the commands.' });
-        this._generator.argument('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to associate with the commands.' });
-        this._generator.argument('commands', { type: String, alias: 'cs', required: true, description: 'The names of the commands to create, separated by commas. (e.g., CreateItem, UpdateItem)' });
+        this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to associate with the commands.' });
+        this._generator.option('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to associate with the commands.' });
+        this._generator.option('commands', { type: String, alias: 'cs', required: true, description: 'The names of the commands to create, separated by commas. (e.g., CreateItem, UpdateItem)' });
     }
 }

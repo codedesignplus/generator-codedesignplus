@@ -1,7 +1,9 @@
 import { glob } from 'glob';
 import path from 'path';
 import ErrorsGenerator from './errors.mjs';
-import WizardGenerator from './wizard.mjs';
+import AppSettingsGenerator from './appsettings.mjs';
+import ConsumerGenerator from './consumer.mjs';
+import ProtoGenerator from './proto.mjs';
 import fs from 'fs/promises';
 
 export default class MicroserviceGenerator {
@@ -10,64 +12,46 @@ export default class MicroserviceGenerator {
         this._utils = utils;
         this._generator = generator;
         this._errorGenerator = new ErrorsGenerator(utils, generator);
-        this._wizard = new WizardGenerator(utils, generator);
+        this._appsettings = new AppSettingsGenerator(utils, generator);
+        this._consumerGenerator = new ConsumerGenerator(utils, generator);
+        this._protoGenerator = new ProtoGenerator(utils, generator);
         this.name = 'microservice';
     }
 
     getArguments() {
-        this._generator.option('isExample', { type: Boolean, required: false, default: false, description: 'Indicates if a functional example should be included in the microservice.' });
+        this._appsettings.getArguments();
 
-        if (this._generator.options.isExample)
-            return
+        if (this._generator.options.enableAsyncWorker)
+            this._consumerGenerator.getArguments();
 
-        this._wizard.getArguments();
-    }
-
-
-    async prompt(defaultValues) {
-        const { isExample } = await this._generator.prompt([
-            {
-                type: 'confirm',
-                name: 'isExample',
-                message: 'Would you like to include an example?',
-            }
-        ]);
-
-        if (isExample)
-            return {
-                isExample: isExample
-            }
-
-        const answersWizard = await this._wizard._prompt(defaultValues);
-
-        return {
-            isExample: isExample,
-            ...answersWizard
-        }
+        if (this._generator.options.enableGrpc)
+            this._protoGenerator.getArguments();
     }
 
     async generate(options) {
+      try {
         const namespace = `${options.organization}.Net.Microservice.${options.microservice}`;
 
         const template = this._generator.templatePath('microservice');
 
         const destination = path.join(this._generator.destinationRoot(), namespace);
 
-        const ignores = this._getIgnores(options.isExample);
+        const ignores = this._getIgnores();
 
         const files = glob.sync('**', { dot: true, nodir: true, cwd: template, ignore: ignores });
 
         await this._generateFiles(options, namespace, template, destination, files);
 
-        if (!options.isExample) {
-            this._generator.destinationRoot(destination);
+        this._generator.destinationRoot(destination);
 
-            await this._errorGenerator.generate(options);
+        await this._errorGenerator.generate(options);
 
-            await this._wizard.generate(options);
-        }
+        await this._appsettings.generate(options);
 
         await this._createMetadataFile(destination, options);
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     async _generateFiles(options, namespace, template, destination, files) {
@@ -101,9 +85,6 @@ export default class MicroserviceGenerator {
             [/CodeDesignPlus\.Net\.Microservice(?!\.Commons)/g, namespace],
         ];
 
-        if (options.isExample)
-            return transformations;
-
         if (options.entities.length === 0)
             transformations = [[/global using CodeDesignPlus\.Net\.Microservice\.Domain\.Entities;/g, ''], ...transformations];
 
@@ -131,11 +112,8 @@ export default class MicroserviceGenerator {
         ]
     }
 
-    _getIgnores(isExample) {
+    _getIgnores() {
         const ignores = ['**/bin/**', '**/obj/**'];
-
-        if (isExample)
-            return ignores;
 
         const items = {
             domain_application: [

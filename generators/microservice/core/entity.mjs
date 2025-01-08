@@ -7,20 +7,6 @@ export default class EntityGenerator {
         this.name = 'entity';
     }
 
-    async prompt(defaultValues) {
-        const answers = await this._generator.prompt([
-            {
-                type: 'input',
-                name: 'entities',
-                message: 'Enter the names of the entities you want to create, separated by commas (e.g., Entity1, Entity2).'
-            },
-        ]);
-
-        return {
-            entities: answers.entities,
-        }
-    }
-
     async generate(options) {
         for (const key in options.entities) {
             const entity = options.entities[key];
@@ -38,6 +24,6 @@ export default class EntityGenerator {
 
 
     getArguments() {
-        this._generator.argument('entities', { type: String, alias: 'e', required: true, description: 'Enter the names of the entities you want to create, separated by commas (e.g., Entity1, Entity2).' });
+        this._generator.option('entities', { type: String, alias: 'e', required: true, description: 'Enter the names of the entities you want to create, separated by commas (e.g., Entity1, Entity2).' });
     }
 }

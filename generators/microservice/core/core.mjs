@@ -8,7 +8,6 @@ import DomainEventGenerator from './domainEvent.mjs';
 import EntityGenerator from './entity.mjs';
 import RepositoryGenerator from './repository.mjs';
 import MicroserviceGenerator from './microservice.mjs';
-import WizardGenerator from './wizard.mjs';
 import ValueObjectGenerator from './valueObject.mjs';
 import ProtoGenerator from './proto.mjs';
 import figlet from 'figlet';
@@ -44,18 +43,13 @@ export default class Core {
                 '- proto:        yo codedesignplus:microservice proto <organization> <microservice> <protoName> --createProto\n' +
                 '- consumer:     yo codedesignplus:microservice consumer <organization> <microservice> <consumer.consumer> <consumer.aggregate> <consumer.action> <consumer.domainEvent> --createConsumer\n' +
 
-                '\nCqrs Commands:\n' +
+                '\nCQRS Commands:\n' +
                 '- command:      yo codedesignplus:microservice command <organization> <microservice> <aggregate> <repository> <commands>\n' +
                 '- query:        yo codedesignplus:microservice query <organization> <microservice> <aggregateName> <repositoryName> <queryName>\n' +
 
-                '\nWizard (Multiple Resources at Once):\n' +
-                '- yo codedesignplus:microservice wizard <organization> <microservice> <aggregate> [--domainEvents | --entities | --commands | --queries | --createController | --createProto --createConsumer]\n' +
-                '- yo codedesignplus:microservice wizard <organization> <microservice> <aggregate> --isCrud [--createController | --createController | --createProto]\n' +
-
                 '\nMicroservices:\n' +
-                '- yo codedesignplus:microservice microservice <organization> <microservice> --isExample\n' +
-                '- yo codedesignplus:microservice microservice <organization> <microservice> <aggregate> [--domainEvents | --entities | --commands | --queries | --createController | --createProto | --createConsumer]\n' +
-                '- yo codedesignplus:microservice microservice <organization> <microservice> <aggregate> --isCrud [--createController | --createProto | --createConsumer]\n' +
+                '- yo codedesignplus:microservice microservice <organization> <microservice> <description> <contactName> <contactEmail> <vault> <aggregate> [--domainEvents | --entities | --commands | --queries | --createController | --createProto | --createConsumer]\n' +
+                '- yo codedesignplus:microservice microservice <organization> <microservice> <description> <contactName> <contactEmail> <vault> <aggregate> --isCrud [--createController | --createProto | --createConsumer]\n' +
 
                 '\nOther Commands:\n' +
                 '-- help:        yo codedesignplus:microservice --help\n' +
@@ -66,6 +60,10 @@ export default class Core {
                 '--------------------------------------------------------------------------------\n' +
                 '<organization>         : The name of the organization or company, which is used in the namespace.\n' +
                 '<microservice>         : The name of the microservice, which is used in the namespace.\n' +
+                '<description>          : The description of the microservice.\n' +
+                '<contactName>          : The name of the contact person for the microservice.\n' +
+                '<contactEmail>         : The email of the contact person for the microservice.\n' +
+                '<vault>                : The name of the vault used in the microservice.\n' +
                 '<aggregate>            : This is the name of the aggregate root, which is the main entity in the microservice.\n' +
                 '<entities>             : The entities that are part of the aggregate root.\n' +
                 '<valueObjects>         : The value objects that are part of the aggregate root.\n' +
@@ -101,7 +99,7 @@ export default class Core {
             type: String,
             alias: 't',
             description: 'The type of component to generate.',
-            required: false
+            required: true
         });
 
         if (this._generator.options.template) {
@@ -117,12 +115,11 @@ export default class Core {
                 'proto': ProtoGenerator,
                 'query': QueryGenerator,
                 'repository': RepositoryGenerator,
-                'valueObject': ValueObjectGenerator,
-                'wizard': WizardGenerator
+                'valueObject': ValueObjectGenerator
             };
 
-            this._generator.argument('organization', { type: String, alias: 'o', required: true, description: 'The organization or company name used in the microservice\'s namespace' });
-            this._generator.argument('microservice', { type: String, alias: 'm', required: true, description: 'The name of the microservice, used in the namespace' });
+            this._generator.option('organization', { type: String, alias: 'o', required: true, description: 'The organization or company name used in the microservice\'s namespace' });
+            this._generator.option('microservice', { type: String, alias: 'm', required: true, description: 'The name of the microservice, used in the namespace' });
 
             const generatorClass = generatorsMap[this._generator.options.template];
 
@@ -139,78 +136,5 @@ export default class Core {
         }
 
         return [null, null];
-    }
-
-    async prompt() {
-        let defaultValues = {};
-
-        try {
-            defaultValues = await this._utils.readArchetypeMetadata();
-        }
-        catch (error) { }
-
-        this._generator.answers = await this._generator.prompt([
-            {
-                type: 'input',
-                name: 'organization',
-                message: 'What is your organization\'s name?',
-                default: defaultValues.organization,
-            },
-            {
-                type: 'input',
-                name: 'microservice',
-                message: 'What is the name of your microservice?',
-                default: defaultValues.microservice
-            },
-            {
-                type: 'list',
-                name: 'resource',
-                message: 'Select the resource create:',
-                choices: [
-                    'Wizard',
-                    'Aggregate',
-                    'Async Worker',
-                    'Microservice',
-                    'Command',
-                    'Consumer',
-                    'Controller',
-                    'Data Transfer Object',
-                    'Domain Event',
-                    'Entity',
-                    'Proto',
-                    'Query',
-                    'Repository',
-                    'Rest',
-                    'Value Object'
-                ],
-            }
-        ]);
-
-        const generatorsMap = {
-            'Wizard': WizardGenerator,
-            'Microservice': MicroserviceGenerator,
-            'Domain Event': DomainEventGenerator,
-            'Entity': EntityGenerator,
-            'Data Transfer Object': DtoGenerator,
-            'Repository': RepositoryGenerator,
-            'Aggregate': AggregateGenerator,
-            'Command': CommandGenerator,
-            'Query': QueryGenerator,
-            'Consumer': ConsumerGenerator,
-            'Controller': ControllerGenerator,
-            'Value Object': ValueObjectGenerator,
-            'Proto': ProtoGenerator
-        };
-
-        const selectedResource = this._generator.answers.resource;
-        const generatorClass = generatorsMap[selectedResource];
-
-        if (!generatorClass)
-            throw new Error(`The resource ${selectedResource} is not supported`);
-
-        const generatorInstance = new generatorClass(this._utils, this._generator);
-        const answers = await generatorInstance.prompt(defaultValues);
-
-        return [generatorInstance, answers];
     }
 }

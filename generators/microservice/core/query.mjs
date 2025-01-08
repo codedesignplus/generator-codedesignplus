@@ -10,43 +10,6 @@ export default class QueryGenerator {
         this.name = 'query';
     }
 
-    async prompt(defaultValues) {
-        const aggregates = glob.sync('**/*Aggregate.cs').map(x => path.basename(x, '.cs'));
-
-        const repositories = glob.sync('**/I*Repository.cs').map(x => path.basename(x, '.cs'));
-        
-        const answers = await this._generator.prompt([
-            {
-                type: 'list',
-                name: 'aggregate',
-                message: 'Select the aggregate you want to associate with queries:',
-                choices: aggregates,
-            },
-            {
-                type: 'list',
-                name: 'repository',
-                message: 'Select the repository you want to associate with queries :',
-                choices: repositories,
-            },
-            {
-                type: 'input',
-                name: 'queries',
-                message: 'Enter the names of the queries you want to create, separated by commas (e.g., Query1, Query2).'
-            },
-        ]);
-
-        
-        const match = answers.repository.match(/I(.*)Repository/);
-        const name = match ? match[1] : null
-
-        return {
-            aggregate: answers.aggregate,
-            queries: answers.queries,
-            repository: name,
-            dataTransferObject: answers.aggregate
-        }
-    }
-
     async generate(options) {
 
         await new DtoGenerator(this._utils, this._generator).generate(options);        
@@ -84,9 +47,9 @@ export default class QueryGenerator {
     }
 
     getArguments() {
-        this._generator.argument('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to associate with the queries.' });
-        this._generator.argument('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to associate with the queries.' });
-        this._generator.argument('queries', { type: String, alias: 'q', required: true, description: 'The names of the queries to create, separated by commas. (e.g., GetItem, GetItems)' });
+        this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to associate with the queries.' });
+        this._generator.option('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to associate with the queries.' });
+        this._generator.option('queries', { type: String, alias: 'q', required: true, description: 'The names of the queries to create, separated by commas. (e.g., GetItem, GetItems)' });
 
         this._generator.options = {
             ...this._generator.options,

@@ -1,15 +1,32 @@
+using CodeDesignPlus.Net.Microservice.Domain.ValueObjects;
+
 namespace CodeDesignPlus.Net.Microservice.gRpc.Test.Services;
 
-public class OrdersServiceTest(Server<Program> server) : ServerBase<Program>(server), IClassFixture<Server<Program>>
+public class OrdersServiceTest : ServerBase<Program>, IClassFixture<Server<Program>>
 {
+    public OrdersServiceTest(Server<Program> server) : base(server)
+    {
+        server.InMemoryCollection = (x) =>
+        {
+            x.Add("Vault:Enabled", "false");
+            x.Add("Vault:Address", "http://localhost:8200");
+            x.Add("Vault:Token", "root");
+            x.Add("Solution", "CodeDesignPlus");
+            x.Add("AppName", "my-test");
+            x.Add("RabbitMQ:UserName", "guest");
+            x.Add("RabbitMQ:Password", "guest");
+        };
+    }
 
     [Fact]
     public async Task GetOrder_BidirectionalStreaming_ValidId_ReturnsOrder()
     {
         bool isInvoked = false;
         var orderClient = new Orders.OrdersClient(Channel);
+        var client = ClientValueObject.Create(Guid.NewGuid(), "CodeDesignPlus", "1234567890", "CC");
+        var address = AddressValueObject.Create("Colombia", "Bogota", "Bogota", "Calle 123", 123456);
 
-        var orderExpected = OrderAggregate.Create(Guid.NewGuid(), Guid.NewGuid(), "CodeDesignPlus", Guid.NewGuid(), Guid.NewGuid());
+        var orderExpected = OrderAggregate.Create(Guid.NewGuid(), client, address, Guid.NewGuid(), Guid.NewGuid());
 
         var repository = Services.GetRequiredService<IOrderRepository>();
 

@@ -9,29 +9,6 @@ export default class DtoGenerator {
         this.name = 'dataTransferObject';
     }
 
-    async prompt(defaultValues) {
-        const aggregates = glob.sync('**/*Aggregate.cs').map(x => path.basename(x, '.cs'));
-
-        const answers = await this._generator.prompt([
-            {
-                type: 'list',
-                name: 'aggregate',
-                message: 'Select the aggregate you want to associate with the data transfer object:',
-                choices: aggregates,
-            },
-            {
-                type: 'input',
-                name: 'dataTransferObject',
-                message: 'What is the name of the data transfer object you want to create?'
-            }
-        ]);
-
-        return {
-            aggregate: answers.aggregate.replace('Aggregate', ''),
-            dataTransferObject: answers.dataTransferObject
-        }
-    }
-
     async generate(options) {
 
         const ns = `${options.solution}.Application.${options.aggregate.name}.DataTransferObjects`;
@@ -48,7 +25,7 @@ export default class DtoGenerator {
     }
 
     getArguments() {
-        this._generator.argument('aggregate', { type: String, alias: 'a', required: true });
-        this._generator.argument('dataTransferObject', { type: String, alias: 'dto', required: true });
+        this._generator.option('aggregate', { type: String, alias: 'a', required: true });
+        this._generator.option('dataTransferObject', { type: String, alias: 'dto', required: true });
     }
 }

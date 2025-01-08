@@ -8,20 +8,6 @@ export default class ValueObjectGenerator {
         this.name = 'valueObject';
     }
 
-    async prompt(defaultValues) {
-        const answers = await this._generator.prompt([
-            {
-                type: 'input',
-                name: 'valueObjects',
-                message: 'Enter the names of the value objects you want to create, separated by commas (e.g., ValueObject1, ValueObject2).'
-            },
-        ]);
-
-        return {
-            valueObjects: answers.valueObjects,
-        }
-    }
-
     async generate(options) {
         for (const key in options.valueObjects) {
             const valueObject = options.valueObjects[key];
@@ -38,6 +24,6 @@ export default class ValueObjectGenerator {
     }
 
     getArguments() {
-        this._generator.argument('valueObjects', { type: String, alias: 'vo', required: true, description: 'Value objects to create, separated by commas. (e.g., Address, Contact)' });
+        this._generator.option('valueObjects', { type: String, alias: 'vo', required: true, description: 'Value objects to create, separated by commas. (e.g., Address, Contact)' });
     }
 }
