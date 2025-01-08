@@ -2,8 +2,18 @@ import { glob } from 'glob';
 import path from 'path';
 import ErrorsGenerator from './errors.mjs';
 import AppSettingsGenerator from './appsettings.mjs';
-import ConsumerGenerator from './consumer.mjs';
+import AggregateGenerator from './aggregate.mjs';
+import CommandGenerator from './command.mjs';
+import QueryGenerator from './query.mjs';
+import ControllerGenerator from './controller.mjs';
+import DtoGenerator from './dataTransferObject.mjs';
+import ValueObjectGenerator from './valueObject.mjs';
+import DomainEventGenerator from './domainEvent.mjs';
+import EntityGenerator from './entity.mjs';
+import RepositoryGenerator from './repository.mjs';
 import ProtoGenerator from './proto.mjs';
+import ConsumerGenerator from './consumer.mjs';
+
 import fs from 'fs/promises';
 
 export default class MicroserviceGenerator {
@@ -55,18 +65,18 @@ export default class MicroserviceGenerator {
     }
 
     async generate(options) {
-      try {
         const namespace = `${options.organization}.Net.Microservice.${options.microservice}`;
 
         const template = this._generator.templatePath('microservice');
 
         const destination = path.join(this._generator.destinationRoot(), namespace);
 
-        const ignores = this._getIgnores();
+        const ignores = this._getIgnores(options.isExample);
 
         const files = glob.sync('**', { dot: true, nodir: true, cwd: template, ignore: ignores });
 
         await this._generateFiles(options, namespace, template, destination, files);
+
 
         this._generator.destinationRoot(destination);
 
@@ -74,10 +84,29 @@ export default class MicroserviceGenerator {
 
         await this._appsettings.generate(options);
 
+
+        const generatorsMap = {
+            'Aggregate': AggregateGenerator,
+            'Domain Event': DomainEventGenerator,
+            'Entity': EntityGenerator,
+            'Value Object': ValueObjectGenerator,
+            'Repository': RepositoryGenerator,
+            'Data Transfer Object': DtoGenerator,
+            'Command': CommandGenerator,
+            'Query': QueryGenerator,
+            'Controller': ControllerGenerator,
+            'Proto': ProtoGenerator,
+            'Consumer': ConsumerGenerator
+        };
+
+        for (const key in generatorsMap) {
+            const generator = new generatorsMap[key](this._utils, this._generator);
+            console.log(`Generating ${key}...`);
+            await generator.generate(options);
+        }
+
+
         await this._createMetadataFile(destination, options);
-      } catch (error) {
-        console.log(error);
-      }
     }
 
     async _generateFiles(options, namespace, template, destination, files) {
