@@ -44,13 +44,11 @@ export default class Utils {
     }
 
     async getOptions(answers) {
-        const organization = answers.template ? answers.organization : this._generator.answers.organization;
-        const microservice = answers.template ? answers.microservice : this._generator.answers.microservice;
+        const organization = this.toPascalCase(answers.template ? answers.organization : this._generator.answers.organization);
+        const microservice = this.toPascalCase(answers.template ? answers.microservice : this._generator.answers.microservice);
 
         const solution = `${organization}.Net.Microservice.${microservice}`;
         
-        console.log("answers", answers)
-
         let options = {
             "organization": organization,
             "microservice": microservice,
@@ -84,19 +82,16 @@ export default class Utils {
             "valueObjects": ValueObjectModel.from(answers.valueObjects),
             "commands": CommandHandlerModel.from(answers.commands),
             "queries": QueryHandlerModel.from(answers.queries),
-            "createController": answers.createController,
-            "createProto": answers.createProto,
-            "createConsumer": answers.createConsumer,
-            "consumer": answers.createConsumer ? ConsumerModel.from(answers.consumer) : answers.consumer,
+            "enableRest": answers.enableRest,
+            "enableGrpc": answers.enableGrpc,
+            "enableAsyncWorker": answers.enableAsyncWorker,
+            "consumer": answers.enableAsyncWorker ? ConsumerModel.from(answers.consumer) : answers.consumer,
             "repository": RepositoryModel.from(answers.repository),
             "dataTransferObject": DataTransferObjectModel.from(answers.dataTransferObject),
             "controller": ControllerModel.from(answers.controller),
-            "proto": ProtoModel.from(answers.proto),
+            "proto": ProtoModel.from(answers.protoName),
             "appSettings": AppSettingsModel.from(answers, microservice, organization)
         };
-
-
-        console.log("options", options)
 
         return options;
     }
@@ -123,4 +118,10 @@ export default class Utils {
 
         return className;
     }
+
+    toPascalCase = (str) =>
+        str
+        .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+        .map((x) => x.charAt(0).toUpperCase() + x.slice(1).toLowerCase())
+        .join("");
 }

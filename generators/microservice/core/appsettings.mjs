@@ -61,8 +61,8 @@ export default class AppSettingsGenerator {
 
     getArguments() {
         this._generator.option('description', { type: String, alias: 'd', required: true, description: 'The description of the application' });
-        this._generator.option('contact-name', { type: String, alias: 'c', required: true, description: 'The name of the contact person' });
-        this._generator.option('contact-email', { type: String, alias: 'e', required: true, description: 'The email of the contact person' });
-        this._generator.option('vault', { type: String, alias: 's', required: true, description: 'The name of the vault' });
+        this._generator.option('contact-name', { type: String, alias: 'cn', required: true, description: 'The name of the contact person' });
+        this._generator.option('contact-email', { type: String, alias: 'ce', required: true, description: 'The email of the contact person' });
+        this._generator.option('vault', { type: String, alias: 'v', required: true, description: 'The name of the vault' });
     }
 }

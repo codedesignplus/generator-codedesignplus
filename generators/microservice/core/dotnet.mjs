@@ -11,13 +11,13 @@ export default class DotNet {
     removeProjects(options) {
         this._generator.on('end', () => {
 
-            if (!options.createProto)
+            if (!options.enableGrpc)
                 this._removeProject('gRpc');
 
-            if (!options.createController)
+            if (!options.enableRest)
                 this._removeProject('Rest');
 
-            if (!options.createConsumer)
+            if (!options.enableAsyncWorker)
                 this._removeProject('AsyncWorker');
 
         });

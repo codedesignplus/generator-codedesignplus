@@ -1,4 +1,4 @@
-import BaseModel from "./base.mjs";
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class ConsumerModel extends BaseModel {
     constructor(data) {
@@ -9,10 +9,10 @@ export class ConsumerModel extends BaseModel {
         this.fullname = `${this.name}${this.sufix}`;
         this.file = `${this.fullname}.cs`;
 
-        this.aggregate =  `${this._validate(data.aggregate, 'Aggregate')}`;
+        this.aggregate =  `${this._validate(toPascalCase(data.aggregate), 'Aggregate')}`;
         this.action = data.action.toLowerCase();
-        this.domainEvent = `${this._validate(data.domainEvent, 'DomainEvent')}`;
-        this.command = this._toPascalCase(data.action);
+        this.domainEvent = `${this._validate(toPascalCase(data.domainEvent), 'DomainEvent')}`;
+        this.command = toPascalCase(data.action);
     }
 
     static from(data) {

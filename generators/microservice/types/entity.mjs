@@ -1,4 +1,4 @@
-import BaseModel from './base.mjs';
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class EntityModel extends BaseModel {
     constructor(entity) {
@@ -14,8 +14,8 @@ export class EntityModel extends BaseModel {
             return [];
         
         if (typeof value === 'string' && value.includes(','))
-            return value.split(',').map(x => new EntityModel(x));
+            return value.split(',').map(x => new EntityModel(toPascalCase(x)));
 
-        return [new EntityModel(value)];
+        return [new EntityModel(toPascalCase(value))];
     }
 }

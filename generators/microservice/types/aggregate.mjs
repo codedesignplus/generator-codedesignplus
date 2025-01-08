@@ -1,4 +1,4 @@
-import BaseModel from "./base.mjs";
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class AggregateModel extends BaseModel {
     constructor(aggregate) {
@@ -14,6 +14,6 @@ export class AggregateModel extends BaseModel {
         if(!value)
             return null;
 
-        return new AggregateModel(value);
+        return new AggregateModel(toPascalCase(value));
     }
 }

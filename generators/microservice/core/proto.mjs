@@ -10,7 +10,7 @@ export default class ProtoGenerator {
     }
 
     async generate(options) {
-        if (options.createProto) {
+        if (options.enableGrpc) {
             const solution = `${options.solution}.gRpc`;
 
             await this._generator.fs.copyTplAsync(
@@ -51,6 +51,6 @@ export default class ProtoGenerator {
     }
 
     getArguments() {
-        this._generator.option('proto-file', { type: String, alias: 'p', required: true, description: 'The name of the protobuf file to create.' });
+        this._generator.option('proto-name', { type: String, alias: 'p', required: true, description: 'The name of the protobuf file to create.' });
     }
 }

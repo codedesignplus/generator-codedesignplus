@@ -21,7 +21,7 @@ export default class ConsumerGenerator {
 
     async generate(options) {
         
-        if (options.createConsumer) {
+        if (options.enableAsyncWorker) {
             
             options = {
                 ...options,
@@ -55,18 +55,18 @@ export default class ConsumerGenerator {
     }
 
     getArguments() {
-        this._generator.option('consumer-consumer', { type: String, required: true, description: 'The name of the consumer' });
+        this._generator.option('consumer-name', { type: String, required: true, description: 'The name of the consumer' });
         this._generator.option('consumer-aggregate', { type: String, required: true, description: 'The name of the aggregate' });
         this._generator.option('consumer-action', { type: String, required: true, description: 'The action that will be associated with the consumer' });
-        this._generator.option('consumer-domainEvent', { type: String, required: true, description: 'The domain event that will be associated with the consumer' });
+        this._generator.option('consumer-domain-event', { type: String, required: true, description: 'The domain event that will be associated with the consumer' });
 
         this._generator.options = {
             ...this._generator.options,
             consumer: {
-                aggregate: this._generator.options['consumer-aggregate'],
-                consumer: this._generator.options['consumer-consumer'],
-                action: this._generator.options['consumer-action'],
-                domainEvent: this._generator.options['consumer-domainEvent']
+                aggregate: this._generator.options['consumerAggregate'],
+                consumer: this._generator.options['consumerName'],
+                action: this._generator.options['consumerAction'],
+                domainEvent: this._generator.options['consumerDomainEvent']
             }
         };
     }

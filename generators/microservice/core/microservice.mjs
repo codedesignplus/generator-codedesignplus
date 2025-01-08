@@ -19,13 +19,39 @@ export default class MicroserviceGenerator {
     }
 
     getArguments() {
+        this._generator.option('is-crud', { type: Boolean, alias: 'ic', required: false, description: 'Indicates whether the wizard should generate a CRUD.' });
+        this._generator.option('enable-rest', { type: Boolean, alias: 'er', required: true, description: 'Indicates whether the wizard should create a controller for the aggregate.' });
+        this._generator.option('enable-grpc', { type: Boolean, alias: 'eg', required: true, description: 'Indicates whether the wizard should create a proto for the aggregate.' });
+        this._generator.option('enable-async-worker', { type: Boolean, alias: 'eaw', required: true, description: 'Indicates whether the wizard should create consumers.' });
+        this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to create.' });
+
         this._appsettings.getArguments();
 
         if (this._generator.options.enableAsyncWorker)
             this._consumerGenerator.getArguments();
 
-        if (this._generator.options.enableGrpc)
-            this._protoGenerator.getArguments();
+        this._generator.options = {
+            ...this._generator.options,
+            aggregate: this._generator.options.aggregate,
+            domainEvents: `${this._generator.options.aggregate}Created, ${this._generator.options.aggregate}Updated, ${this._generator.options.aggregate}Deleted`,
+            commands: `Create${this._generator.options.aggregate}, Update${this._generator.options.aggregate}, Delete${this._generator.options.aggregate}`,
+            queries: `Get${this._generator.options.aggregate}ById, GetAll${this._generator.options.aggregate}`,
+        }
+
+        if (!this._generator.options.isCrud) {
+            this._generator.option('domain-events', { type: String, alias: 'de', required: false, description: 'The names of the domain events to create, separated by commas. (e.g., OrgCreated, OrgUpdated)' });
+            this._generator.option('entities', { type: String, alias: 'e', required: false, description: 'The names of the entities to create, separated by commas. (e.g., Org, User)' });
+            this._generator.option('commands', { type: String, alias: 'cs', required: false, description: 'The names of the commands to create, separated by commas. (e.g., CreateOrg, UpdateOrg)' });
+            this._generator.option('queries', { type: String, alias: 'q', required: false, description: 'The names of the queries to create, separated by commas. (e.g., GetOrg, GetOrgs)' });
+        }
+
+        this._generator.options = {
+            ...this._generator.options,
+            repository: this._generator.options.aggregate,
+            controller: this._generator.options.aggregate,
+            dataTransferObject: this._generator.options.aggregate,
+            protoName: this._generator.options.aggregate
+        }
     }
 
     async generate(options) {
@@ -127,9 +153,7 @@ export default class MicroserviceGenerator {
                 'src/domain/CodeDesignPlus.Net.Microservice.Application/Order/Commands/AddProductToOrder/**',
                 'src/domain/CodeDesignPlus.Net.Microservice.Application/Order/Queries/FindOrderById/**',
                 'src/domain/CodeDesignPlus.Net.Microservice.Application/Order/Queries/GetAllOrders/**',
-                'src/domain/CodeDesignPlus.Net.Microservice.Application/Order/DataTransferObjects/ClientDto.cs',
-                'src/domain/CodeDesignPlus.Net.Microservice.Application/Order/DataTransferObjects/OrderDto.cs',
-                'src/domain/CodeDesignPlus.Net.Microservice.Application/Order/DataTransferObjects/ProductDto.cs',
+                'src/domain/CodeDesignPlus.Net.Microservice.Application/Order/DataTransferObjects/*.cs',
             ],
             domain_domain: [
                 'src/domain/CodeDesignPlus.Net.Microservice.Domain/Errors.cs',
@@ -138,6 +162,7 @@ export default class MicroserviceGenerator {
                 'src/domain/CodeDesignPlus.Net.Microservice.Domain/Entities/*.cs',
                 'src/domain/CodeDesignPlus.Net.Microservice.Domain/Enums/*.cs',
                 'src/domain/CodeDesignPlus.Net.Microservice.Domain/Repositories/*.cs',
+                'src/domain/CodeDesignPlus.Net.Microservice.Domain/ValueObjects/*.cs',
                 'src/domain/CodeDesignPlus.Net.Microservice.Domain/OrderAggregate.cs',
             ],
             domain_infrastructure: [

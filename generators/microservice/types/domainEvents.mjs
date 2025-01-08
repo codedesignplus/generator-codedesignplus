@@ -1,4 +1,4 @@
-import BaseModel from "./base.mjs";
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class DomainEventModel extends BaseModel {
     constructor(domainEvent) {
@@ -15,8 +15,8 @@ export class DomainEventModel extends BaseModel {
             return [];
 
         if (typeof value === 'string' && value.includes(','))
-            return value.split(',').map(x => new DomainEventModel(x));
+            return value.split(',').map(x => new DomainEventModel(toPascalCase(x)));
 
-        return [new DomainEventModel(value)];
+        return [new DomainEventModel(toPascalCase(value))];
     }
 }

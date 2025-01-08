@@ -120,7 +120,7 @@ export default class Core {
 
             this._generator.option('organization', { type: String, alias: 'o', required: true, description: 'The organization or company name used in the microservice\'s namespace' });
             this._generator.option('microservice', { type: String, alias: 'm', required: true, description: 'The name of the microservice, used in the namespace' });
-
+            
             const generatorClass = generatorsMap[this._generator.options.template];
 
             if (!generatorClass)

@@ -1,4 +1,4 @@
-import BaseModel from "./base.mjs";
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class ValueObjectModel  extends BaseModel {
     constructor(valueObject) {
@@ -16,8 +16,8 @@ export class ValueObjectModel  extends BaseModel {
             return [];
 
         if (typeof value === 'string' && value.includes(','))
-            return value.split(',').map(x => new ValueObjectModel(x));
+            return value.split(',').map(x => new ValueObjectModel(toPascalCase(x)));
 
-        return [new ValueObjectModel(value)];
+        return [new ValueObjectModel(toPascalCase(value))];
     }
 }

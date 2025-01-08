@@ -1,4 +1,4 @@
-import BaseModel from "./base.mjs";
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class QueryModel extends BaseModel {
     constructor(query) {
@@ -11,7 +11,7 @@ export class QueryModel extends BaseModel {
     }
 
     static from(value) {
-        return new QueryModel(value);
+        return new QueryModel(toPascalCase(value));
     }
 }
 
@@ -31,8 +31,8 @@ export class QueryHandlerModel extends BaseModel {
             return [];
 
         if (typeof value === 'string' && value.includes(','))
-            return value.split(',').map(x => new QueryHandlerModel(x));
+            return value.split(',').map(x => new QueryHandlerModel(toPascalCase(x)));
 
-        return [new QueryHandlerModel(value)];
+        return [new QueryHandlerModel(toPascalCase(value))];
     }
 }

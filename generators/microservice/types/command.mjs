@@ -1,4 +1,4 @@
-import BaseModel from "./base.mjs";
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class CommandModel extends BaseModel {
     constructor(command) {
@@ -11,7 +11,7 @@ export class CommandModel extends BaseModel {
     }
 
     static from(value) {
-        return new CommandModel(value);
+        return new CommandModel(toPascalCase(value));
     }
 }
 
@@ -31,8 +31,8 @@ export class CommandHandlerModel extends BaseModel {
             return [];
 
         if (typeof value === 'string' && value.includes(','))
-            return value.split(',').map(x => new CommandHandlerModel(x));
+            return value.split(',').map(x => new CommandHandlerModel(toPascalCase(x)));
 
-        return [new CommandHandlerModel(value)];
+        return [new CommandHandlerModel(toPascalCase(value))];
     }
 }

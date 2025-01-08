@@ -8,18 +8,21 @@ yo codedesignplus:microservice microservice codedesignplus organization "Custom_
 
 
 
- yo codedesignplus:microservice microservice 
-    --organization codedesignplus
-    --microservice organization
-    --description "Custom_Item_Description"
-    --contactName "Wilzon Liscano"
-    --contactEmail "wliscano93@gmail.com"
-    --isCrud
-    --createController
-    --createProto
-    --proto myproto
-    --createConsumer
-    --consumerConsumer usercreated
-    --consumerAggregate user
-    --consumerAction usercreatedd
-    --consumerDomainEvent created
+ yo codedesignplus:microservice microservice \
+    --organization codedesignplus \
+    --microservice organization \
+    --description "Custom Item Description" \
+    --contact-name "Wilzon Liscano" \
+    --contact-email "wliscano93@gmail.com" \
+    --vault va-cdp \
+    --is-crud \
+    --aggregate tower \
+    --enable-rest \
+    --enable-grpc \
+    --enable-async-worker \
+    --consumer-consumer usercreated \
+    --consumer-aggregate user \
+    --consumer-action usercreatedd \
+    --consumer-domainEvent created 
+
+

@@ -1,4 +1,4 @@
-import BaseModel from "./base.mjs";
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class ControllerModel extends BaseModel {
 
@@ -15,6 +15,6 @@ export class ControllerModel extends BaseModel {
         if (!value)
             return null;
         
-        return new ControllerModel(value);
+        return new ControllerModel(toPascalCase(value));
     }
 }

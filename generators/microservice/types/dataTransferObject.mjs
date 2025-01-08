@@ -1,4 +1,4 @@
-import BaseModel from "./base.mjs";
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class DataTransferObjectModel extends BaseModel {
     constructor(dto) {
@@ -14,6 +14,6 @@ export class DataTransferObjectModel extends BaseModel {
         if (!value)
             return null;
 
-        return new DataTransferObjectModel(value);
+        return new DataTransferObjectModel(toPascalCase(value));
     }
 }

@@ -1,4 +1,4 @@
-import BaseModel from "./base.mjs";
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class AppSettingsModel extends BaseModel {
     constructor(answers, microservice, organization) {
@@ -12,8 +12,8 @@ export class AppSettingsModel extends BaseModel {
         this.vault = answers.vault;
 
         this.contact = {
-            name: answers.contactName,
-            email: answers.contactEmail
+            name: toPascalCase(answers.contactName),
+            email: answers.contactEmail.toLowerCase()
         };
     }
 
@@ -21,6 +21,6 @@ export class AppSettingsModel extends BaseModel {
         if(!answers || !microservice || !organization)
             return null;
 
-        return new AppSettingsModel(answers, microservice, organization);
+        return new AppSettingsModel(answers, toPascalCase(microservice), toPascalCase(organization));
     }
 }

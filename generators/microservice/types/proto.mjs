@@ -1,4 +1,4 @@
-import BaseModel from "./base.mjs";
+import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class ProtoModel extends BaseModel {
     constructor(proto) {
@@ -14,6 +14,6 @@ export class ProtoModel extends BaseModel {
         if (!value)
             return null;
         
-        return new ProtoModel(value);
+        return new ProtoModel(toPascalCase(value));
     }
 }
