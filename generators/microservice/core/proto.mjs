@@ -51,7 +51,7 @@ export default class ProtoGenerator {
     }
 
     getArguments() {
-        this._generator.option('proto-name', { type: String, alias: 'p', required: true, description: 'The name of the protobuf file to create.' });
+        this._generator.option('proto-name', { type: String, alias: 'p', required: true, description: 'The base name of the .proto file.' });
     
         this._generator.options = {
             ...this._generator.options,

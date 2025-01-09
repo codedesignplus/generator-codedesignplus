@@ -47,8 +47,8 @@ export default class CommandGenerator {
     }
 
     getArguments() {
-        this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to associate with the commands.' });
-        this._generator.option('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to associate with the commands.' });
-        this._generator.option('commands', { type: String, alias: 'cs', required: true, description: 'The names of the commands to create, separated by commas. (e.g., CreateItem, UpdateItem)' });
+        this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the microservice\'s root aggregate, essential for domain organization.' });
+        this._generator.option('repository', { type: String, alias: 'r', required: true, description: 'The name of the aggregate for which the repository is created or queried.' });
+        this._generator.option('commands', { type: String, alias: 'cs', required: true, description: 'Comma-separated list of commands representing actions from the user or system.' });
     }
 }

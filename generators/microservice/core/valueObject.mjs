@@ -24,6 +24,6 @@ export default class ValueObjectGenerator {
     }
 
     getArguments() {
-        this._generator.option('valueObjects', { type: String, alias: 'vo', required: true, description: 'Value objects to create, separated by commas. (e.g., Address, Contact)' });
+        this._generator.option('valueObjects', { type: String, alias: 'vo', required: true, description: 'Comma-separated list of value object names.' });
     }
 }

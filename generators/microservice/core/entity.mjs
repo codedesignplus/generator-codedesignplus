@@ -24,6 +24,6 @@ export default class EntityGenerator {
 
 
     getArguments() {
-        this._generator.option('entities', { type: String, alias: 'e', required: true, description: 'Enter the names of the entities you want to create, separated by commas (e.g., Entity1, Entity2).' });
+        this._generator.option('entities', { type: String, alias: 'e', required: true, description: 'Comma-separated list of entities.' });
     }
 }

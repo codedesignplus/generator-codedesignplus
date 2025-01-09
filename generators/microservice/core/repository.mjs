@@ -36,6 +36,6 @@ export default class RepositoryGenerator {
 
     
     getArguments() {
-        this._generator.option('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to create.' });
+        this._generator.option('repository', { type: String, alias: 'r', required: true, description: 'The name of the aggregate for which the repository is created or queried.' });
     }
 }

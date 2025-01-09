@@ -56,9 +56,9 @@ export default class ConsumerGenerator {
     }
 
     getArguments() {
-        this._generator.option('consumer-name', { type: String, required: true, description: 'The name of the consumer' });
-        this._generator.option('consumer-aggregate', { type: String, required: true, description: 'The name of the aggregate' });
-        this._generator.option('consumer-action', { type: String, required: true, description: 'The action that will be associated with the consumer' });
+        this._generator.option('consumer-name', { type: String, required: true, description: 'Name of the event consumer, specifying the type of event it consumes.' });
+        this._generator.option('consumer-aggregate', { type: String, required: true, description: 'Aggregate to which the consumer belongs, defining the context of the event.' });
+        this._generator.option('consumer-action', { type: String, required: true, description: 'Action to be performed in the consumer when it receives an event.' });
 
         this._generator.options = {
             ...this._generator.options,

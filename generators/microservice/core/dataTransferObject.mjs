@@ -25,7 +25,7 @@ export default class DtoGenerator {
     }
 
     getArguments() {
-        this._generator.option('aggregate', { type: String, alias: 'a', required: true });
-        this._generator.option('dataTransferObject', { type: String, alias: 'dto', required: true });
+        this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the microservice\'s root aggregate, essential for domain organization.' });
+        this._generator.option('dataTransferObject', { type: String, alias: 'dto', required: true, description: 'A comma-separated list of Data Transfer Object names to be generated.' });
     }
 }

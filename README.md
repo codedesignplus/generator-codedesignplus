@@ -19,34 +19,38 @@ Antes de comenzar, es importante entender algunos conceptos fundamentales de DDD
 *   **Comando (Command):** Una intención de realizar una acción que cambia el estado del sistema. Los comandos suelen ser iniciados por el usuario o por otros servicios. Ejemplos son "CrearPedido", "ActualizarUsuario".
 *   **Query (Consulta):** Una solicitud para obtener información del sistema, sin modificar el estado. Ejemplos son "ObtenerUsuarioPorId" o "BuscarProductosPorNombre".
 
-## Flags de Configuración
 
-| Flag                    | Descripción                                                                                                             |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `--organization`        | El nombre de la organización. Se utiliza para la organización del código y la gestión de los namespaces.                |
-| `--microservice`        | El nombre del microservicio.                                                                                           |
-| `--description`         | Una descripción detallada del microservicio que proporciona un contexto claro sobre su propósito.                     |
-| `--contact-name`        | Nombre de la persona de contacto responsable del microservicio.                                                        |
-| `--contact-email`       | Email de contacto de la persona responsable.                                                                            |
-| `--vault`               | El nombre del vault para la gestión de secretos y configuraciones.                                                      |
-| `--is-crud`             | Indica que el microservicio será un CRUD, generando la estructura básica para operaciones de gestión de datos.           |
-| `--aggregate`           | El nombre del agregado raíz del microservicio, esencial para la organización del dominio.                               |
-| `--enable-rest`         | Habilita la API REST para el microservicio, permitiendo la comunicación a través de peticiones HTTP.                      |
-| `--enable-grpc`         | Habilita la API gRPC para el microservicio, que ofrece un protocolo de comunicación de alto rendimiento.                   |
-| `--enable-async-worker` | Habilita un worker asíncrono para el manejo de eventos y tareas en segundo plano, mejorando la escalabilidad.           |
-| `--consumer-name`       | Nombre del consumer de eventos, especificando el tipo de evento que consume.                                              |
-| `--consumer-aggregate`  | Agregado al que pertenece el consumer, lo cual define el contexto del evento.                                             |
-| `--consumer-action`     | Acción a realizar en el consumer cuando recibe un evento.                                                                 |
-| `--domain-events`       | Lista de eventos de dominio separados por comas, fundamentales en la comunicación asíncrona entre microservicios.        |
-| `--entities`            | Lista de entidades separadas por comas.                                                                                  |
-| `--commands`            | Lista de comandos separados por comas, que representan las acciones del usuario o del sistema.                            |
-| `--queries`             | Lista de queries separados por comas, que representan las solicitudes de información al sistema.                          |
-| `--repository`          | El nombre del agregado para el cual se crea o consulta el repositorio.                                                 |
-| `--controller`          | El nombre del controlador.                                                                                               |
-| `--proto-name`          | El nombre base del archivo `.proto`.                                                                                     |
-| `--valueObjects`        | Lista de nombres de value objects separados por comas.                                                                 |
+Okay, I will update the tables to include the `dto` command and its corresponding flag.
 
-## Comandos Disponibles
+**Updated Flags de Configuración Table**
+
+| Flag                       | Descripción                                                                                                                  |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `--organization`           | El nombre de la organización. Se utiliza para la organización del código y la gestión de los namespaces.                     |
+| `--microservice`           | El nombre del microservicio.                                                                                               |
+| `--description`            | Una descripción detallada del microservicio que proporciona un contexto claro sobre su propósito.                          |
+| `--contact-name`           | Nombre de la persona de contacto responsable del microservicio.                                                             |
+| `--contact-email`          | Email de contacto de la persona responsable.                                                                                 |
+| `--vault`                  | El nombre del vault para la gestión de secretos y configuraciones.                                                           |
+| `--is-crud`                | Indica que el microservicio será un CRUD, generando la estructura básica para operaciones de gestión de datos.               |
+| `--aggregate`              | El nombre del agregado raíz del microservicio, esencial para la organización del dominio.                                   |
+| `--enable-rest`            | Habilita la API REST para el microservicio, permitiendo la comunicación a través de peticiones HTTP.                         |
+| `--enable-grpc`            | Habilita la API gRPC para el microservicio, que ofrece un protocolo de comunicación de alto rendimiento.                      |
+| `--enable-async-worker`    | Habilita un worker asíncrono para el manejo de eventos y tareas en segundo plano, mejorando la escalabilidad.              |
+| `--consumer-name`          | Nombre del consumer de eventos, especificando el tipo de evento que consume.                                                 |
+| `--consumer-aggregate`     | Agregado al que pertenece el consumer, lo cual define el contexto del evento.                                                |
+| `--consumer-action`        | Acción a realizar en el consumer cuando recibe un evento.                                                                    |
+| `--domain-events`          | Lista de eventos de dominio separados por comas, fundamentales en la comunicación asíncrona entre microservicios.           |
+| `--entities`               | Lista de entidades separadas por comas.                                                                                     |
+| `--commands`               | Lista de comandos separados por comas, que representan las acciones del usuario o del sistema.                               |
+| `--queries`                | Lista de queries separados por comas, que representan las solicitudes de información al sistema.                             |
+| `--repository`             | El nombre del agregado para el cual se crea o consulta el repositorio.                                                      |
+| `--controller`             | El nombre del controlador.                                                                                                 |
+| `--proto-name`             | El nombre base del archivo `.proto`.                                                                                        |
+| `--valueObjects`           | Lista de nombres de value objects separados por comas.                                                                    |
+| `--dataTransferObject`     | Lista de nombres de DTOs separados por comas.                                                                        |
+
+**Updated Comandos Disponibles Table**
 
 | Comando                                   | Descripción                                                                                                                                     | Opciones Principales                                                                                                                                                                      |
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -57,10 +61,13 @@ Antes de comenzar, es importante entender algunos conceptos fundamentales de DDD
 | `yo codedesignplus:microservice domainEvent`| Crea uno o más eventos de dominio asociados a un agregado.                                                                                        | `--organization`, `--microservice`, `--aggregate`, `--domainEvents`                                                                                                                       |
 | `yo codedesignplus:microservice repository`  | Crea un repositorio para un agregado específico.                                                                                               | `--organization`, `--microservice`, `--repository`                                                                                                                                        |
 | `yo codedesignplus:microservice controller`  | Crea un controlador para manejar las peticiones entrantes.                                                                                       | `--organization`, `--microservice`, `--controller`                                                                                                                                      |
-| `yo codedesignplus:microservice proto`      | Crea un archivo .proto para un servicio gRPC.                                                                                                   | `--organization`, `--microservice`, `--proto-name`                                                                                                                                      |
+| `yo codedesignplus:microservice proto`      | Crea un archivo `.proto` para un servicio gRPC.                                                                                                   | `--organization`, `--microservice`, `--proto-name`                                                                                                                                      |
 | `yo codedesignplus:microservice consumer`   | Crea un consumer que reacciona a eventos de dominio.                                                                                            | `--organization`, `--microservice`, `--consumer-name`, `--consumer-aggregate`, `--consumer-action`                                                                                               |
 | `yo codedesignplus:microservice query`       | Crea una o más consultas (queries) para obtener datos sin modificar el estado.                                                                      | `--organization`, `--microservice`, `--aggregate`, `--repository`, `--queries`                                                                                                              |
 | `yo codedesignplus:microservice command`     | Crea uno o más comandos para realizar acciones que cambian el estado del sistema.                                                               | `--organization`, `--microservice`, `--aggregate`, `--repository`, `--commands`                                                                                                           |
+| `yo codedesignplus:microservice dto`         | Crea uno o más Data Transfer Objects (DTOs) para transferir datos.                                                                               | `--organization`, `--microservice`, `--aggregate`, `--dataTransferObject`                                                                                                        |
+
+
 
 ### 1. Creación de Microservicio
 
@@ -250,6 +257,20 @@ yo codedesignplus:microservice command \
     --aggregate Order \
     --repository Order \
     --commands CreateOrder,CancelOrder
+```
+
+### 12. Creación de Data Transfer Objects (DTOs)
+
+`yo codedesignplus:microservice dto`
+
+Crea uno o más Data Transfer Objects (DTOs) para transferir datos entre capas o microservicios, permitiendo definir la forma de los datos según las necesidades del consumidor.
+
+```bash
+yo codedesignplus:microservice dto \
+    --organization acme \
+    --microservice orders \
+    --aggregate Order \
+    --dataTransferObject OrderDto,OrderSummaryDto
 ```
 
 ## Uso

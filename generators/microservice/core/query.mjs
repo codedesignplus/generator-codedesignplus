@@ -47,9 +47,9 @@ export default class QueryGenerator {
     }
 
     getArguments() {
-        this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the aggregate to associate with the queries.' });
-        this._generator.option('repository', { type: String, alias: 'r', required: true, description: 'The name of the repository to associate with the queries.' });
-        this._generator.option('queries', { type: String, alias: 'q', required: true, description: 'The names of the queries to create, separated by commas. (e.g., GetItem, GetItems)' });
+        this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the microservice\'s root aggregate, essential for domain organization.' });
+        this._generator.option('repository', { type: String, alias: 'r', required: true, description: 'The name of the aggregate for which the repository is created or queried.' });
+        this._generator.option('queries', { type: String, alias: 'q', required: true, description: 'Comma-separated list of queries, representing requests for information from the system.' });
 
         this._generator.options = {
             ...this._generator.options,

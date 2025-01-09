@@ -27,34 +27,22 @@ export default class Core {
             console.log(boxen(
                 'Welcome to the CodeDesignPlus Microservice Archetype Generator (v1.0)\n\n' +
                 'This generator helps developers quickly create resources for microservices following best practices in the CodeDesignPlus architecture.\n\n' +
-
-                '--------------------------------------------------------------------------------\n' +
-                'Available Commands:\n' +
-                '--------------------------------------------------------------------------------\n' +
-                'Domain Commands:\n' +
-                '- aggregate:    yo codedesignplus:microservice aggregate <organization> <microservice> <aggregateName>\n' +
-                '- entity:       yo codedesignplus:microservice entity <organization> <microservice> <entityName>\n' +
-                '- valueObject:  yo codedesignplus:microservice valueObject <organization> <microservice> <valueObjectName>\n' +
-                '- domainEvent:  yo codedesignplus:microservice domainEvent <organization> <microservice> <entityName> <domainEvent>\n' +
-
-                '\nInfrastructure Commands:\n' +
-                '- repository:   yo codedesignplus:microservice repository <organization> <microservice> <repositoryName>\n' +
-                '- controller:   yo codedesignplus:microservice controller <organization> <microservice> <controllerName> --enableRest\n' +
-                '- proto:        yo codedesignplus:microservice proto <organization> <microservice> <protoName> --enableGrpc\n' +
-                '- consumer:     yo codedesignplus:microservice consumer <organization> <microservice> <consumer.consumer> <consumer.aggregate> <consumer.action> <consumer.domainEvent> --enableAsyncWorker\n' +
-
-                '\nCQRS Commands:\n' +
-                '- command:      yo codedesignplus:microservice command <organization> <microservice> <aggregate> <repository> <commands>\n' +
-                '- query:        yo codedesignplus:microservice query <organization> <microservice> <aggregateName> <repositoryName> <queryName>\n' +
-
-                '\nMicroservices:\n' +
-                '- yo codedesignplus:microservice microservice <organization> <microservice> <description> <contactName> <contactEmail> <vault> <aggregate> [--domainEvents | --entities | --commands | --queries | --enableRest | --enableGrpc | --enableAsyncWorker]\n' +
-                '- 1. yo codedesignplus:microservice microservice <organization> <microservice> <description> <contactName> <contactEmail> <vault> <aggregate> --isCrud [--enableRest | --enableGrpc | --enableAsyncWorker]\n' +
-
-                '\nOther Commands:\n' +
-                '-- help:        yo codedesignplus:microservice --help\n' +
-                '-- version:     yo codedesignplus:microservice --version\n' +
-                '\n',
+                'Available Commands:\n\n' +
+                ' - yo codedesignplus:microservice microservice  | Creates the base structure for a new microservice, choosing between CRUD or custom patterns.\n' +
+                ' - yo codedesignplus:microservice aggregate     | Creates a new aggregate within an existing microservice.\n' +
+                ' - yo codedesignplus:microservice entity        | Creates one or more entities.\n' +
+                ' - yo codedesignplus:microservice valueObject   | Creates one or more value objects.\n' +
+                ' - yo codedesignplus:microservice domainEvent   | Creates one or more domain events associated with an aggregate.\n' +
+                ' - yo codedesignplus:microservice repository    | Creates a repository for a specific aggregate.\n' +
+                ' - yo codedesignplus:microservice controller    | Creates a controller to handle incoming requests.\n' +
+                ' - yo codedesignplus:microservice proto         | Creates a .proto file for a gRPC service.\n' +
+                ' - yo codedesignplus:microservice consumer      | Creates a consumer that reacts to domain events.\n' +
+                ' - yo codedesignplus:microservice query         | Creates one or more queries to retrieve data.\n' +
+                ' - yo codedesignplus:microservice command       | Creates one or more commands to perform actions that change the system state.\n' +
+                ' - yo codedesignplus:microservice dto           | Creates one or more Data Transfer Objects (DTOs) to transfer data.\n\n' +
+                'Usage:\n\n' +
+                'To use a command, run `yo codedesignplus:microservice <command> --option1 <value> --option2 <value>`.\n\n' +
+                'For more details on each command and its options, use the `--help` flag after the specific command (e.g., `yo codedesignplus:microservice microservice --help`).\n\n',
 
                 { padding: 1, margin: 1, borderStyle: 'round' }
             ));

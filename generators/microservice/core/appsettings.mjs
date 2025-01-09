@@ -60,9 +60,9 @@ export default class AppSettingsGenerator {
     }
 
     getArguments() {
-        this._generator.option('description', { type: String, alias: 'd', required: true, description: 'The description of the application' });
-        this._generator.option('contact-name', { type: String, alias: 'cn', required: true, description: 'The name of the contact person' });
-        this._generator.option('contact-email', { type: String, alias: 'ce', required: true, description: 'The email of the contact person' });
-        this._generator.option('vault', { type: String, alias: 'v', required: true, description: 'The name of the vault' });
+        this._generator.option('description', { type: String, alias: 'd', required: true, description: 'A detailed description of the microservice providing clear context about its purpose.' });
+        this._generator.option('contact-name', { type: String, alias: 'cn', required: true, description: 'Name of the contact person responsible for the microservice.' });
+        this._generator.option('contact-email', { type: String, alias: 'ce', required: true, description: 'Email of the contact person responsible.' });
+        this._generator.option('vault', { type: String, alias: 'v', required: true, description: 'The name of the vault for managing secrets and configurations.' });
     }
 }

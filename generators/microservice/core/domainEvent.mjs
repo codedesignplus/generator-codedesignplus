@@ -30,7 +30,7 @@ export default class DomainEventGenerator {
     }
 
     getArguments() {
-        this._generator.option('aggregate', { type: String, alias: 'e', required: true, description: 'The name of the aggregate to associate with the domain event.' });
-        this._generator.option('domainEvents', { type: String, alias: 'de', required: true, description: 'The names of the domain events to create, separated by commas. (e.g., OrgCreated, OrgUpdated)' });
+        this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the microservice\'s root aggregate, essential for domain organization.' });
+        this._generator.option('domainEvents', { type: String, alias: 'de', required: true, description: 'Comma-separated list of domain events, fundamental in asynchronous communication between microservices.' });
     }
 }
