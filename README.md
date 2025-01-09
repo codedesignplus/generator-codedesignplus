@@ -4,34 +4,73 @@ Este generador de Yeoman tiene como objetivo simplificar y estandarizar la creac
 
 ## ¿Qué es CodeDesignPlus.Net.Microservice?
 
-El arquetipo `CodeDesignPlus.Net.Microservice` es un punto de partida para la construcción de microservicios .NET modernos. Promueve la separación de responsabilidades, la mantenibilidad y la escalabilidad. Incluye una estructura de proyecto bien definida, configuraciones predeterminadas y bibliotecas de utilidad, permitiendo a los desarrolladores centrarse en la lógica de negocio.
+El arquetipo `CodeDesignPlus.Net.Microservice` es un punto de partida para la construcción de microservicios .NET modernos. Promueve la separación de responsabilidades, la mantenibilidad y la escalabilidad. Incluye una estructura de proyecto bien definida, configuraciones predeterminadas y bibliotecas de utilidad, permitiendo a los desarrolladores centrarse en la lógica de negocio. Este arquetipo ofrece una base sólida que incorpora buenas prácticas y facilita el desarrollo rápido de microservicios robustos.
 
 ## Conceptos Clave del Diseño Basado en el Dominio (DDD)
 
 Antes de comenzar, es importante entender algunos conceptos fundamentales de DDD:
 
-*   **Dominio:** El área de conocimiento sobre la cual opera el software.
-*   **Agregado (Aggregate):** Un clúster de entidades que se tratan como una unidad, con una entidad raíz que actúa como punto de acceso. Los agregados garantizan la consistencia dentro de sus límites.
-*   **Entidad (Entity):** Un objeto con identidad propia, que persiste a través del tiempo y tiene un ciclo de vida definido.
-*   **Objeto de Valor (Value Object):** Un objeto sin identidad propia, definido por sus atributos. Los objetos de valor son inmutables y se comparan por valor.
-*   **Evento de Dominio (Domain Event):** Una notificación de algo que ha sucedido en el dominio. Los eventos son inmutables y representan hechos históricos.
-*   **Repositorio (Repository):** Un mecanismo para abstraer el acceso a los datos persistentes. Proporciona una interfaz para interactuar con el almacenamiento de datos.
-*   **Comando (Command):** Una intención de realizar una acción que cambia el estado del sistema.
-*   **Query (Consulta):** Una solicitud para obtener información del sistema, sin modificar el estado.
+*   **Dominio:** El área de conocimiento sobre la cual opera el software. Representa el contexto del negocio y sus reglas. En un sistema de e-commerce, el dominio podría ser "la gestión de pedidos" o "la administración de productos".
+*   **Agregado (Aggregate):** Un clúster de entidades que se tratan como una unidad, con una entidad raíz que actúa como punto de acceso. Los agregados son responsables de mantener la consistencia dentro de sus límites. Un ejemplo es un pedido (orden) con sus líneas de pedido, donde la entidad raíz es el pedido.
+*   **Entidad (Entity):** Un objeto con identidad propia, que persiste a través del tiempo y tiene un ciclo de vida definido. Cada entidad tiene un identificador único. En una aplicación de gestión de usuarios, la entidad "Usuario" tendría propiedades como nombre, email, etc.
+*   **Objeto de Valor (Value Object):** Un objeto sin identidad propia, definido por sus atributos. Los objetos de valor son inmutables y se comparan por valor. Ejemplos incluyen un objeto "Dirección" o un objeto "Moneda".
+*   **Evento de Dominio (Domain Event):** Una notificación de algo que ha sucedido en el dominio. Los eventos son inmutables y representan hechos históricos. Un ejemplo podría ser "PedidoCreado" o "UsuarioRegistrado".
+*   **Repositorio (Repository):** Un mecanismo para abstraer el acceso a los datos persistentes. Proporciona una interfaz para interactuar con el almacenamiento de datos, permitiendo a la aplicación trabajar con objetos de dominio sin preocuparse por los detalles de la base de datos.
+*   **Comando (Command):** Una intención de realizar una acción que cambia el estado del sistema. Los comandos suelen ser iniciados por el usuario o por otros servicios. Ejemplos son "CrearPedido", "ActualizarUsuario".
+*   **Query (Consulta):** Una solicitud para obtener información del sistema, sin modificar el estado. Ejemplos son "ObtenerUsuarioPorId" o "BuscarProductosPorNombre".
+
+## Flags de Configuración
+
+| Flag                    | Descripción                                                                                                             |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `--organization`        | El nombre de la organización. Se utiliza para la organización del código y la gestión de los namespaces.                |
+| `--microservice`        | El nombre del microservicio.                                                                                           |
+| `--description`         | Una descripción detallada del microservicio que proporciona un contexto claro sobre su propósito.                     |
+| `--contact-name`        | Nombre de la persona de contacto responsable del microservicio.                                                        |
+| `--contact-email`       | Email de contacto de la persona responsable.                                                                            |
+| `--vault`               | El nombre del vault para la gestión de secretos y configuraciones.                                                      |
+| `--is-crud`             | Indica que el microservicio será un CRUD, generando la estructura básica para operaciones de gestión de datos.           |
+| `--aggregate`           | El nombre del agregado raíz del microservicio, esencial para la organización del dominio.                               |
+| `--enable-rest`         | Habilita la API REST para el microservicio, permitiendo la comunicación a través de peticiones HTTP.                      |
+| `--enable-grpc`         | Habilita la API gRPC para el microservicio, que ofrece un protocolo de comunicación de alto rendimiento.                   |
+| `--enable-async-worker` | Habilita un worker asíncrono para el manejo de eventos y tareas en segundo plano, mejorando la escalabilidad.           |
+| `--consumer-name`       | Nombre del consumer de eventos, especificando el tipo de evento que consume.                                              |
+| `--consumer-aggregate`  | Agregado al que pertenece el consumer, lo cual define el contexto del evento.                                             |
+| `--consumer-action`     | Acción a realizar en el consumer cuando recibe un evento.                                                                 |
+| `--domain-events`       | Lista de eventos de dominio separados por comas, fundamentales en la comunicación asíncrona entre microservicios.        |
+| `--entities`            | Lista de entidades separadas por comas.                                                                                  |
+| `--commands`            | Lista de comandos separados por comas, que representan las acciones del usuario o del sistema.                            |
+| `--queries`             | Lista de queries separados por comas, que representan las solicitudes de información al sistema.                          |
+| `--repository`          | El nombre del agregado para el cual se crea o consulta el repositorio.                                                 |
+| `--controller`          | El nombre del controlador.                                                                                               |
+| `--proto-name`          | El nombre base del archivo `.proto`.                                                                                     |
+| `--valueObjects`        | Lista de nombres de value objects separados por comas.                                                                 |
 
 ## Comandos Disponibles
 
-El generador `codedesignplus` ofrece los siguientes comandos para la creación de artefactos dentro de un microservicio:
+| Comando                                   | Descripción                                                                                                                                     | Opciones Principales                                                                                                                                                                      |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `yo codedesignplus:microservice microservice` | Crea la estructura base de un nuevo microservicio. Permite elegir entre un microservicio CRUD o uno custom, cada uno con patrones específicos. | `--organization`, `--microservice`, `--description`, `--contact-name`, `--contact-email`, `--vault`, `--is-crud`, `--aggregate`, `--enable-rest`, `--enable-grpc`, `--enable-async-worker`, `--consumer-name`, `--consumer-aggregate`, `--consumer-action`, `--domain-events`, `--entities`, `--commands`, `--queries` |
+| `yo codedesignplus:microservice aggregate`   | Crea un nuevo agregado dentro de un microservicio existente.                                                                                          | `--organization`, `--microservice`, `--aggregate`                                                                                                                                     |
+| `yo codedesignplus:microservice entity`      | Crea una o más entidades.                                                                                                                        | `--organization`, `--microservice`, `--entities`                                                                                                                                         |
+| `yo codedesignplus:microservice valueObject` | Crea uno o más value objects.                                                                                                                  | `--organization`, `--microservice`, `--valueObjects`                                                                                                                                    |
+| `yo codedesignplus:microservice domainEvent`| Crea uno o más eventos de dominio asociados a un agregado.                                                                                        | `--organization`, `--microservice`, `--aggregate`, `--domainEvents`                                                                                                                       |
+| `yo codedesignplus:microservice repository`  | Crea un repositorio para un agregado específico.                                                                                               | `--organization`, `--microservice`, `--repository`                                                                                                                                        |
+| `yo codedesignplus:microservice controller`  | Crea un controlador para manejar las peticiones entrantes.                                                                                       | `--organization`, `--microservice`, `--controller`                                                                                                                                      |
+| `yo codedesignplus:microservice proto`      | Crea un archivo .proto para un servicio gRPC.                                                                                                   | `--organization`, `--microservice`, `--proto-name`                                                                                                                                      |
+| `yo codedesignplus:microservice consumer`   | Crea un consumer que reacciona a eventos de dominio.                                                                                            | `--organization`, `--microservice`, `--consumer-name`, `--consumer-aggregate`, `--consumer-action`                                                                                               |
+| `yo codedesignplus:microservice query`       | Crea una o más consultas (queries) para obtener datos sin modificar el estado.                                                                      | `--organization`, `--microservice`, `--aggregate`, `--repository`, `--queries`                                                                                                              |
+| `yo codedesignplus:microservice command`     | Crea uno o más comandos para realizar acciones que cambian el estado del sistema.                                                               | `--organization`, `--microservice`, `--aggregate`, `--repository`, `--commands`                                                                                                           |
 
-### 1. `yo codedesignplus:microservice microservice` (Creación de Microservicio Base)
+### 1. Creación de Microservicio
 
-Este comando es el punto de partida para generar la estructura de un nuevo microservicio. Puedes optar por un microservicio **CRUD** o uno **No CRUD**, cada uno con sus propias características y patrones de diseño.
+`yo codedesignplus:microservice microservice`
 
-#### A. Microservicio CRUD
+Este comando es el punto de partida para generar la estructura de un nuevo microservicio. Puedes optar por un microservicio **CRUD** o uno **Custom**, cada uno con sus propias características y patrones de diseño, para adaptarse mejor a las necesidades de tu proyecto.
 
-Un microservicio CRUD (Create, Read, Update, Delete) se centra en la gestión de datos. Es adecuado para escenarios donde las operaciones principales son crear, leer, actualizar y eliminar entidades.
+#### Microservicio CRUD
 
-**Ejemplo:**
+Un microservicio CRUD (Create, Read, Update, Delete) se centra en la gestión de datos. Es adecuado para escenarios donde las operaciones principales son crear, leer, actualizar y eliminar entidades. Se enfoca principalmente en la persistencia de datos.
 
 ```bash
 yo codedesignplus:microservice microservice \
@@ -51,31 +90,9 @@ yo codedesignplus:microservice microservice \
     --consumer-action send-welcome-email
 ```
 
-*   **`--organization`**: El nombre de la organización (ej. `acme`).
-*   **`--microservice`**: El nombre del microservicio (ej. `users`).
-*   **`--description`**: Una descripción del microservicio.
-*   **`--contact-name`**: Nombre de la persona de contacto.
-*   **`--contact-email`**: Email de contacto.
-*   **`--vault`**: El nombre del vault (ej. `vault-acme`).
-*   **`--is-crud`**: Indica que el microservicio será un CRUD.
-*   **`--aggregate`**: El nombre del agregado raíz del microservicio (ej. `user`).
-*   **`--enable-rest`**: Habilita la API REST para el microservicio.
-*   **`--enable-grpc`**: Habilita la API gRPC para el microservicio.
-*   **`--enable-async-worker`**: Habilita un worker asíncrono para el manejo de eventos.
-*   **`--consumer-name`**: Nombre del consumer de eventos (ej. `userRegistered`).
-*   **`--consumer-aggregate`**: Agregado al que pertenece el consumer (ej. `user`).
-*   **`--consumer-action`**: Acción a realizar en el consumer (ej. `send-welcome-email`).
+#### Microservicio Custom
 
-**Patrones de Diseño:**
-
-*   **Arquitectura de Microservicios:** Separa la aplicación en servicios independientes.
-*   **Diseño Basado en el Dominio (DDD):** Organiza la lógica de negocio alrededor del dominio del problema, enfocándose en operaciones básicas de gestión de datos.
-
-#### B. Microservicio No CRUD
-
-Un microservicio No CRUD se enfoca en la lógica de negocio compleja y eventos, en lugar de simples operaciones CRUD. Es ideal para escenarios donde el flujo de trabajo es más importante que el almacenamiento de datos.
-
-**Ejemplo:**
+Un microservicio custom se enfoca en la lógica de negocio compleja y eventos, en lugar de simples operaciones CRUD. Es ideal para escenarios donde el flujo de trabajo es más importante que el almacenamiento de datos, permitiendo mayor flexibilidad y personalización.
 
 ```bash
 yo codedesignplus:microservice microservice \
@@ -85,7 +102,7 @@ yo codedesignplus:microservice microservice \
     --contact-name "John Smith" \
     --contact-email "john.smith@example.com" \
     --vault vault-acme \
-     --aggregate product \
+    --aggregate product \
     --enable-rest \
     --enable-grpc \
     --enable-async-worker \
@@ -98,35 +115,11 @@ yo codedesignplus:microservice microservice \
     --queries FindProductById,FindProductsByCategory
 ```
 
-*   **`--organization`**: El nombre de la organización (ej. `acme`).
-*   **`--microservice`**: El nombre del microservicio (ej. `inventory`).
-*   **`--description`**: Una descripción del microservicio.
-*   **`--contact-name`**: Nombre de la persona de contacto.
-*   **`--contact-email`**: Email de contacto.
-*   **`--vault`**: El nombre del vault (ej. `vault-acme`).
-*   **`--aggregate`**: El nombre del agregado raíz del microservicio (ej. `product`).
- *   **`--enable-rest`**: Habilita la API REST para el microservicio.
-*   **`--enable-grpc`**: Habilita la API gRPC para el microservicio.
-*   **`--enable-async-worker`**: Habilita un worker asíncrono para el manejo de eventos.
-*   **`--consumer-name`**: Nombre del consumer de eventos (ej. `orderCreated`).
-*   **`--consumer-aggregate`**: Agregado al que pertenece el consumer (ej. `order`).
-*   **`--consumer-action`**: Acción a realizar en el consumer (ej. `update-stock`).
-*   **`--domain-events`**: Lista de eventos de dominio separados por comas (ej. `ProductCreated,ProductUpdated,ProductRemoved`).
-*   **`--entities`**: Lista de entidades separadas por comas (ej. `Product,Category`).
-*   **`--commands`**: Lista de comandos separados por comas (ej. `CreateProduct,UpdateProduct,RemoveProduct`).
-*   **`--queries`**: Lista de queries separados por comas (ej. `FindProductById,FindProductsByCategory`).
+### 2. Creación de un Agregado
 
-**Patrones de Diseño:**
-
-*   **Arquitectura de Microservicios:** Separa la aplicación en servicios independientes.
-*   **Diseño Basado en el Dominio (DDD):** Organiza la lógica de negocio alrededor del dominio del problema, utilizando patrones como eventos, comandos y queries.
-*   **CQRS (Command Query Responsibility Segregation):** Separa las operaciones de lectura y escritura.
-
-### 2. `yo codedesignplus:microservice aggregate` (Creación de Agregado)
+`yo codedesignplus:microservice aggregate`
 
 Crea un nuevo agregado en el microservicio. Los agregados son bloques de construcción clave en DDD, que garantizan la consistencia de las entidades dentro de sus límites.
-
-**Ejemplo:**
 
 ```bash
 yo codedesignplus:microservice aggregate \
@@ -135,17 +128,11 @@ yo codedesignplus:microservice aggregate \
     --aggregate UserProfile
 ```
 
-*   **`--aggregate`**: El nombre del nuevo agregado (ej. `UserProfile`).
+### 3. Creación de Entidad
 
-**Patrones de Diseño:**
-
-*   **Diseño Basado en el Dominio (DDD):** Define el límite de consistencia y la unidad de transacción.
-
-### 3. `yo codedesignplus:microservice entity` (Creación de Entidad)
+`yo codedesignplus:microservice entity`
 
 Crea una o más entidades. Las entidades son objetos con identidad que pueden cambiar de estado a lo largo de su ciclo de vida.
-
-**Ejemplo:**
 
 ```bash
 yo codedesignplus:microservice entity \
@@ -154,17 +141,11 @@ yo codedesignplus:microservice entity \
     --entities Product,Category
 ```
 
-*   **`--entities`**: Lista de nombres de entidades separadas por comas (ej. `Product,Category`).
+### 4. Creación de Value Object
 
-**Patrones de Diseño:**
-
-*   **Diseño Basado en el Dominio (DDD):** Representa los objetos clave del dominio con identidad propia.
-
-### 4. `yo codedesignplus:microservice valueObject` (Creación de Value Object)
+`yo codedesignplus:microservice valueObject`
 
 Crea uno o más objetos de valor. Estos son objetos inmutables definidos por sus atributos y no tienen identidad propia.
-
-**Ejemplo:**
 
 ```bash
 yo codedesignplus:microservice valueObject \
@@ -173,17 +154,11 @@ yo codedesignplus:microservice valueObject \
     --valueObjects Email,Address
 ```
 
-*   **`--valueObjects`**: Lista de nombres de value objects separados por comas (ej. `Email,Address`).
+### 5. Creación de Evento de Dominio
 
-**Patrones de Diseño:**
-
-*   **Diseño Basado en el Dominio (DDD):** Representa conceptos del dominio definidos por valor, en lugar de identidad.
-
-### 5. `yo codedesignplus:microservice domainEvent` (Creación de Evento de Dominio)
+`yo codedesignplus:microservice domainEvent`
 
 Crea uno o más eventos de dominio, que son representaciones de algo que ha ocurrido en el dominio.
-
-**Ejemplo:**
 
 ```bash
 yo codedesignplus:microservice domainEvent \
@@ -193,19 +168,11 @@ yo codedesignplus:microservice domainEvent \
     --domainEvents OrderCreated,OrderShipped
 ```
 
-*   **`--domainEvents`**: Lista de nombres de eventos de dominio separados por comas (ej. `OrderCreated,OrderShipped`).
-*   **`--aggregate`**: El nombre del agregado al que pertenecen los eventos (ej. `Order`).
+### 6. Creación de Repositorio
 
-**Patrones de Diseño:**
-
-*   **Diseño Basado en el Dominio (DDD):** Captura la historia del dominio.
-*   **Event-Driven Architecture (EDA):** Facilita la comunicación asíncrona entre servicios.
-
-### 6. `yo codedesignplus:microservice repository` (Creación de Repositorio)
+`yo codedesignplus:microservice repository`
 
 Crea un repositorio para un agregado específico, proporcionando una interfaz para acceder a los datos persistentes del agregado.
-
-**Ejemplo:**
 
 ```bash
 yo codedesignplus:microservice repository \
@@ -214,18 +181,11 @@ yo codedesignplus:microservice repository \
     --repository Product
 ```
 
-*   **`--repository`**: El nombre del agregado para el cual se crea el repositorio (ej. `Product`).
+### 7. Creación de Controlador
 
-**Patrones de Diseño:**
-
-*   **Diseño Basado en el Dominio (DDD):** Separa la lógica de dominio de la persistencia.
-*   **Repository Pattern:** Define una interfaz para acceder a la base de datos.
-
-### 7. `yo codedesignplus:microservice controller` (Creación de Controlador)
+`yo codedesignplus:microservice controller`
 
 Crea un controlador que gestiona las peticiones entrantes (HTTP o gRPC) para el microservicio.
-
-**Ejemplo:**
 
 ```bash
 yo codedesignplus:microservice controller \
@@ -234,18 +194,11 @@ yo codedesignplus:microservice controller \
     --controller UserProfileController
 ```
 
-*   **`--controller`**: El nombre del controlador (ej. `UserProfileController`).
+### 8. Creación de Proto
 
-**Patrones de Diseño:**
+`yo codedesignplus:microservice proto`
 
-*   **REST API:** Maneja las peticiones HTTP.
-*   **gRPC:** Maneja las peticiones gRPC.
-
-### 8. `yo codedesignplus:microservice proto` (Creación de Proto)
-
-Crea un archivo .proto para un servicio gRPC, que define los mensajes y servicios para la comunicación.
-
-**Ejemplo:**
+Crea un archivo `.proto` para un servicio gRPC, que define los mensajes y servicios para la comunicación.
 
 ```bash
 yo codedesignplus:microservice proto \
@@ -254,17 +207,11 @@ yo codedesignplus:microservice proto \
     --proto-name ProductService
 ```
 
-*   **`--proto-name`**: El nombre base del archivo .proto (ej. `ProductService`).
+### 9. Creación de Consumer de Eventos
 
-**Patrones de Diseño:**
-
-*   **gRPC:** Define la interfaz de servicio.
-
-### 9. `yo codedesignplus:microservice consumer` (Creación de Consumer de Eventos)
+`yo codedesignplus:microservice consumer`
 
 Crea un consumer que reacciona a eventos publicados por otros microservicios, realizando una acción específica.
-
-**Ejemplo:**
 
 ```bash
 yo codedesignplus:microservice consumer \
@@ -275,19 +222,11 @@ yo codedesignplus:microservice consumer \
     --consumer-action send-order-confirmation
 ```
 
-*   **`--consumer-name`**: El nombre del evento a consumir (ej. `OrderCreated`).
-*   **`--consumer-aggregate`**: El nombre del agregado al que pertenece el evento (ej. `Order`).
-*   **`--consumer-action`**: La acción a realizar cuando se consume el evento (ej. `send-order-confirmation`).
+### 10. Creación de Query
 
-**Patrones de Diseño:**
-
-*   **Event-Driven Architecture (EDA):** Permite la comunicación asíncrona entre microservicios.
-
-### 10. `yo codedesignplus:microservice query` (Creación de Query)
+`yo codedesignplus:microservice query`
 
 Crea una o más queries para obtener información del sistema, sin modificar su estado.
-
-**Ejemplo:**
 
 ```bash
 yo codedesignplus:microservice query \
@@ -298,19 +237,11 @@ yo codedesignplus:microservice query \
     --queries FindProductById,FindProductsByName
 ```
 
-*   **`--aggregate`**: El nombre del agregado al que pertenece la query (ej. `Product`).
-*   **`--repository`**: El nombre del agregado para el cual se consulta el repositorio (ej. `Product`).
-*   **`--queries`**: Lista de nombres de queries separados por comas (ej. `FindProductById,FindProductsByName`).
+### 11. Creación de Comando
 
-**Patrones de Diseño:**
-
-*   **CQRS (Command Query Responsibility Segregation):** Separa las operaciones de lectura de las de escritura.
-
-### 11. `yo codedesignplus:microservice command` (Creación de Comando)
+`yo codedesignplus:microservice command`
 
 Crea uno o más comandos para realizar acciones que cambian el estado del sistema.
-
-**Ejemplo:**
 
 ```bash
 yo codedesignplus:microservice command \
@@ -321,14 +252,6 @@ yo codedesignplus:microservice command \
     --commands CreateOrder,CancelOrder
 ```
 
-*   **`--aggregate`**: El nombre del agregado al que pertenece el comando (ej. `Order`).
-*   **`--repository`**: El nombre del agregado para el cual se realiza la operación en el repositorio (ej. `Order`).
-*   **`--commands`**: Lista de nombres de comandos separados por comas (ej. `CreateOrder,CancelOrder`).
-
-**Patrones de Diseño:**
-
-*   **CQRS (Command Query Responsibility Segregation):** Separa las operaciones de escritura de las de lectura.
-
 ## Uso
 
 1.  **Instala Yeoman y el generador:**
@@ -337,6 +260,7 @@ yo codedesignplus:microservice command \
     npm install -g yo
     npm install -g generator-codedesignplus
     ```
+
 2.  **Ejecuta los comandos:**
 
     Ve a la carpeta donde quieres generar el microservicio y ejecuta uno de los comandos de `yo codedesignplus:microservice` detallados anteriormente.
@@ -344,7 +268,3 @@ yo codedesignplus:microservice command \
 ## Contribuciones
 
 ¡Las contribuciones son bienvenidas! Si encuentras errores o quieres añadir nuevas funcionalidades, por favor crea un Pull Request en el repositorio del generador.
-
-## Licencia
-
-Este generador se distribuye bajo la Licencia MIT.
