@@ -8,15 +8,15 @@ export default class ErrorsGenerator {
     async generate(options) {
         const layers = {
             'Domain': {
-                "code": '000',
+                "code": '100',
                 "destination": options.paths.src.domain
             },
             'Application': {
-                "code": '100',
+                "code": '200',
                 "destination": options.paths.src.application
             },
             'Infrastructure': {
-                "code": '200',
+                "code": '300',
                 "destination": options.paths.src.infrastructure
             }
         };
