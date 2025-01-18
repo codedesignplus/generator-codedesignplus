@@ -1,37 +1,70 @@
 {
   "name": "generator-codedesignplus",
   "version": "1.0.0",
-  "description": "",
+  "description": "Yeoman generator for creating microservices based on the CodeDesignPlus.Net.Microservice archetype.",
   "private": false,
-  "main": "index.js",
+  "main": "generators/index.mjs",
   "scripts": {
     "test": "jest",
     "unlink": "npm unlink generator-codedesignplus -g",
     "link": "npm link",
     "local": "npm run unlink && npm run link && yo --generators",
     "submodule": "git submodule update --remote",
-    "submodule:net:library": "git clone --recurse-submodules https://github.com/codedesignplus/CodeDesignPlus.Net.Library submodules/CodeDesignPlus.Net.Library"
+    "submodule:net:library": "git clone --recurse-submodules https://github.com/codedesignplus/CodeDesignPlus.Net.Library submodules/CodeDesignPlus.Net.Library",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prettier": "prettier --check ."
   },
   "type": "module",
   "files": [
     "generators"
   ],
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "yeoman",
+    "generator",
+    "microservices",
+    "dotnet",
+    ".net",
+    "codedesignplus",
+    "ddd",
+    "domain-driven design",
+    "grpc",
+    "async-worker",
+    "code-generation"
+  ],
+  "author": {
+    "name": "CodeDesignPlus Team",
+    "email": "info@codedesignplus.com",
+    "url": "https://doc.codedesignplus.com"
+  },
+  "license": "See LICENSE file",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codedesignplus/generator-codedesignplus"
+  },
+  "bugs": {
+    "url": "https://github.com/codedesignplus/generator-codedesignplus/issues"
+  },
+  "homepage": "https://github.com/codedesignplus/generator-codedesignplus#readme",
   "dependencies": {
     "yeoman-environment": "^4.4.1"
   },
   "devDependencies": {
     "@types/xml2js": "^0.4.14",
     "boxen": "^8.0.1",
+    "eslint": "^8.57.0",
     "figlet": "^1.8.0",
     "find-up": "^7.0.0",
     "glob": "^11.0.0",
     "gulp-replace": "^1.1.4",
+    "jest": "^29.7.0",
     "make-dir": "^5.0.0",
     "mem-fs-editor": "^11.1.1",
+    "prettier": "^3.2.5",
     "xml2js": "^0.6.2",
     "yeoman-generator": "^7.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
