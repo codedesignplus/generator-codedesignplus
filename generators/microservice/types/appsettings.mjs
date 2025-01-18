@@ -1,14 +1,14 @@
 import { toPascalCase, BaseModel } from "./base.mjs";
 
 export class AppSettingsModel extends BaseModel {
-    constructor(answers, microservice, organization) {
+    constructor(answers) {
         super();
 
         this.sufix = '';
-        this.appName = `ms-${microservice.toLowerCase()}`;
-        this.database = `db-ms-${microservice.toLowerCase()}`;
+        this.appName = `ms-${answers.microservice.toLowerCase()}`;
+        this.database = `db-ms-${answers.microservice.toLowerCase()}`;
         this.description = answers.description;
-        this.business = organization;
+        this.business = answers.organization;
         this.vault = answers.vault;
 
         this.contact = {
@@ -17,10 +17,10 @@ export class AppSettingsModel extends BaseModel {
         };
     }
 
-    static from(answers, microservice, organization) {
-        if(!answers || !answers.contactName || !answers.contactEmail || !microservice || !organization)
+    static from(answers) {
+        if(!answers || !answers.contactName || !answers.contactEmail)
             return null;
 
-        return new AppSettingsModel(answers, toPascalCase(microservice), toPascalCase(organization));
+        return new AppSettingsModel(answers);
     }
 }

@@ -9,6 +9,7 @@ import EntityGenerator from './entity.mjs';
 import RepositoryGenerator from './repository.mjs';
 import MicroserviceGenerator from './microservice.mjs';
 import ValueObjectGenerator from './valueObject.mjs';
+import GrpcGenerator from './grpc.mjs';
 import ProtoGenerator from './proto.mjs';
 import figlet from 'figlet';
 import boxen from 'boxen';
@@ -67,14 +68,15 @@ export default class Core {
                 'proto': ProtoGenerator,
                 'query': QueryGenerator,
                 'repository': RepositoryGenerator,
-                'valueObject': ValueObjectGenerator
+                'valueObject': ValueObjectGenerator,
+                'grpc': GrpcGenerator
             };
 
             this._generator.option('organization', { type: String, alias: 'o', required: true, description: 'The organization or company name used in the microservice\'s namespace' });
             this._generator.option('microservice', { type: String, alias: 'm', required: true, description: 'The name of the microservice, used in the namespace' });
             
             const generatorClass = generatorsMap[this._generator.options.template];
-
+            
             if (!generatorClass)
                 throw new Error(`The resource ${this._generator.options.template} is not supported`);
 

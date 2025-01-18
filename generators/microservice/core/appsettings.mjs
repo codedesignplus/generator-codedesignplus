@@ -8,17 +8,21 @@ export default class AppSettingsGenerator {
         this.name = 'appsettings';
     }
 
-    async generate(options) {
+    async generate(options, sources = []) {
 
-        const sources = [
-            options.paths.src.rest,
-            options.paths.src.grpc,
-            options.paths.src.asyncWorker
-        ]
+        if(sources.length === 0) {
+            sources = [
+                options.paths.src.rest,
+                options.paths.src.grpc,
+                options.paths.src.asyncWorker
+            ];
+        }
+
+        const destination = this._generator.destinationPath();
 
         sources.forEach(source => {
 
-            const appSettingsFile = this._generator.destinationPath(path.join(source, 'appsettings.json'));
+            const appSettingsFile = path.join(destination, source, 'appsettings.json');
 
             const json = this._generator.fs.readJSON(appSettingsFile, {});
 
@@ -35,28 +39,31 @@ export default class AppSettingsGenerator {
         });
 
         try {
-            const file = path.join('resources', 'shared', 'vault', 'config.sh');
-
-            const configFile = this._generator.destinationPath(file);
-
-            let config = this._generator.fs.read(configFile);
-
-            const vault = options.appSettings.vault.toLowerCase();
-    
-            config = config.replace(/archetype-keyvalue/g, `${vault}-keyvalue`);
-            config = config.replace(/archetype-database/g, `${vault}-database`);
-            config = config.replace(/archetype-rabbitmq/g, `${vault}-rabbitmq`);
-            config = config.replace(/archetype-transit/g, `${vault}-transit`);
-            config = config.replace(/archetype-approle/g, `${vault}-approle`);
-    
-            config = config.replace(/db-ms-archetype/g, options.appSettings.database);
-            config = config.replace(/ms-archetype/g, options.appSettings.appName);
-    
-            this._generator.fs.write(configFile, config);
+            this.updateConfigVault(path.join('tools', 'vault','config-vault.ps1'), options);
+            this.updateConfigVault(path.join('tools', 'vault','config-vault.sh'), options);
         } catch (error) {
-            console.log('No se encontró el archivo config.sh');
+            console.log('The vault configuration could not be updated.');
             console.log(error);
         }    
+    }
+
+    updateConfigVault(file, options) {
+        const configFile = this._generator.destinationPath(file);
+
+        let config = this._generator.fs.read(configFile);
+
+        const vault = options.appSettings.vault.toLowerCase();
+
+        console.log(vault);
+
+        config = config.replace(/\bvault-keyvalue\b/g, `${vault}-keyvalue`);
+        config = config.replace(/\bvault-database\b/g, `${vault}-database`);
+        config = config.replace(/\bvault-rabbitmq\b/g, `${vault}-rabbitmq`);
+        config = config.replace(/\bvault-transit\b/g, `${vault}-transit`);
+        config = config.replace(/\bvault-approle\b/g, `${vault}-approle`);
+        config = config.replace(/ms-archetype/g, options.appSettings.appName);
+
+        this._generator.fs.write(configFile, config);
     }
 
     getArguments() {

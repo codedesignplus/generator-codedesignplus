@@ -1,4 +1,5 @@
 import { findUp } from 'find-up';
+import fs from 'fs/promises';
 import path from 'path';
 import {
     AggregateModel,
@@ -44,12 +45,25 @@ export default class Utils {
     }
 
     async getOptions(answers) {
-        
-        const organization = this.toPascalCase(answers.template ? answers.organization : this._generator.answers.organization);
-        const microservice = this.toPascalCase(answers.template ? answers.microservice : this._generator.answers.microservice);
+        const archetypeValues = this._generator.fs.readJSON(`${path.join(this._generator.destinationRoot())}/archetype.json`);
+
+        answers = { 
+            ...answers,  
+            organization: archetypeValues.organization,
+            microservice: archetypeValues.microservice,
+            description: archetypeValues.description,
+            organization: archetypeValues.organization,
+            aggregate: answers.aggregate ?? archetypeValues.aggregate,
+            vault: archetypeValues.vault,
+            contactName: archetypeValues.contactName,
+            contactEmail: archetypeValues.contactEmail
+        };
+
+        const organization = this.toPascalCase(answers.organization);
+        const microservice = this.toPascalCase(answers.microservice);
 
         const solution = `${organization}.Net.Microservice.${microservice}`;
-        
+
         let options = {
             "organization": organization,
             "microservice": microservice,
@@ -91,7 +105,7 @@ export default class Utils {
             "dataTransferObject": DataTransferObjectModel.from(answers.dataTransferObject),
             "controller": ControllerModel.from(answers.controller),
             "proto": ProtoModel.from(answers.protoName),
-            "appSettings": AppSettingsModel.from(answers, microservice, organization)
+            "appSettings": AppSettingsModel.from(answers)
         };
 
         return options;
@@ -122,7 +136,65 @@ export default class Utils {
 
     toPascalCase = (str) =>
         str
-        .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
-        .map((x) => x.charAt(0).toUpperCase() + x.slice(1).toLowerCase())
-        .join("");
+            .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+            .map((x) => x.charAt(0).toUpperCase() + x.slice(1).toLowerCase())
+            .join("");
+
+
+    _getTransformations(options, namespace) {
+        let transformations = [
+            [/CodeDesignPlus\.Net\.Microservice(?!\.Commons)/g, namespace],
+        ];
+
+        if (options.entities.length === 0)
+            transformations = [[/global using CodeDesignPlus\.Net\.Microservice\.Domain\.Entities;/g, ''], ...transformations];
+
+        if (options.domainEvents.length === 0)
+            transformations = [[/global using CodeDesignPlus\.Net\.Microservice\.Domain\.DomainEvents;/g, ''], ...transformations];
+
+        return [
+            [/public static void Configure\(\)\s*{\s*([^}]*)}/g, 'public static void Configure() { }'],
+            [/<Protobuf Include="Protos\\org.proto" GrpcServices="Server" \/>/g, ''],
+            [/Protos\\orders.proto/g, `Protos\\${options.proto.file}`],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Domain\.Enums;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Domain\.DataTransferObjects;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Domain\.ValueObjects;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.AsyncWorker\.Consumers;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.AddProductToOrder;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.CancelOrder;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.CompleteOrder;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.CreateOrder;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.RemoveProduct;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.UpdateQuantityProduct;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Queries\.FindOrderById;/g, ''],
+            [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Queries\.GetAllOrders;/g, ''],
+            [/app\.MapGrpcService<OrdersService>\(\)/g, `app.MapGrpcService<${options.proto.name}Service>()`],
+            [/Order/g, options.aggregate.name],
+            ...transformations
+        ]
+    }
+
+    async generateFiles(options, namespace, template, destination, files) {
+        const transformations = this._getTransformations(options, namespace);
+
+        for (const i in files) {
+            const file = files[i];
+            const src = path.resolve(template, file);
+            const dest = path.resolve(destination, file
+                .replace(/CodeDesignPlus\.Net\.Microservice/g, namespace)
+                .replace(/Order/g, options.microservice)
+                .replace(/orders.proto/g, options.proto.file)
+            );
+
+            console.log('src', src);
+            console.log('dest', dest);
+
+            const content = await fs.readFile(src, { encoding: 'utf-8' });
+
+            let transformedContent = transformations.reduce((acc, [regex, replacement]) => acc.replace(regex, replacement), content);
+
+            await fs.mkdir(path.dirname(dest), { recursive: true });
+            await fs.writeFile(dest, transformedContent, { encoding: 'utf-8' });
+        }
+    }
 }

@@ -16,4 +16,3 @@ global using CodeDesignPlus.Net.Microservice.Domain.Entities;
 global using CodeDesignPlus.Net.Microservice.Domain.Repositories;
 global using CodeDesignPlus.Net.Microservice.Domain.Enums;
 global using CodeDesignPlus.Net.Microservice.Domain.DataTransferObjects;
-global using CodeDesignPlus.Net.Microservice.Domain.ValueObjects;
