@@ -155,7 +155,7 @@ export default class Utils {
         return [
             [/public static void Configure\(\)\s*{\s*([^}]*)}/g, 'public static void Configure() { }'],
             [/<Protobuf Include="Protos\\org.proto" GrpcServices="Server" \/>/g, ''],
-            [/Protos\\orders.proto/g, `Protos\\${options.proto.file}`],
+            [/Protos\\orders.proto/g, `Protos\\${options.proto?.file}`],
             [/global using CodeDesignPlus\.Net\.Microservice\.Domain\.Enums;/g, ''],
             [/global using CodeDesignPlus\.Net\.Microservice\.Domain\.DataTransferObjects;/g, ''],
             [/global using CodeDesignPlus\.Net\.Microservice\.Domain\.ValueObjects;/g, ''],
@@ -168,7 +168,7 @@ export default class Utils {
             [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Commands\.UpdateQuantityProduct;/g, ''],
             [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Queries\.FindOrderById;/g, ''],
             [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Queries\.GetAllOrders;/g, ''],
-            [/app\.MapGrpcService<OrdersService>\(\)/g, `app.MapGrpcService<${options.proto.name}Service>()`],
+            [/app\.MapGrpcService<OrdersService>\(\)/g, `app.MapGrpcService<${options.proto?.name}Service>()`],
             [/Order/g, options.aggregate.name],
             ...transformations
         ]
@@ -183,7 +183,7 @@ export default class Utils {
             const dest = path.resolve(destination, file
                 .replace(/CodeDesignPlus\.Net\.Microservice/g, namespace)
                 .replace(/Order/g, options.microservice)
-                .replace(/orders.proto/g, options.proto.file)
+                .replace(/orders.proto/g, options.proto?.file)
             );
 
             const content = await fs.readFile(src, { encoding: 'utf-8' });

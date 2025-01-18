@@ -1,9 +1,7 @@
 import path from 'path';
-import Xml from './xml.mjs';
 import AppSettingsGenerator from './appsettings.mjs';
 import ProtoGenerator from './proto.mjs';
 import fsSync from 'fs';
-import fs from 'fs/promises';
 import { glob } from 'glob';
 import { ProtoModel } from '../types/index.mjs';
 
