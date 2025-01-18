@@ -54,8 +54,6 @@ export default class AppSettingsGenerator {
 
         const vault = options.appSettings.vault.toLowerCase();
 
-        console.log(vault);
-
         config = config.replace(/\bvault-keyvalue\b/g, `${vault}-keyvalue`);
         config = config.replace(/\bvault-database\b/g, `${vault}-database`);
         config = config.replace(/\bvault-rabbitmq\b/g, `${vault}-rabbitmq`);

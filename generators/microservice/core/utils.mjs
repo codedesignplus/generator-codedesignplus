@@ -186,9 +186,6 @@ export default class Utils {
                 .replace(/orders.proto/g, options.proto.file)
             );
 
-            console.log('src', src);
-            console.log('dest', dest);
-
             const content = await fs.readFile(src, { encoding: 'utf-8' });
 
             let transformedContent = transformations.reduce((acc, [regex, replacement]) => acc.replace(regex, replacement), content);

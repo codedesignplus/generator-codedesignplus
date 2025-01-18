@@ -102,7 +102,7 @@ export default class MicroserviceGenerator {
 
         for (const key in generatorsMap) {
             const generator = new generatorsMap[key](this._utils, this._generator);
-            console.log(`Generating ${key}...`);
+            
             await generator.generate(options);
         }
 

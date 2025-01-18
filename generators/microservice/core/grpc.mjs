@@ -51,6 +51,10 @@ export default class GrpcGenerator {
         }
         
         this._protoGenerator.generate(options);
+
+        await this._generator.spawnCommand('dotnet', ['sln', `${destination}/${options.solution}.sln`, 'add', `${grpcProjectPathDestination}`, '--solution-folder', 'src/entrypoints']);
+        await this._generator.spawnCommand('dotnet', ['sln', `${destination}/${options.solution}.sln`, 'add', `${grpcTestProjectPathDestination}`, '--solution-folder', 'tests/unit']);
+        await this._generator.spawnCommand('dotnet', ['sln', `${destination}/${options.solution}.sln`, 'add', `${grpcIntegrationTestProjectPathDestination}`, '--solution-folder', 'tests/integration']);
     }
 
     async _generateFiles(templateGrpcProject, ignores, options, grpcProjectPathDestination) {
