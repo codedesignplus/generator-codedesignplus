@@ -13,7 +13,6 @@ env:
   IS_RC: ${{ github.ref == 'refs/heads/rc' }}
   IS_BETA: ${{ github.ref == 'refs/heads/dev' }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
 
 jobs:
   publish:
@@ -82,7 +81,7 @@ jobs:
       run: npm version ${{ steps.git-semver.outputs.new-version }} --no-git-tag-version
 
     - name: Build
-      run: npm publish --provenance --access public
+      run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
