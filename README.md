@@ -1,85 +1,85 @@
-# generator-codedesignplus: Generador de Microservicios con Arquetipo CodeDesignPlus.Net.Microservice
+# 👋 Your Sidekick for CodeDesignPlus.Net Microservices! 🚀
 
-Este generador de Yeoman tiene como objetivo simplificar y estandarizar la creación de microservicios basados en el arquetipo `CodeDesignPlus.Net.Microservice`. Proporciona comandos para generar diferentes componentes clave de un microservicio, siguiendo los principios del diseño basado en el dominio (DDD) y los patrones de arquitectura comúnmente utilizados en la construcción de microservicios.
+Hey there, developer! 👋 Tired of starting your microservices from scratch? Worry no more! The `generator-codedesignplus` is here to simplify and standardize the creation of your microservices based on the `CodeDesignPlus.Net.Microservice` archetype. Imagine having a tool that guides you step by step, generating the structure and key components of your microservice—all ready for you to focus on the business logic! 🤩
 
-## ¿Qué es CodeDesignPlus.Net.Microservice?
+## What's the Buzz About CodeDesignPlus.Net.Microservice? 🤔
 
-El arquetipo `CodeDesignPlus.Net.Microservice` es un punto de partida para la construcción de microservicios .NET modernos. Promueve la separación de responsabilidades, la mantenibilidad y la escalabilidad. Incluye una estructura de proyecto bien definida, configuraciones predeterminadas y bibliotecas de utilidad, permitiendo a los desarrolladores centrarse en la lógica de negocio. Este arquetipo ofrece una base sólida que incorpora buenas prácticas y facilita el desarrollo rápido de microservicios robustos.
+`CodeDesignPlus.Net.Microservice` is like your "starter kit" for building modern .NET microservices. It's a starting point that promotes separation of responsibilities, maintainability, and scalability. Forget tedious configurations, as it includes a well-defined project structure, default settings, and utility libraries. In short, it's the solid foundation you need to develop robust microservices quickly and efficiently. 😎
 
-## Conceptos Clave del Diseño Basado en el Dominio (DDD)
+## A Journey into the World of Domain-Driven Design (DDD) 🗺️
 
-Antes de comenzar, es importante entender algunos conceptos fundamentales de DDD:
+Before you start using the generator, it's important to know some key concepts of DDD:
 
-*   **Dominio:** El área de conocimiento sobre la cual opera el software. Representa el contexto del negocio y sus reglas. En un sistema de e-commerce, el dominio podría ser "la gestión de pedidos" o "la administración de productos".
-*   **Agregado (Aggregate):** Un clúster de entidades que se tratan como una unidad, con una entidad raíz que actúa como punto de acceso. Los agregados son responsables de mantener la consistencia dentro de sus límites. Un ejemplo es un pedido (orden) con sus líneas de pedido, donde la entidad raíz es el pedido.
-*   **Entidad (Entity):** Un objeto con identidad propia, que persiste a través del tiempo y tiene un ciclo de vida definido. Cada entidad tiene un identificador único. En una aplicación de gestión de usuarios, la entidad "Usuario" tendría propiedades como nombre, email, etc.
-*   **Objeto de Valor (Value Object):** Un objeto sin identidad propia, definido por sus atributos. Los objetos de valor son inmutables y se comparan por valor. Ejemplos incluyen un objeto "Dirección" o un objeto "Moneda".
-*   **Evento de Dominio (Domain Event):** Una notificación de algo que ha sucedido en el dominio. Los eventos son inmutables y representan hechos históricos. Un ejemplo podría ser "PedidoCreado" o "UsuarioRegistrado".
-*   **Repositorio (Repository):** Un mecanismo para abstraer el acceso a los datos persistentes. Proporciona una interfaz para interactuar con el almacenamiento de datos, permitiendo a la aplicación trabajar con objetos de dominio sin preocuparse por los detalles de la base de datos.
-*   **Comando (Command):** Una intención de realizar una acción que cambia el estado del sistema. Los comandos suelen ser iniciados por el usuario o por otros servicios. Ejemplos son "CrearPedido", "ActualizarUsuario".
-*   **Query (Consulta):** Una solicitud para obtener información del sistema, sin modificar el estado. Ejemplos son "ObtenerUsuarioPorId" o "BuscarProductosPorNombre".
+*   **Domain:** It's the "world" of your software, the area of knowledge it operates on. Think of the domain as your business context with its own rules. For example, in an e-commerce platform, the domain might be "order management" or "product administration."
+*   **Aggregate:** A cluster of entities treated as a unit, with a root entity acting as the "entry point." Aggregates are responsible for maintaining consistency within their boundaries. An order with its order lines is a good example.
+*   **Entity:** An object with its own identity, persisting over time and having a defined lifecycle. Each entity has a unique identifier. A user with their name, email, and other details is an entity.
+*   **Value Object:** An object without its own identity, defined by its attributes. They are immutable and compared by value. An address or a currency are perfect examples.
+*   **Domain Event:** A notification of something that has happened in the domain. They are immutable and represent historical facts. Examples include "OrderCreated" or "UserRegistered."
+*   **Repository:** A mechanism that "hides" access to persistent data. It provides an interface for your application to interact with the database without worrying about technical details.
+*   **Command:** An intention to perform an action that changes the system's state. These are the orders you give, such as "CreateOrder" or "UpdateUser."
+*   **Query:** A request to get information from the system without modifying anything. For example, "GetUserById" or "FindProductsByName."
 
-**Flags de Configuración**
+## Configuration Flags: Customize Your Microservice! 🛠️
 
-| Flag                       | Descripción                                                                                                                  |
+| Flag                       | Description                                                                                                                  |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `--organization`           | El nombre de la organización. Se utiliza para la organización del código y la gestión de los namespaces.                     |
-| `--microservice`           | El nombre del microservicio.                                                                                               |
-| `--description`            | Una descripción detallada del microservicio que proporciona un contexto claro sobre su propósito.                          |
-| `--contact-name`           | Nombre de la persona de contacto responsable del microservicio.                                                             |
-| `--contact-email`          | Email de contacto de la persona responsable.                                                                                 |
-| `--vault`                  | El nombre del vault para la gestión de secretos y configuraciones.                                                           |
-| `--is-crud`                | Indica que el microservicio será un CRUD, generando la estructura básica para operaciones de gestión de datos.               |
-| `--aggregate`              | El nombre del agregado raíz del microservicio, esencial para la organización del dominio.                                   |
-| `--enable-grpc`            | Habilita la API gRPC para el microservicio, que ofrece un protocolo de comunicación de alto rendimiento.                      |
-| `--enable-async-worker`    | Habilita un worker asíncrono para el manejo de eventos y tareas en segundo plano, mejorando la escalabilidad.              |
-| `--consumer-name`          | Nombre del consumer de eventos, especificando el tipo de evento que consume.                                                 |
-| `--consumer-aggregate`     | Agregado al que pertenece el consumer, lo cual define el contexto del evento.                                                |
-| `--consumer-action`        | Acción a realizar en el consumer cuando recibe un evento.                                                                    |
-| `--domain-events`          | Lista de eventos de dominio separados por comas, fundamentales en la comunicación asíncrona entre microservicios.           |
-| `--entities`               | Lista de entidades separadas por comas.                                                                                     |
-| `--commands`               | Lista de comandos separados por comas, que representan las acciones del usuario o del sistema.                               |
-| `--queries`                | Lista de queries separados por comas, que representan las solicitudes de información al sistema.                             |
-| `--repository`             | El nombre del agregado para el cual se crea o consulta el repositorio.                                                      |
-| `--controller`             | El nombre del controlador.                                                                                                 |
-| `--proto-name`             | El nombre base del archivo `.proto`.                                                                                        |
-| `--valueObjects`           | Lista de nombres de value objects separados por comas.                                                                    |
-| `--dataTransferObject`     | Lista de nombres de DTOs separados por comas.                                                                        |
+| `--organization`           | The name of your organization—the base of your namespace!                                                                  |
+| `--microservice`           | The name of your microservice—the heart of your project!                                                                     |
+| `--description`            | A detailed description—so everyone understands its purpose!                                                                |
+| `--contact-name`           | The name of the contact person—the one who always has the answers!                                                           |
+| `--contact-email`          | The contact email—the way to communicate with the responsible person!                                                        |
+| `--vault`                  | The name of the vault for managing secrets—your microservice's safe!                                                        |
+| `--is-crud`                | Indicates whether your microservice will be a CRUD—the easy path for data management!                                        |
+| `--aggregate`              | The name of the root aggregate—the foundation of your domain!                                                              |
+| `--enable-grpc`            | Enables the gRPC API—communication at the speed of light!                                                                    |
+| `--enable-async-worker`    | Enables an asynchronous worker—for background tasks without stress!                                                          |
+| `--consumer-name`          | The name of the event consumer—the one who always keeps track of everything!                                               |
+| `--consumer-aggregate`     | The aggregate the consumer belongs to—context is key!                                                                      |
+| `--consumer-action`        | The action to be performed by the consumer upon receiving an event—respond to the action!                                     |
+| `--domain-events`          | A comma-separated list of domain events—your microservice's communication!                                                   |
+| `--entities`               | A comma-separated list of entities—objects with identity!                                                                 |
+| `--commands`               | A comma-separated list of commands—actions that change the system!                                                            |
+| `--queries`                | A comma-separated list of queries—requests that fetch information!                                                          |
+| `--repository`             | The name of the aggregate for which the repository is created or consulted—access to your data!                              |
+| `--controller`             | The name of the controller—the entry point to your microservice!                                                             |
+| `--proto-name`             | The base name of the `.proto` file—the definition of your gRPC API!                                                           |
+| `--valueObjects`           | A comma-separated list of value object names—objects without identity!                                                       |
+| `--dataTransferObject`     | A comma-separated list of DTO names—the shape of the data as it travels!                                                     |
 
-**Comandos Disponibles**
+## Available Commands: Your Guide in Development! 🚀
 
-| Comando                                   | Descripción                                                                                                                                     | Opciones Principales                                                                                                                                                                      |
+| Command                                   | Description                                                                                                                                     | Main Options                                                                                                                                                                       |
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `yo codedesignplus:microservice microservice` | Crea la estructura base de un nuevo microservicio. Permite elegir entre un microservicio CRUD o uno custom, cada uno con patrones específicos. | `--organization`, `--microservice`, `--description`, `--contact-name`, `--contact-email`, `--vault`, `--is-crud`, `--aggregate`, `--enable-grpc`, `--enable-async-worker`, `--consumer-name`, `--consumer-aggregate`, `--consumer-action`, `--domain-events`, `--entities`, `--commands`, `--queries` |
-| `yo codedesignplus:microservice aggregate`   | Crea un nuevo agregado dentro de un microservicio existente.                                                                                          | `--organization`, `--microservice`, `--aggregate`                                                                                                                                     |
-| `yo codedesignplus:microservice entity`      | Crea una o más entidades.                                                                                                                        | `--organization`, `--microservice`, `--entities`                                                                                                                                         |
-| `yo codedesignplus:microservice valueObject` | Crea uno o más value objects.                                                                                                                  | `--organization`, `--microservice`, `--valueObjects`                                                                                                                                    |
-| `yo codedesignplus:microservice domainEvent`| Crea uno o más eventos de dominio asociados a un agregado.                                                                                        | `--organization`, `--microservice`, `--aggregate`, `--domainEvents`                                                                                                                       |
-| `yo codedesignplus:microservice repository`  | Crea un repositorio para un agregado específico.                                                                                               | `--organization`, `--microservice`, `--repository`                                                                                                                                        |
-| `yo codedesignplus:microservice controller`  | Crea un controlador para manejar las peticiones entrantes.                                                                                       | `--organization`, `--microservice`, `--controller`                                                                                                                                      |
-| `yo codedesignplus:microservice proto`      | Crea un archivo `.proto` para un servicio gRPC.                                                                                                   | `--organization`, `--microservice`, `--proto-name`                                                                                                                                      |
-| `yo codedesignplus:microservice consumer`   | Crea un consumer que reacciona a eventos de dominio.                                                                                            | `--organization`, `--microservice`, `--consumer-name`, `--consumer-aggregate`, `--consumer-action`                                                                                               |
-| `yo codedesignplus:microservice query`       | Crea una o más consultas (queries) para obtener datos sin modificar el estado.                                                                      | `--organization`, `--microservice`, `--aggregate`, `--repository`, `--queries`                                                                                                              |
-| `yo codedesignplus:microservice command`     | Crea uno o más comandos para realizar acciones que cambian el estado del sistema.                                                               | `--organization`, `--microservice`, `--aggregate`, `--repository`, `--commands`                                                                                                           |
-| `yo codedesignplus:microservice dto`         | Crea uno o más Data Transfer Objects (DTOs) para transferir datos.                                                                               | `--organization`, `--microservice`, `--aggregate`, `--dataTransferObject`                                                                                                        |
-| `yo codedesignplus:microservice grpc`       | Crea un proyecto gRPC.                                                                                                                           | `--organization`, `--microservice`                                                                                                                                                  |
-| `yo codedesignplus:microservice asyncWorker`| Crea un proyecto de worker asíncrono.                                                                                                          | `--organization`, `--microservice`                                                                                                                                                  |
+| `yo codedesignplus:microservice microservice` | Creates the base structure of a new microservice. Choose between a CRUD or custom pattern.                                                   | `--organization`, `--microservice`, `--description`, `--contact-name`, `--contact-email`, `--vault`, `--is-crud`, `--aggregate`, `--enable-grpc`, `--enable-async-worker`, `--consumer-name`, `--consumer-aggregate`, `--consumer-action`, `--domain-events`, `--entities`, `--commands`, `--queries` |
+| `yo codedesignplus:microservice aggregate`   | Creates a new aggregate within an existing microservice.                                                                                          | `--organization`, `--microservice`, `--aggregate`                                                                                                                                      |
+| `yo codedesignplus:microservice entity`      | Creates one or more entities.                                                                                                                        | `--organization`, `--microservice`, `--entities`                                                                                                                                         |
+| `yo codedesignplus:microservice valueObject` | Creates one or more value objects.                                                                                                                  | `--organization`, `--microservice`, `--valueObjects`                                                                                                                                    |
+| `yo codedesignplus:microservice domainEvent`| Creates one or more domain events associated with an aggregate.                                                                                        | `--organization`, `--microservice`, `--aggregate`, `--domainEvents`                                                                                                                       |
+| `yo codedesignplus:microservice repository`  | Creates a repository for a specific aggregate.                                                                                               | `--organization`, `--microservice`, `--repository`                                                                                                                                        |
+| `yo codedesignplus:microservice controller`  | Creates a controller to handle incoming requests.                                                                                       | `--organization`, `--microservice`, `--controller`                                                                                                                                      |
+| `yo codedesignplus:microservice proto`      | Creates a `.proto` file for a gRPC service.                                                                                                   | `--organization`, `--microservice`, `--proto-name`                                                                                                                                      |
+| `yo codedesignplus:microservice consumer`   | Creates a consumer that reacts to domain events.                                                                                            | `--organization`, `--microservice`, `--consumer-name`, `--consumer-aggregate`, `--consumer-action`                                                                                               |
+| `yo codedesignplus:microservice query`       | Creates one or more queries to retrieve data without modifying the state.                                                                     | `--organization`, `--microservice`, `--aggregate`, `--repository`, `--queries`                                                                                                              |
+| `yo codedesignplus:microservice command`     | Creates one or more commands to perform actions that change the system state.                                                               | `--organization`, `--microservice`, `--aggregate`, `--repository`, `--commands`                                                                                                           |
+| `yo codedesignplus:microservice dto`         | Creates one or more Data Transfer Objects (DTOs) to transfer data.                                                                               | `--organization`, `--microservice`, `--aggregate`, `--dataTransferObject`                                                                                                        |
+| `yo codedesignplus:microservice grpc`       | Creates a gRPC project.                                                                                                                           | `--organization`, `--microservice`                                                                                                                                                  |
+| `yo codedesignplus:microservice asyncWorker`| Creates an async worker project.                                                                                                          | `--organization`, `--microservice`                                                                                                                                                  |
 
-### 1. Creación de Microservicio
+### 1. Creating a Microservice: The Beginning of It All!
 
 `yo codedesignplus:microservice microservice`
 
-Este comando es el punto de partida para generar la estructura de un nuevo microservicio. Puedes optar por un microservicio **CRUD** o uno **Custom**, cada uno con sus propias características y patrones de diseño, para adaptarse mejor a las necesidades de tu proyecto.
+This is the starting point for your new microservice. You can choose between a **CRUD** or **Custom** microservice, each with its own magic and design patterns.
 
-#### Microservicio CRUD
+#### CRUD Microservice: Straight to the Point!
 
-Un microservicio CRUD (Create, Read, Update, Delete) se centra en la gestión de datos. Es adecuado para escenarios donde las operaciones principales son crear, leer, actualizar y eliminar entidades. Se enfoca principalmente en la persistencia de datos.
+A CRUD microservice focuses on managing data: create, read, update, and delete. It's ideal for scenarios where data persistence is the main concern.
 
 ```bash
 yo codedesignplus:microservice microservice \
     --organization acme \
     --microservice users \
-    --description "Microservicio para gestionar usuarios de la plataforma." \
+    --description "Microservice to manage platform users." \
     --contact-name "Jane Doe" \
     --contact-email "jane.doe@example.com" \
     --vault vault-acme \
@@ -91,17 +91,18 @@ yo codedesignplus:microservice microservice \
     --consumer-aggregate user \
     --consumer-action send-welcome-email
 ```
-**Nota:** El entrypoint REST se crea por defecto al crear un microservicio.
 
-#### Microservicio Custom
+**Note:** The REST entrypoint is created by default when creating a microservice.
 
-Un microservicio custom se enfoca en la lógica de negocio compleja y eventos, en lugar de simples operaciones CRUD. Es ideal para escenarios donde el flujo de trabajo es más importante que el almacenamiento de datos, permitiendo mayor flexibilidad y personalización.
+#### Custom Microservice: Maximum Flexibility!
+
+A custom microservice is for complex business logic and events, not just CRUD operations. It's perfect if the workflow is more important than data storage.
 
 ```bash
 yo codedesignplus:microservice microservice \
     --organization acme \
     --microservice inventory \
-    --description "Microservicio para gestionar el inventario de productos." \
+    --description "Microservice to manage product inventory." \
     --contact-name "John Smith" \
     --contact-email "john.smith@example.com" \
     --vault vault-acme \
@@ -117,13 +118,13 @@ yo codedesignplus:microservice microservice \
     --queries FindProductById,FindProductsByCategory
 ```
 
-**Nota:** Los flags `--organization`, `--microservice`, `--description`, `--contact-name`, `--contact-email`, y `--vault` son opcionales después de la creación inicial del microservicio, ya que se almacenan en el archivo `archetype.json`.
+**Note:** The flags `--organization`, `--microservice`, `--description`, `--contact-name`, `--contact-email`, and `--vault` are optional after the initial creation, as they are stored in `archetype.json`.
 
-### 2. Creación de un Agregado
+### 2. Creating an Aggregate: Organizing Your Domain!
 
 `yo codedesignplus:microservice aggregate`
 
-Crea un nuevo agregado en el microservicio. Los agregados son bloques de construcción clave en DDD, que garantizan la consistencia de las entidades dentro de sus límites.
+Creates a new aggregate in your microservice. Aggregates are key in DDD—they maintain the consistency of your entities!
 
 ```bash
 yo codedesignplus:microservice aggregate \
@@ -132,11 +133,11 @@ yo codedesignplus:microservice aggregate \
     --aggregate UserProfile
 ```
 
-### 3. Creación de Entidad
+### 3. Creating an Entity: Giving Identity to Your Objects!
 
 `yo codedesignplus:microservice entity`
 
-Crea una o más entidades. Las entidades son objetos con identidad que pueden cambiar de estado a lo largo de su ciclo de vida.
+Creates one or more entities. These are objects with identity that can change state!
 
 ```bash
 yo codedesignplus:microservice entity \
@@ -145,11 +146,11 @@ yo codedesignplus:microservice entity \
     --entities Product,Category
 ```
 
-### 4. Creación de Value Object
+### 4. Creating a Value Object: Objects Without Identity!
 
 `yo codedesignplus:microservice valueObject`
 
-Crea uno o más objetos de valor. Estos son objetos inmutables definidos por sus atributos y no tienen identidad propia.
+Creates one or more value objects. They are immutable and defined by their attributes!
 
 ```bash
 yo codedesignplus:microservice valueObject \
@@ -158,11 +159,11 @@ yo codedesignplus:microservice valueObject \
     --valueObjects Email,Address
 ```
 
-### 5. Creación de Evento de Dominio
+### 5. Creating a Domain Event: Communicating What Happens!
 
 `yo codedesignplus:microservice domainEvent`
 
-Crea uno o más eventos de dominio, que son representaciones de algo que ha ocurrido en el dominio.
+Creates one or more domain events. These are representations of something that happened in your domain!
 
 ```bash
 yo codedesignplus:microservice domainEvent \
@@ -172,11 +173,11 @@ yo codedesignplus:microservice domainEvent \
     --domainEvents OrderCreated,OrderShipped
 ```
 
-### 6. Creación de Repositorio
+### 6. Creating a Repository: Access to Your Data!
 
 `yo codedesignplus:microservice repository`
 
-Crea un repositorio para un agregado específico, proporcionando una interfaz para acceder a los datos persistentes del agregado.
+Creates a repository for a specific aggregate. It's the interface to access persistent data!
 
 ```bash
 yo codedesignplus:microservice repository \
@@ -185,11 +186,11 @@ yo codedesignplus:microservice repository \
     --repository Product
 ```
 
-### 7. Creación de Controlador
+### 7. Creating a Controller: Managing Requests!
 
 `yo codedesignplus:microservice controller`
 
-Crea un controlador que gestiona las peticiones entrantes (HTTP o gRPC) para el microservicio.
+Creates a controller to manage incoming requests (HTTP or gRPC).
 
 ```bash
 yo codedesignplus:microservice controller \
@@ -198,11 +199,11 @@ yo codedesignplus:microservice controller \
     --controller UserProfileController
 ```
 
-### 8. Creación de Proto
+### 8. Creating a Proto: Defining Your gRPC API!
 
 `yo codedesignplus:microservice proto`
 
-Crea un archivo `.proto` para un servicio gRPC, que define los mensajes y servicios para la comunicación.
+Creates a `.proto` file for a gRPC service. It defines the messages and services for communication!
 
 ```bash
 yo codedesignplus:microservice proto \
@@ -211,11 +212,11 @@ yo codedesignplus:microservice proto \
     --proto-name ProductService
 ```
 
-### 9. Creación de Consumer de Eventos
+### 9. Creating an Event Consumer: Reacting to Changes!
 
 `yo codedesignplus:microservice consumer`
 
-Crea un consumer que reacciona a eventos publicados por otros microservicios, realizando una acción específica.
+Creates a consumer that reacts to events published by other microservices.
 
 ```bash
 yo codedesignplus:microservice consumer \
@@ -226,11 +227,11 @@ yo codedesignplus:microservice consumer \
     --consumer-action send-order-confirmation
 ```
 
-### 10. Creación de Query
+### 10. Creating a Query: Getting Information Without Changing Anything!
 
 `yo codedesignplus:microservice query`
 
-Crea una o más queries para obtener información del sistema, sin modificar su estado.
+Creates one or more queries to get information from the system without modifying its state!
 
 ```bash
 yo codedesignplus:microservice query \
@@ -241,11 +242,11 @@ yo codedesignplus:microservice query \
     --queries FindProductById,FindProductsByName
 ```
 
-### 11. Creación de Comando
+### 11. Creating a Command: Changing the System State!
 
 `yo codedesignplus:microservice command`
 
-Crea uno o más comandos para realizar acciones que cambian el estado del sistema.
+Creates one or more commands to perform actions that change the system's state.
 
 ```bash
 yo codedesignplus:microservice command \
@@ -256,11 +257,11 @@ yo codedesignplus:microservice command \
     --commands CreateOrder,CancelOrder
 ```
 
-### 12. Creación de Data Transfer Objects (DTOs)
+### 12. Creating Data Transfer Objects (DTOs): The Traveling Data!
 
 `yo codedesignplus:microservice dto`
 
-Crea uno o más Data Transfer Objects (DTOs) para transferir datos entre capas o microservicios, permitiendo definir la forma de los datos según las necesidades del consumidor.
+Creates one or more DTOs to transfer data between layers or microservices.
 
 ```bash
 yo codedesignplus:microservice dto \
@@ -270,11 +271,11 @@ yo codedesignplus:microservice dto \
     --dataTransferObject OrderDto,OrderSummaryDto
 ```
 
-### 13. Creación de Proyecto gRPC
+### 13. Creating a gRPC Project: Adding Fast Communication!
 
 `yo codedesignplus:microservice grpc`
 
-Crea un proyecto gRPC dentro de la estructura de un microservicio existente, en caso de que no se haya creado inicialmente.
+Creates a gRPC project within your microservice if you didn't do it initially!
 
 ```bash
 yo codedesignplus:microservice grpc \
@@ -282,30 +283,172 @@ yo codedesignplus:microservice grpc \
     --microservice products
 ```
 
-### 14. Creación de Proyecto Async Worker
+### 14. Creating an Async Worker Project: Background Tasks!
 
 `yo codedesignplus:microservice asyncWorker`
 
-Crea un proyecto de worker asíncrono dentro de la estructura de un microservicio existente, en caso de que no se haya creado inicialmente.
+Creates an asynchronous worker project within your microservice for tasks that don't need to wait!
 
 ```bash
 yo codedesignplus:microservice asyncWorker \
     --organization acme \
     --microservice notifications
 ```
-## Uso
 
-1.  **Instala Yeoman y el generador:**
+## Internal Structure of the Generator and Contributions 🤝
+
+### How Does This Generator Work Internally? 🤔
+
+The `generator-codedesignplus` is built using Yeoman, a tool for creating code generators. Here's a summary of its structure:
+
+1.  **Entry Point (`index.mjs`):**
+    *   The "brain" of the generator.
+    *   Imports the `Core`, `Utils`, and `DotNet` classes from their respective files.
+    *   Retrieves command-line arguments (template, organization, microservice, etc.).
+    *   Executes methods to generate files, depending on the resource (aggregate, command, entity, etc.).
+
+2.  **`Core` Class (`core/core.mjs`):**
+    *   Manages arguments, options, and initial questions.
+    *   Maps generators to resources (aggregate, command, entity, etc.).
+    *   Displays help in the console.
+    *   Decides which generator to use, based on the template option.
+
+3.  **`Utils` Class (`core/utils.mjs`):**
+    *   Utility functions for the generator.
+    *   Reads and writes configuration information (`archetype.json`).
+    *   Transforms files (replaces names, namespaces, etc.).
+    *   Manages namespaces, adds `usings`, and generates files with `generateFiles`.
+
+4.  **`DotNet` Class (`core/dotnet.mjs`):**
+    *   Logic to perform operations related to .NET.
+    *   Removes projects from a microservice (executed when creating the microservice).
+
+5.  **Specific Generators (`core/*.mjs`):**
+    *   Generators for components (e.g., `aggregate.mjs`, `command.mjs`).
+    *   Define specific arguments and options.
+    *   Implement logic to generate files (using templates and `Utils`).
+
+6.  **Templates (`templates/`):**
+    *   Base files for generating code.
+    *   Placeholders (e.g., `CodeDesignPlus.Net.Microservice`, `Order`) are dynamically replaced.
+    *   The structure reflects a .NET project with the `CodeDesignPlus.Net.Microservice` archetype.
+
+7. **Types (`types/`):**
+   *  Definitions of classes/interfaces for data type management within the generator.
+
+8.  **`package.json`:**
+    *   Project dependencies, development scripts, and package information.
+    *   Includes `yeoman-generator`, `find-up`, etc.
+
+### How to Contribute to Development? 🤝
+
+We love collaboration! If you want to contribute, follow these steps:
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/codedesignplus/generator-codedesignplus.git
+    cd generator-codedesignplus
+    ```
+
+2.  **Install the dependencies:**
+
+    ```bash
+    npm install
+    ```
+
+3.  **Make your changes:**
+    *   Create a separate branch.
+    *   Modify files in `generators`, `templates`, and `types`.
+    *   Understand the logic (`index.mjs`, `core/core.mjs`, `core/utils.mjs`).
+    *   If you add templates, update the generators' logic.
+
+4.  **Run tests:**
+    *   Run tests with `npm test`.
+    *   Create or modify tests as needed.
+
+5. **Ensure your code follows project style:**
+    * Execute `npm run lint`, `npm run format` or `npm run prettier`
+
+6.  **Create a Pull Request:**
+    *   Upload your changes to your fork.
+    *   Create a pull request to the `main` branch.
+    *   Describe your changes clearly.
+
+### Detailed File Structure 📁
+
+Here's a summary of the generator's file structure:
+
+```
+generator-codedesignplus/
+├── generators/                   # Generator logic
+│   ├── core/                     # Central logic
+│   │   ├── aggregate.mjs         # Aggregate generator
+│   │   ├── appsettings.mjs        # Appsettings generator
+│   │   ├── asyncWorker.mjs      # Async Worker generator
+│   │   ├── command.mjs           # Command generator
+│   │   ├── consumer.mjs        # Consumer generator
+│   │   ├── controller.mjs        # Controller generator
+│   │   ├── core.mjs              # Core class
+│   │   ├── dataTransferObject.mjs # DTO generator
+│   │   ├── domainEvent.mjs       # Domain event generator
+│   │   ├── dotnet.mjs            # Utilities for .Net
+│   │   ├── entity.mjs            # Entity generator
+│   │   ├── errors.mjs             # Errors generator
+│   │   ├── grpc.mjs               # gRPC generator
+│   │   ├── microservice.mjs       # Microservice generator
+│   │   ├── proto.mjs             # .proto file generator
+│   │   ├── query.mjs             # Query generator
+│   │   ├── repository.mjs        # Repository generator
+│   │   ├── utils.mjs             # Utilities class
+│   │   ├── valueObject.mjs       # Value object generator
+│   │   └── xml.mjs               # XML Utilities
+│   ├── index.mjs                # Entry point
+│   ├── templates/               # File templates
+│   │   ├── aggregate/           # Aggregate templates
+│   │   ├── command/             # Command templates
+│   │   ├── consumer/             # Consumer templates
+│   │   ├── controller/          # Controller templates
+│   │   ├── data-transfer-object/ # DTO templates
+│   │   ├── domain-event/        # Domain event templates
+│   │   ├── entity/              # Entity templates
+│   │   ├── errors/              # Errors templates
+│   │   ├── grpc/               # gRPC templates
+│   │   ├── microservice/        # Microservice templates
+│   │   ├── others/              # Other templates
+│   │   ├── query/               # Query templates
+│   │   ├── repository/          # Repository templates
+│   │   └── value-object/        # Value object templates
+│   └── types/               # Type definitions
+│       ├── aggregate.mjs
+│       ├── appsettings.mjs
+│       ├── base.mjs
+│       ├── command.mjs
+│       ├── consumer.mjs
+│       ├── controller.mjs
+│       ├── dataTransferObject.mjs
+│       ├── domainEvents.mjs
+│       ├── entity.mjs
+│       ├── index.mjs
+│       ├── proto.mjs
+│       ├── query.mjs
+│       ├── repository.mjs
+│       └── valueObject.mjs
+├── package.json                # Project configuration
+└── README.md                   # This file
+```
+
+## Usage 🚀
+
+1.  **Install Yeoman and the generator:**
 
     ```bash
     npm install -g yo
     npm install -g generator-codedesignplus
     ```
 
-2.  **Ejecuta los comandos:**
+2.  **Run the commands:**
 
-    Ve a la carpeta donde quieres generar el microservicio y ejecuta uno de los comandos de `yo codedesignplus:microservice` detallados anteriormente.
+    Go to the folder where you want to generate the microservice and run one of the `yo codedesignplus:microservice` commands shown above.
 
-## Contribuciones
-
-¡Las contribuciones son bienvenidas! Si encuentras errores o quieres añadir nuevas funcionalidades, por favor crea un Pull Request en el repositorio del generador.
+And that's it! We hope this generator is a great help to you on your journey as a microservice developer. If you have any questions, don't hesitate to contact us or create an issue in the repository! 😊
