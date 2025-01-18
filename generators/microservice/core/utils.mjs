@@ -97,7 +97,6 @@ export default class Utils {
             "valueObjects": ValueObjectModel.from(answers.valueObjects),
             "commands": CommandHandlerModel.from(answers.commands),
             "queries": QueryHandlerModel.from(answers.queries),
-            "enableRest": answers.enableRest,
             "enableGrpc": answers.enableGrpc,
             "enableAsyncWorker": answers.enableAsyncWorker,
             "consumer": answers.enableAsyncWorker ? ConsumerModel.from(answers.consumer) : answers.consumer,

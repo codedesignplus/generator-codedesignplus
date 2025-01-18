@@ -14,9 +14,6 @@ export default class DotNet {
             if (!options.enableGrpc)
                 this._removeProject('gRpc');
 
-            if (!options.enableRest)
-                this._removeProject('Rest');
-
             if (!options.enableAsyncWorker)
                 this._removeProject('AsyncWorker');
 

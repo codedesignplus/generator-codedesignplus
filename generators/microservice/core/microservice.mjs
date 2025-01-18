@@ -31,7 +31,6 @@ export default class MicroserviceGenerator {
 
     getArguments() {
         this._generator.option('is-crud', { type: Boolean, alias: 'ic', required: false, description: 'Indicates that the microservice will be a CRUD, generating the basic structure for data management operations.' });
-        this._generator.option('enable-rest', { type: Boolean, alias: 'er', required: true, description: 'Enables the REST API for the microservice, allowing communication through HTTP requests.' });
         this._generator.option('enable-grpc', { type: Boolean, alias: 'eg', required: true, description: 'Enables the gRPC API for the microservice, which offers a high-performance communication protocol.' });
         this._generator.option('enable-async-worker', { type: Boolean, alias: 'eaw', required: true, description: 'Enables an asynchronous worker for handling background tasks and events, improving scalability.' });
         this._generator.option('aggregate', { type: String, alias: 'a', required: true, description: 'The name of the microservice\'s root aggregate, essential for domain organization.' });

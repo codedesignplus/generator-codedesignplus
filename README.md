@@ -19,10 +19,7 @@ Antes de comenzar, es importante entender algunos conceptos fundamentales de DDD
 *   **Comando (Command):** Una intención de realizar una acción que cambia el estado del sistema. Los comandos suelen ser iniciados por el usuario o por otros servicios. Ejemplos son "CrearPedido", "ActualizarUsuario".
 *   **Query (Consulta):** Una solicitud para obtener información del sistema, sin modificar el estado. Ejemplos son "ObtenerUsuarioPorId" o "BuscarProductosPorNombre".
 
-
-Okay, I will update the tables to include the `dto` command and its corresponding flag.
-
-**Updated Flags de Configuración Table**
+**Flags de Configuración**
 
 | Flag                       | Descripción                                                                                                                  |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -34,7 +31,6 @@ Okay, I will update the tables to include the `dto` command and its correspondin
 | `--vault`                  | El nombre del vault para la gestión de secretos y configuraciones.                                                           |
 | `--is-crud`                | Indica que el microservicio será un CRUD, generando la estructura básica para operaciones de gestión de datos.               |
 | `--aggregate`              | El nombre del agregado raíz del microservicio, esencial para la organización del dominio.                                   |
-| `--enable-rest`            | Habilita la API REST para el microservicio, permitiendo la comunicación a través de peticiones HTTP.                         |
 | `--enable-grpc`            | Habilita la API gRPC para el microservicio, que ofrece un protocolo de comunicación de alto rendimiento.                      |
 | `--enable-async-worker`    | Habilita un worker asíncrono para el manejo de eventos y tareas en segundo plano, mejorando la escalabilidad.              |
 | `--consumer-name`          | Nombre del consumer de eventos, especificando el tipo de evento que consume.                                                 |
@@ -50,11 +46,11 @@ Okay, I will update the tables to include the `dto` command and its correspondin
 | `--valueObjects`           | Lista de nombres de value objects separados por comas.                                                                    |
 | `--dataTransferObject`     | Lista de nombres de DTOs separados por comas.                                                                        |
 
-**Updated Comandos Disponibles Table**
+**Comandos Disponibles**
 
 | Comando                                   | Descripción                                                                                                                                     | Opciones Principales                                                                                                                                                                      |
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `yo codedesignplus:microservice microservice` | Crea la estructura base de un nuevo microservicio. Permite elegir entre un microservicio CRUD o uno custom, cada uno con patrones específicos. | `--organization`, `--microservice`, `--description`, `--contact-name`, `--contact-email`, `--vault`, `--is-crud`, `--aggregate`, `--enable-rest`, `--enable-grpc`, `--enable-async-worker`, `--consumer-name`, `--consumer-aggregate`, `--consumer-action`, `--domain-events`, `--entities`, `--commands`, `--queries` |
+| `yo codedesignplus:microservice microservice` | Crea la estructura base de un nuevo microservicio. Permite elegir entre un microservicio CRUD o uno custom, cada uno con patrones específicos. | `--organization`, `--microservice`, `--description`, `--contact-name`, `--contact-email`, `--vault`, `--is-crud`, `--aggregate`, `--enable-grpc`, `--enable-async-worker`, `--consumer-name`, `--consumer-aggregate`, `--consumer-action`, `--domain-events`, `--entities`, `--commands`, `--queries` |
 | `yo codedesignplus:microservice aggregate`   | Crea un nuevo agregado dentro de un microservicio existente.                                                                                          | `--organization`, `--microservice`, `--aggregate`                                                                                                                                     |
 | `yo codedesignplus:microservice entity`      | Crea una o más entidades.                                                                                                                        | `--organization`, `--microservice`, `--entities`                                                                                                                                         |
 | `yo codedesignplus:microservice valueObject` | Crea uno o más value objects.                                                                                                                  | `--organization`, `--microservice`, `--valueObjects`                                                                                                                                    |
@@ -66,8 +62,8 @@ Okay, I will update the tables to include the `dto` command and its correspondin
 | `yo codedesignplus:microservice query`       | Crea una o más consultas (queries) para obtener datos sin modificar el estado.                                                                      | `--organization`, `--microservice`, `--aggregate`, `--repository`, `--queries`                                                                                                              |
 | `yo codedesignplus:microservice command`     | Crea uno o más comandos para realizar acciones que cambian el estado del sistema.                                                               | `--organization`, `--microservice`, `--aggregate`, `--repository`, `--commands`                                                                                                           |
 | `yo codedesignplus:microservice dto`         | Crea uno o más Data Transfer Objects (DTOs) para transferir datos.                                                                               | `--organization`, `--microservice`, `--aggregate`, `--dataTransferObject`                                                                                                        |
-
-
+| `yo codedesignplus:microservice grpc`       | Crea un proyecto gRPC.                                                                                                                           | `--organization`, `--microservice`                                                                                                                                                  |
+| `yo codedesignplus:microservice asyncWorker`| Crea un proyecto de worker asíncrono.                                                                                                          | `--organization`, `--microservice`                                                                                                                                                  |
 
 ### 1. Creación de Microservicio
 
@@ -89,13 +85,13 @@ yo codedesignplus:microservice microservice \
     --vault vault-acme \
     --is-crud \
     --aggregate user \
-    --enable-rest \
     --enable-grpc \
     --enable-async-worker \
     --consumer-name userRegistered \
     --consumer-aggregate user \
     --consumer-action send-welcome-email
 ```
+**Nota:** El entrypoint REST se crea por defecto al crear un microservicio.
 
 #### Microservicio Custom
 
@@ -110,7 +106,6 @@ yo codedesignplus:microservice microservice \
     --contact-email "john.smith@example.com" \
     --vault vault-acme \
     --aggregate product \
-    --enable-rest \
     --enable-grpc \
     --enable-async-worker \
     --consumer-name orderCreated \
@@ -121,6 +116,8 @@ yo codedesignplus:microservice microservice \
     --commands CreateProduct,UpdateProduct,RemoveProduct \
     --queries FindProductById,FindProductsByCategory
 ```
+
+**Nota:** Los flags `--organization`, `--microservice`, `--description`, `--contact-name`, `--contact-email`, y `--vault` son opcionales después de la creación inicial del microservicio, ya que se almacenan en el archivo `archetype.json`.
 
 ### 2. Creación de un Agregado
 
@@ -273,6 +270,29 @@ yo codedesignplus:microservice dto \
     --dataTransferObject OrderDto,OrderSummaryDto
 ```
 
+### 13. Creación de Proyecto gRPC
+
+`yo codedesignplus:microservice grpc`
+
+Crea un proyecto gRPC dentro de la estructura de un microservicio existente, en caso de que no se haya creado inicialmente.
+
+```bash
+yo codedesignplus:microservice grpc \
+    --organization acme \
+    --microservice products
+```
+
+### 14. Creación de Proyecto Async Worker
+
+`yo codedesignplus:microservice asyncWorker`
+
+Crea un proyecto de worker asíncrono dentro de la estructura de un microservicio existente, en caso de que no se haya creado inicialmente.
+
+```bash
+yo codedesignplus:microservice asyncWorker \
+    --organization acme \
+    --microservice notifications
+```
 ## Uso
 
 1.  **Instala Yeoman y el generador:**

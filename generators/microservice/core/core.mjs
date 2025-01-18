@@ -42,7 +42,8 @@ export default class Core {
                 ' - yo codedesignplus:microservice query         | Creates one or more queries to retrieve data.\n' +
                 ' - yo codedesignplus:microservice command       | Creates one or more commands to perform actions that change the system state.\n' +
                 ' - yo codedesignplus:microservice dto           | Creates one or more Data Transfer Objects (DTOs) to transfer data.\n\n' +
-                ' - yo codedesignplus:microservice grpc          | Creates a gRPC service.\n\n' +
+                ' - yo codedesignplus:microservice grpc          | Creates a gRPC project.\n' +
+                ' - yo codedesignplus:microservice asyncWorker   | Creates an async worker project.\n\n' +
                 'Usage:\n\n' +
                 'To use a command, run `yo codedesignplus:microservice <command> --option1 <value> --option2 <value>`.\n\n' +
                 'For more details on each command and its options, use the `--help` flag after the specific command (e.g., `yo codedesignplus:microservice microservice --help`).\n\n',
