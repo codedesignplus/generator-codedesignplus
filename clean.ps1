@@ -13,6 +13,7 @@ function Remove-Directories {
     }
 }
 
+# Remove files from a directory
 function Remove-Files {
     param (
         [string]$Path,
