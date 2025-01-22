@@ -1,3 +1,4 @@
+# Remove directories and files from a solution directory
 function Remove-Directories {
     param (
         [string]$Path,
@@ -12,6 +13,7 @@ function Remove-Directories {
     }
 }
 
+# Remove files from a directory
 function Remove-Files {
     param (
         [string]$Path,
