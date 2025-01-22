@@ -49,6 +49,7 @@ public class OrderRepositoryTest
     {
         // Arrange
         var idOrder = Guid.NewGuid();
+        var tenant = Guid.NewGuid();
         var idProduct = Guid.NewGuid();
         var name = "Product Name";
         var description = "Product Description";
@@ -61,15 +62,14 @@ public class OrderRepositoryTest
             .ReturnsAsync(It.IsAny<UpdateResult>());
 
         // Act
-        await orderRepository.AddProductToOrderAsync(new AddProductToOrderParams()
+        await orderRepository.AddProductToOrderAsync(idOrder, tenant, new AddProductToOrderParams()
         {
-            Id = idOrder,
-            IdProduct = idProduct,
+            Id = idProduct,
             Name = name,
             Description = description,
             Price = price,
             Quantity = quantity,
-            UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            UpdatedAt = SystemClock.Instance.GetCurrentInstant(),
             UpdateBy = Guid.NewGuid()
         }, cancellationToken);
 
@@ -82,9 +82,10 @@ public class OrderRepositoryTest
     {
         // Arrange
         var idOrder = Guid.NewGuid();
+        var tenant = Guid.NewGuid();
         var reason = "Reason for cancellation";
         var cancellationToken = CancellationToken.None;
-        var cancelledAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var cancelledAt = SystemClock.Instance.GetCurrentInstant();
 
         collectionMock
             .Setup(x => x.UpdateOneAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<UpdateDefinition<OrderAggregate>>(), It.IsAny<UpdateOptions>(), cancellationToken))
@@ -97,9 +98,9 @@ public class OrderRepositoryTest
             OrderStatus = OrderStatus.Cancelled,
             Reason = reason,
             CancelledAt = cancelledAt,
-            UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            UpdatedAt = SystemClock.Instance.GetCurrentInstant(),
             UpdateBy = Guid.NewGuid()
-        }, cancellationToken);
+        }, tenant, cancellationToken);
 
         // Assert
         collectionMock.Verify(x => x.UpdateOneAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<UpdateDefinition<OrderAggregate>>(), It.IsAny<UpdateOptions>(), cancellationToken), Times.Once);
@@ -110,8 +111,9 @@ public class OrderRepositoryTest
     {
         // Arrange
         var idOrder = Guid.NewGuid();
+        var tenant = Guid.NewGuid();
         var cancellationToken = CancellationToken.None;
-        var completedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var completedAt = SystemClock.Instance.GetCurrentInstant();
 
         collectionMock
             .Setup(x => x.UpdateOneAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<UpdateDefinition<OrderAggregate>>(), It.IsAny<UpdateOptions>(), cancellationToken))
@@ -123,66 +125,12 @@ public class OrderRepositoryTest
             Id = idOrder,
             CompletedAt = completedAt,
             OrderStatus = OrderStatus.Completed,
-            UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            UpdatedAt = SystemClock.Instance.GetCurrentInstant(),
             UpdateBy = Guid.NewGuid()
-        }, cancellationToken);
+        }, tenant, cancellationToken);
 
         // Assert
         collectionMock.Verify(x => x.UpdateOneAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<UpdateDefinition<OrderAggregate>>(), It.IsAny<UpdateOptions>(), cancellationToken), Times.Once);
-    }
-
-    [Fact]
-    public async Task CreateOrderAsync_Should_Create_Order()
-    {
-        // Arrange
-        var client = ClientValueObject.Create(Guid.NewGuid(), "CodeDesignPlus", "1234567890", "CC");
-        var address = AddressValueObject.Create("Colombia", "Bogota", "Bogota", "Calle 123", 123456);
-        var order = OrderAggregate.Create(Guid.NewGuid(), client, address, Guid.NewGuid(), Guid.NewGuid());
-        var cancellationToken = CancellationToken.None;
-
-        collectionMock
-            .Setup(x => x.InsertOneAsync(It.IsAny<OrderAggregate>(), It.IsAny<InsertOneOptions>(), cancellationToken));
-
-        // Act
-        await orderRepository.CreateOrderAsync(order, cancellationToken);
-
-        // Assert
-        collectionMock.Verify(x => x.InsertOneAsync(It.IsAny<OrderAggregate>(), It.IsAny<InsertOneOptions>(), cancellationToken), Times.Once);
-    }
-
-    [Fact]
-    public async Task FindAsync_Should_Find_Order()
-    {
-        // Arrange
-        var id = Guid.NewGuid();
-        var cancellationToken = CancellationToken.None;
-
-        collectionMock
-            .Setup(x => x.FindAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<FindOptions<OrderAggregate, OrderAggregate>>(), cancellationToken))
-            .ReturnsAsync(new Mock<IAsyncCursor<OrderAggregate>>().Object);
-
-        // Act
-        await orderRepository.FindAsync(id, cancellationToken);
-
-        // Assert
-        collectionMock.Verify(x => x.FindAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<FindOptions<OrderAggregate, OrderAggregate>>(), cancellationToken), Times.Once);
-    }
-
-    [Fact]
-    public async Task GetAllOrdersAsync_Should_Get_All_Orders()
-    {
-        // Arrange
-        var cancellationToken = CancellationToken.None;
-
-        collectionMock
-            .Setup(x => x.FindAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<FindOptions<OrderAggregate, OrderAggregate>>(), cancellationToken))
-            .ReturnsAsync(new Mock<IAsyncCursor<OrderAggregate>>().Object);
-
-        // Act
-        await orderRepository.GetAllOrdersAsync(cancellationToken);
-
-        // Assert
-        collectionMock.Verify(x => x.FindAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<FindOptions<OrderAggregate, OrderAggregate>>(), cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -190,6 +138,7 @@ public class OrderRepositoryTest
     {
         // Arrange
         var idOrder = Guid.NewGuid();
+        var tenant = Guid.NewGuid();
         var idProduct = Guid.NewGuid();
         var cancellationToken = CancellationToken.None;
 
@@ -198,36 +147,16 @@ public class OrderRepositoryTest
             .ReturnsAsync(It.IsAny<UpdateResult>());
 
         // Act
-        await orderRepository.RemoveProductFromOrderAsync( new RemoveProductFromOrderParams()
+        await orderRepository.RemoveProductFromOrderAsync(new RemoveProductFromOrderParams()
         {
             Id = idOrder,
             IdProduct = idProduct,
-            UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            UpdatedAt = SystemClock.Instance.GetCurrentInstant(),
             UpdateBy = Guid.NewGuid()
-        }, cancellationToken);
+        }, tenant, cancellationToken);
 
         // Assert
         collectionMock.Verify(x => x.UpdateOneAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<UpdateDefinition<OrderAggregate>>(), It.IsAny<UpdateOptions>(), cancellationToken), Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdateOrderAsync_Should_Update_Order()
-    {
-        // Arrange
-        var client = ClientValueObject.Create(Guid.NewGuid(), "CodeDesignPlus", "1234567890", "CC");
-        var address = AddressValueObject.Create("Colombia", "Bogota", "Bogota", "Calle 123", 123456);
-        var order = OrderAggregate.Create(Guid.NewGuid(), client, address, Guid.NewGuid(), Guid.NewGuid());
-        var cancellationToken = CancellationToken.None;
-
-        collectionMock
-            .Setup(x => x.ReplaceOneAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<OrderAggregate>(), It.IsAny<ReplaceOptions>(), cancellationToken))
-            .ReturnsAsync(It.IsAny<ReplaceOneResult>());
-
-        // Act
-        await orderRepository.UpdateOrderAsync(order, cancellationToken);
-
-        // Assert
-        collectionMock.Verify(x => x.ReplaceOneAsync(It.IsAny<FilterDefinition<OrderAggregate>>(), It.IsAny<OrderAggregate>(), It.IsAny<ReplaceOptions>(), cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -235,6 +164,7 @@ public class OrderRepositoryTest
     {
         // Arrange
         var idOrder = Guid.NewGuid();
+        var tenant = Guid.NewGuid();
         var productId = Guid.NewGuid();
         var newQuantity = 10;
         var cancellationToken = CancellationToken.None;
@@ -244,12 +174,11 @@ public class OrderRepositoryTest
             .ReturnsAsync(It.IsAny<UpdateResult>());
 
         // Act
-        await orderRepository.UpdateQuantityProductAsync(new UpdateQuantityProductParams()
+        await orderRepository.UpdateQuantityProductAsync(idOrder, tenant, new UpdateQuantityProductParams()
         {
-            Id = idOrder,
-            ProductId = productId,
+            Id = productId,
             NewQuantity = newQuantity,
-            UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            UpdatedAt = SystemClock.Instance.GetCurrentInstant(),
             UpdateBy = Guid.NewGuid()
         }, cancellationToken);
 
