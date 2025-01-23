@@ -36,8 +36,8 @@ export default class Utils {
 
     async getOptions(answers) {
         const pathJson = path.join(this._generator.destinationRoot(), 'archetype.json');
-
-        if (!fsSync.existsSync(pathJson))
+        
+        if (this._generator.options.template != 'microservice' && !fsSync.existsSync(pathJson))
             throw new Error('⚠️ File archetype.json not found, using the answers provided.');
 
         const archetypeValues = this._generator.fs.readJSON(pathJson);
