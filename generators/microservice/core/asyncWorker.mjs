@@ -1,5 +1,6 @@
 import path from 'path';
 import AppSettingsGenerator from './appsettings.mjs';
+import ConsumerGenerator from './consumer.mjs';
 import fsSync from 'fs';
 import fs from 'fs/promises';
 import { glob } from 'glob';
@@ -8,6 +9,7 @@ export default class AsyncWorkerGenerator {
 
     constructor(utils, generator) {
         this._appsettings = new AppSettingsGenerator(utils, generator);
+        this._consumerGenerator = new ConsumerGenerator(utils, generator);
 
         this._utils = utils;
         this._generator = generator;
@@ -44,6 +46,9 @@ export default class AsyncWorkerGenerator {
 
             await this._generateFiles(templateAsyncWorkerProject, ignores, options, asyncWorkerIntegrationTestProjectPathDestination);
         }
+
+        
+        this._consumerGenerator.generate(options);
         
         await this._generator.spawnCommand('dotnet', ['sln', `${destination}/${options.solution}.sln`, 'add', `${asyncWorkerProjectPathDestination}`, '--solution-folder', 'src/entrypoints']);
         await this._generator.spawnCommand('dotnet', ['sln', `${destination}/${options.solution}.sln`, 'add', `${asyncWorkerTestProjectPathDestination}`, '--solution-folder', 'tests/unit']);
@@ -60,27 +65,15 @@ export default class AsyncWorkerGenerator {
     }
 
     getArguments() {
-
+        this._consumerGenerator.getArguments();
     }
 
     _getIgnores() {
-        const ignores = ['**/bin/**', '**/obj/**'];
-
-        const items = {
-            entryPoints_asyncWorker: [
-                'src/entrypoints/CodeDesignPlus.Net.Microservice.AsyncWorker/Consumers/**'
-            ],
-            integrationTest_asyncWorker: [
-                'tests/integration/CodeDesignPlus.Net.Microservice.AsyncWorker.Test/Consumers/**'
-            ],
-            unitTest_asyncWorker: [
-                'tests/unit/CodeDesignPlus.Net.Microservice.AsyncWorker.Test/Consumers/*.cs',
-            ]
-        }
-
-        for (const key in items) {
-            ignores.push(...items[key]);
-        }
+        const ignores = [
+            '**/bin/**', 
+            '**/obj/**',  
+            '**/Consumers/**'
+        ];
 
         return ignores;
     }

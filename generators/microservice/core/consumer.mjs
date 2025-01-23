@@ -51,14 +51,15 @@ export default class ConsumerGenerator {
 
             await this._commandGenerator.generate(options);
 
-            await this._domainEventGenerator.generate(options);
+            await this._domainEventGenerator.generate(options, options.consumer.microservice);
         }
     }
 
     getArguments() {
         this._generator.option('consumer-name', { type: String, required: true, description: 'Name of the event consumer, specifying the type of event it consumes.' });
         this._generator.option('consumer-aggregate', { type: String, required: true, description: 'Aggregate to which the consumer belongs, defining the context of the event.' });
-        this._generator.option('consumer-action', { type: String, required: true, description: 'Action to be performed in the consumer when it receives an event.' });
+        this._generator.option('consumer-action', { type: String, required: true, description: 'Action to be performed in the consumer when it receives an event.' });        
+        this._generator.option('consumer-microservice', { type: String, required: true, description: 'Name of the microservice that publishes the event.' });
 
         this._generator.options = {
             ...this._generator.options,
@@ -66,6 +67,7 @@ export default class ConsumerGenerator {
                 aggregate: this._generator.options['consumerAggregate'],
                 consumer: this._generator.options['consumerName'],
                 action: this._generator.options['consumerAction'],
+                microservice: this._generator.options['consumerMicroservice']
             },
             enableAsyncWorker: this._generator.options.consumerName !== undefined && this._generator.options.consumerName !== null
         };

@@ -1,5 +1,6 @@
 import { findUp } from 'find-up';
 import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
 import {
     AggregateModel,
@@ -15,8 +16,6 @@ import {
     ConsumerModel
 } from '../types/index.mjs';
 import { AppSettingsModel } from '../types/appsettings.mjs';
-
-
 
 export default class Utils {
     constructor(generator) {
@@ -35,25 +34,21 @@ export default class Utils {
         this._generator.destinationRoot(pathBaseDir);
     }
 
-    async readArchetypeMetadata() {
-        const archetypeFile = await findUp('archetype.json');
-
-        if (!archetypeFile)
-            throw new Error('No se encontró el archivo archetype.json');
-
-        return await this._generator.fs.readJSON(archetypeFile);
-    }
-
     async getOptions(answers) {
-        const archetypeValues = this._generator.fs.readJSON(`${path.join(this._generator.destinationRoot())}/archetype.json`);
+        const pathJson = path.join(this._generator.destinationRoot(), 'archetype.json');
 
-        answers = { 
-            ...answers,  
+        if (!fsSync.existsSync(pathJson))
+            throw new Error('⚠️ File archetype.json not found, using the answers provided.');
+
+        const archetypeValues = this._generator.fs.readJSON(pathJson);
+
+        answers = {
+            ...answers,
             organization: archetypeValues?.organization ?? answers.organization,
             microservice: archetypeValues?.microservice ?? answers.microservice,
             description: archetypeValues?.description ?? answers.description,
             organization: archetypeValues?.organization ?? answers.organization,
-            aggregate: answers.aggregate ?? archetypeValues.aggregate,
+            aggregate: answers.aggregate ?? archetypeValues?.aggregate,
             vault: archetypeValues?.vault ?? answers.vault,
             contactName: archetypeValues?.contactName ?? answers.contactName,
             contactEmail: archetypeValues?.contactEmail ?? answers.contactEmail
