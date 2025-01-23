@@ -49,14 +49,14 @@ export default class Utils {
 
         answers = { 
             ...answers,  
-            organization: archetypeValues.organization,
-            microservice: archetypeValues.microservice,
-            description: archetypeValues.description,
-            organization: archetypeValues.organization,
+            organization: archetypeValues?.organization ?? answers.organization,
+            microservice: archetypeValues?.microservice ?? answers.microservice,
+            description: archetypeValues?.description ?? answers.description,
+            organization: archetypeValues?.organization ?? answers.organization,
             aggregate: answers.aggregate ?? archetypeValues.aggregate,
-            vault: archetypeValues.vault,
-            contactName: archetypeValues.contactName,
-            contactEmail: archetypeValues.contactEmail
+            vault: archetypeValues?.vault ?? answers.vault,
+            contactName: archetypeValues?.contactName ?? answers.contactName,
+            contactEmail: archetypeValues?.contactEmail ?? answers.contactEmail
         };
 
         const organization = this.toPascalCase(answers.organization);
