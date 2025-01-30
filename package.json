@@ -45,7 +45,7 @@
   "bugs": {
     "url": "https://github.com/codedesignplus/generator-codedesignplus/issues"
   },
-  "homepage": "https://github.com/codedesignplus/generator-codedesignplus#readme",
+  "homepage": "https://www.codedesignplus.com",
   "dependencies": {
     "yeoman-environment": "^4.4.1"
   },
