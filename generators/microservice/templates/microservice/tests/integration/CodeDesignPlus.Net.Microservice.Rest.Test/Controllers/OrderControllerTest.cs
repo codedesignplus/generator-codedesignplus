@@ -3,10 +3,10 @@
 public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Program>>
 {
     public OrderControllerTest(Server<Program> server) : base(server)
-    {
+    {        
         server.InMemoryCollection = (x) =>
         {
-            x.Add("Vault:Enabled", "false");
+            x.Add("Vault:Enable", "false");
             x.Add("Vault:Address", "http://localhost:8200");
             x.Add("Vault:Token", "root");
             x.Add("Solution", "CodeDesignPlus");
@@ -30,7 +30,7 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
 
         var json = await response.Content.ReadAsStringAsync();
 
-        var orders = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<OrderDto>>(json);
+        var orders = JsonSerializer.Deserialize<IEnumerable<OrderDto>>(json);
 
         Assert.NotNull(orders);
         Assert.NotEmpty(orders);
@@ -50,7 +50,7 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
 
         var json = await response.Content.ReadAsStringAsync();
 
-        var order = Newtonsoft.Json.JsonConvert.DeserializeObject<OrderDto>(json);
+        var order = JsonSerializer.Deserialize<OrderDto>(json);
 
         Assert.NotNull(order);
         Assert.Equal(orderCreated.Id, order.Id);
@@ -82,13 +82,13 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
             }
         };
 
-        var json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+        var json = JsonSerializer.Serialize(data);
 
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await this.RequestAsync("http://localhost/api/Orders", tenant, content, HttpMethod.Post);
 
-        var order = await this.GetRecordAsync(data.Id);
+        var order = await this.GetRecordAsync(data.Id, tenant);
 
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -98,8 +98,8 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         Assert.Equal(data.Client.Id, order.Client.Id);
         Assert.NotEqual(Guid.Empty, order.CreatedBy);
         Assert.Equal(Guid.Empty, order.UpdatedBy);
-        Assert.NotEqual(0, order.CreatedAt);
-        Assert.Equal(0, order.UpdatedAt);
+        Assert.True(order.CreatedAt > Instant.MinValue);
+        Assert.Null(order.UpdatedAt);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         // Act
         var response = await this.RequestAsync($"http://localhost/api/Orders/{orderCreated.Id}/cancel", tenant, content, HttpMethod.Delete);
 
-        var order = await this.GetRecordAsync(orderCreated.Id);
+        var order = await this.GetRecordAsync(orderCreated.Id, tenant);
 
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -125,8 +125,8 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         Assert.NotNull(order.CancelledAt);
         Assert.NotEqual(Guid.Empty, order.CreatedBy);
         Assert.NotEqual(Guid.Empty, order.UpdatedBy);
-        Assert.NotEqual(0, order.CreatedAt);
-        Assert.NotEqual(0, order.UpdatedAt);
+        Assert.True(order.CreatedAt > Instant.MinValue);
+        Assert.True(order.UpdatedAt > Instant.MinValue);
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         // Act
         var response = await this.RequestAsync($"http://localhost/api/Orders/{orderCreated.Id}/complete", tenant, null, HttpMethod.Patch);
 
-        var order = await this.GetRecordAsync(orderCreated.Id);
+        var order = await this.GetRecordAsync(orderCreated.Id, tenant);
 
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -147,8 +147,8 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         Assert.NotNull(order.CompletedAt);
         Assert.NotEqual(Guid.Empty, order.CreatedBy);
         Assert.NotEqual(Guid.Empty, order.UpdatedBy);
-        Assert.NotEqual(0, order.CreatedAt);
-        Assert.NotEqual(0, order.UpdatedAt);
+        Assert.True(order.CreatedAt > Instant.MinValue);
+        Assert.True(order.UpdatedAt > Instant.MinValue);
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         // Act
         var response = await this.RequestAsync($"http://localhost/api/Orders/{orderCreated.Id}/products", tenant, content, HttpMethod.Post);
 
-        var order = await this.GetRecordAsync(orderCreated.Id);
+        var order = await this.GetRecordAsync(orderCreated.Id, tenant);
 
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -185,8 +185,8 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         Assert.Equal(addProduct.Quantity, order.Products.First().Quantity);
         Assert.NotEqual(Guid.Empty, order.CreatedBy);
         Assert.NotEqual(Guid.Empty, order.UpdatedBy);
-        Assert.NotEqual(0, order.CreatedAt);
-        Assert.NotEqual(0, order.UpdatedAt);
+        Assert.True(order.CreatedAt > Instant.MinValue);
+        Assert.True(order.UpdatedAt > Instant.MinValue);
     }
 
     [Fact]
@@ -222,7 +222,7 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         // Act
         var response = await this.RequestAsync($"http://localhost/api/Orders/{orderCreated.Id}/products/{addProduct.IdProduct}", tenant, content, HttpMethod.Put);
 
-        var order = await this.GetRecordAsync(orderCreated.Id);
+        var order = await this.GetRecordAsync(orderCreated.Id, tenant);
 
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -230,8 +230,8 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         Assert.Equal(updateQuantity.Quantity, order.Products.First().Quantity);
         Assert.NotEqual(Guid.Empty, order.CreatedBy);
         Assert.NotEqual(Guid.Empty, order.UpdatedBy);
-        Assert.NotEqual(0, order.CreatedAt);
-        Assert.NotEqual(0, order.UpdatedAt);
+        Assert.True(order.CreatedAt > Instant.MinValue);
+        Assert.True(order.UpdatedAt > Instant.MinValue);
     }
 
     [Fact]
@@ -258,20 +258,20 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         // Act
         var response = await this.RequestAsync($"http://localhost/api/Orders/{orderCreated.Id}/products/{addProduct.IdProduct}", tenant, null, HttpMethod.Delete);
 
-        var order = await this.GetRecordAsync(orderCreated.Id);
+        var order = await this.GetRecordAsync(orderCreated.Id, tenant);
 
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Empty(order.Products);
         Assert.NotEqual(Guid.Empty, order.CreatedBy);
         Assert.NotEqual(Guid.Empty, order.UpdatedBy);
-        Assert.NotEqual(0, order.CreatedAt);
-        Assert.NotEqual(0, order.UpdatedAt);
+        Assert.True(order.CreatedAt > Instant.MinValue);
+        Assert.True(order.UpdatedAt > Instant.MinValue);
     }
 
     private static StringContent BuildBody(object data)
     {
-        var json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+        var json = JsonSerializer.Serialize(data);
 
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -300,7 +300,7 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
             }
         };
 
-        var json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+        var json = JsonSerializer.Serialize(data);
 
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -309,13 +309,13 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
         return data;
     }
 
-    private async Task<OrderDto> GetRecordAsync(Guid id)
+    private async Task<OrderDto> GetRecordAsync(Guid id, Guid tenant)
     {
-        var response = await this.RequestAsync($"http://localhost/api/Orders/{id}", Guid.NewGuid(), null, HttpMethod.Get);
+        var response = await this.RequestAsync($"http://localhost/api/Orders/{id}", tenant, null, HttpMethod.Get);
 
         var json = await response.Content.ReadAsStringAsync();
 
-        return Newtonsoft.Json.JsonConvert.DeserializeObject<OrderDto>(json)!;
+        return JsonSerializer.Deserialize<OrderDto>(json)!;
     }
 
     private async Task<HttpResponseMessage> RequestAsync(string uri, Guid tenant, HttpContent? content, HttpMethod method)

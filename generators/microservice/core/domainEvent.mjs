@@ -9,8 +9,7 @@ export default class DomainEventGenerator {
         this.name = 'domainEvent';
     }
 
-    async generate(options) {
-
+    async generate(options, microservice) {
         const to = options.isConsumer ? options.paths.src.asyncWorker : options.paths.src.domain;
         const ns = options.isConsumer ? `${options.solution}.AsyncWorker.DomainEvents` : `${options.solution}.Domain.DomainEvents`;
 
@@ -18,12 +17,13 @@ export default class DomainEventGenerator {
             const domainEvent = options.domainEvents[key];
 
             await this._generator.fs.copyTplAsync(
-                this._generator.templatePath('domain-event/ItemDomainEvent.cs'),
+                this._generator.templatePath(`domain-event/${options.isConsumer ? 'ItemListenerDomainEvent' : 'ItemDomainEvent'}.cs`),
                 this._generator.destinationPath(path.join(to, `DomainEvents`, domainEvent.file)),
                 {
                     ns: ns,
                     name: domainEvent.fullname,
-                    entity: options.aggregate.fullname
+                    entity: options.aggregate.fullname,
+                    microservice: microservice,
                 }
             );
         }

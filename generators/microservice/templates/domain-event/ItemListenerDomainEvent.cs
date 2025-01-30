@@ -1,6 +1,6 @@
 ﻿namespace <%= ns %>;
 
-[EventKey<<%= entity %>>(1, "<%= name %>")]
+[EventKey<<%= entity %>>(1, "<%= name %>", "<%= microservice %>")]
 public class <%= name %>(
      Guid aggregateId,
      Guid? eventId = null,

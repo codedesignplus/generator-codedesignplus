@@ -137,8 +137,7 @@ Write-Host "6. Writing secrets..." -ForegroundColor Blue
 vault kv put -mount=vault-keyvalue ms-archetype `
     Security:ClientId=a74cb192-598c-4757-95ae-b315793bbbca `
     Security:ValidAudiences:0=a74cb192-598c-4757-95ae-b315793bbbca `
-    Security:ValidAudiences:1=api://a74cb192-598c-4757-95ae-b315793bbbca `
-    Redis:Instances:Core:ConnectionString=localhost:6379
+    Security:ValidAudiences:1=api://a74cb192-598c-4757-95ae-b315793bbbca
 
 vault kv get -mount=vault-keyvalue ms-archetype
 
@@ -154,7 +153,7 @@ vault write vault-database/config/db-ms-archetype `
 
 vault write vault-database/roles/ms-archetype-mongo-role `
     db_name=db-ms-archetype `
-    creation_statements="{ \""db\"": \""admin\"", \""roles\"": [{ \""role\"": \""readWrite\"", \""db\"": \""db-ms-archetype\"" }] }" `
+    creation_statements="{ """db""": """admin""", """roles""": [{ """role""": """readWrite""", """db""": """db-ms-archetype""" }] }" `
     default_ttl="1h" `
     max_ttl="24h"
 
@@ -173,6 +172,6 @@ vault write vault-rabbitmq/config/connection `
     password="password"
 
 vault write vault-rabbitmq/roles/ms-archetype-rabbitmq-role `
-    vhosts="{\""/\"":{\""write\"": \"".*\"", \""read\"": \"".*\"", \""configure\"": \"".*\""}}"
+    vhosts="{"""/""":{"""write""": """.*""", """read""": """.*""", """configure""": """.*"""}}"
 
 vault read vault-rabbitmq/creds/ms-archetype-rabbitmq-role
