@@ -39,15 +39,16 @@ export default class AppSettingsGenerator {
         });
 
         try {
-            this.updateConfigVault(path.join('tools', 'vault','config-vault.ps1'), options);
-            this.updateConfigVault(path.join('tools', 'vault','config-vault.sh'), options);
+            this._updateConfigVault(path.join('tools', 'vault','config-vault.ps1'), options);
+            this._updateConfigVault(path.join('tools', 'vault','config-vault.sh'), options);
+            this._updateReadme(options);
         } catch (error) {
             console.log('The vault configuration could not be updated.');
             console.log(error);
         }    
     }
 
-    updateConfigVault(file, options) {
+    _updateConfigVault(file, options) {
         const configFile = this._generator.destinationPath(file);
 
         let config = this._generator.fs.read(configFile);
@@ -62,6 +63,16 @@ export default class AppSettingsGenerator {
         config = config.replace(/ms-archetype/g, options.appSettings.appName);
 
         this._generator.fs.write(configFile, config);
+    }
+
+    _updateReadme(options) {
+        const readmeFile = this._generator.destinationPath('README.md');
+
+        let readme = this._generator.fs.read(readmeFile);
+
+        readme = readme.replace(/\bms-archetype\b/g, options.appSettings.appName);
+
+        this._generator.fs.write(readmeFile, readme);
     }
 
     getArguments() {
