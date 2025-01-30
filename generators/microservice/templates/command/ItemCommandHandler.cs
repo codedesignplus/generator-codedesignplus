@@ -1,6 +1,6 @@
 ﻿namespace <%= ns %>;
 
-public class <%= handler %>(<%= repository %> repository, IUserContext user, IMessage message) : IRequestHandler<<%= name %>>
+public class <%= handler %>(<%= repository %> repository, IUserContext user, IPubSub pubsub) : IRequestHandler<<%= name %>>
 {
     public Task Handle(<%= name %> request, CancellationToken cancellationToken)
     {
