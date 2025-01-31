@@ -50,7 +50,7 @@
     "yeoman-environment": "^4.4.1",
     "@types/xml2js": "^0.4.14",
     "boxen": "^8.0.1",
-    "eslint": "^8.57.0",
+    "eslint": "^9.19.0",
     "figlet": "^1.8.0",
     "find-up": "^7.0.0",
     "glob": "^11.0.0",
