@@ -47,9 +47,7 @@
   },
   "homepage": "https://www.codedesignplus.com",
   "dependencies": {
-    "yeoman-environment": "^4.4.1"
-  },
-  "devDependencies": {
+    "yeoman-environment": "^4.4.1",
     "@types/xml2js": "^0.4.14",
     "boxen": "^8.0.1",
     "eslint": "^8.57.0",
@@ -63,6 +61,8 @@
     "prettier": "^3.2.5",
     "xml2js": "^0.6.2",
     "yeoman-generator": "^7.3.2"
+  },
+  "devDependencies": {
   },
   "engines": {
     "node": ">=18.0.0"
