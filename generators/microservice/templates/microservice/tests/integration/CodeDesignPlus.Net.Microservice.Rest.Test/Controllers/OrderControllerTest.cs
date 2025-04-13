@@ -1,10 +1,15 @@
-﻿namespace CodeDesignPlus.Net.Microservice.Rest.Test.Controllers;
+﻿using CodeDesignPlus.Net.Core.Abstractions.Models.Pager;
+using CodeDesignPlus.Net.Microservice.Rest.Test.Helpers;
+using Xunit.Abstractions;
 
-public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Program>>
+namespace CodeDesignPlus.Net.Microservice.Rest.Test.Controllers;
+
+[Collection(ServerCollectionFixture<Program> .Collection)]
+public class OrderControllerTest : ServerBase<Program>
 {
-    public OrderControllerTest(Server<Program> server) : base(server)
+    public OrderControllerTest(ServerCollectionFixture<Program> fixture, ITestOutputHelper output) : base(fixture.Container)
     {        
-        server.InMemoryCollection = (x) =>
+        fixture.Container.InMemoryCollection = (x) =>
         {
             x.Add("Vault:Enable", "false");
             x.Add("Vault:Address", "http://localhost:8200");
@@ -30,11 +35,12 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
 
         var json = await response.Content.ReadAsStringAsync();
 
-        var orders = JsonSerializer.Deserialize<IEnumerable<OrderDto>>(json);
+        var orders = JsonSerializer.Deserialize<Pagination<OrderDto>>(json);
 
+        Assert.NotNull(json);
         Assert.NotNull(orders);
-        Assert.NotEmpty(orders);
-        Assert.Contains(orders, x => x.Id == order.Id);
+        Assert.NotEmpty(orders.Data);
+        Assert.Contains(orders.Data, x => x.Id == order.Id);
     }
 
     [Fact]
@@ -92,7 +98,7 @@ public class OrderControllerTest : ServerBase<Program>, IClassFixture<Server<Pro
 
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-
+ 
         Assert.Equal(data.Id, order.Id);
         Assert.Equal(data.Client.Name, order.Client.Name);
         Assert.Equal(data.Client.Id, order.Client.Id);
