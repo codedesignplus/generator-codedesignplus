@@ -32,7 +32,11 @@ ms-base:
 
   service:
     type: ClusterIP
-    port: 5000
+    ports:
+      - name: http
+        port: 5000
+        targetPort: http
+        protocol: TCP
 
   ingress:
     enabled: false
@@ -96,7 +100,7 @@ ms-base:
     hosts:
       - services.codedesignplus.com
     gateways:
-      - istio-ingress/services-gateway
+      - istio-ingress/istio-gateway
     http:
     - name: ms-archetype
       match:
@@ -106,6 +110,6 @@ ms-base:
         uri: /
       route:
       - destination:
-          host: ms-archetype-rest.default.svc.cluster.local
+          host: ms-archetype-rest.urbancore.svc.cluster.local
           port:
             number: 5000

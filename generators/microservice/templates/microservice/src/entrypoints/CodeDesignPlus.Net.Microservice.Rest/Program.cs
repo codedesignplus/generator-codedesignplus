@@ -1,3 +1,4 @@
+using CodeDesignPlus.Net.Microservice.Commons.Application;
 using CodeDesignPlus.Net.Microservice.Commons.EntryPoints.Rest.Middlewares;
 using CodeDesignPlus.Net.Microservice.Commons.EntryPoints.Rest.Resources;
 using CodeDesignPlus.Net.Microservice.Commons.EntryPoints.Rest.Swagger;
@@ -9,7 +10,7 @@ using CodeDesignPlus.Net.Vault.Extensions;
 using NodaTime.Serialization.SystemTextJson;
 
 
-    var builder = WebApplication.CreateSlimBuilder(args);
+var builder = WebApplication.CreateSlimBuilder(args);
 
 Serilog.Debugging.SelfLog.Enable(Console.Error);
 
@@ -45,6 +46,9 @@ app.UseCors(builder => builder
     .AllowAnyMethod()
     .AllowAnyHeader()
 );
+
+app.UsePath();
+
 app.UseExceptionMiddleware();
 app.UseHealthChecks();
 app.UseCodeErrors();
