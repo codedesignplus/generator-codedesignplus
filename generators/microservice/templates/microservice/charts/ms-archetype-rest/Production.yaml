@@ -1,14 +1,15 @@
 ms-base:
+  environment: Production
   replicaCount: 1
 
   image:
-    repository: codedesignplus/ms-archetype-grpc
+    repository: codedesignplus/ms-archetype-rest
     pullPolicy: IfNotPresent
     tag: "v0.1.0-alpha.100"
 
   imagePullSecrets: []
-  fullnameOverride: "ms-archetype-grpc"
-  nameOverride: "ms-archetype-grpc"
+  fullnameOverride: "ms-archetype-rest"
+  nameOverride: "ms-archetype-rest"
 
   serviceAccount:
     create: true
@@ -31,7 +32,11 @@ ms-base:
 
   service:
     type: ClusterIP
-    port: 5000
+    ports:
+      - name: http
+        port: 5000
+        targetPort: http
+        protocol: TCP
 
   ingress:
     enabled: false
@@ -91,4 +96,20 @@ ms-base:
   affinity: {}
 
   virtualService: 
-    create: false
+    create: true
+    hosts:
+      - services.codedesignplus.com
+    gateways:
+      - istio-ingress/istio-gateway
+    http:
+    - name: ms-archetype
+      match:
+      - uri:
+          prefix: /ms-archetype/
+      rewrite:
+        uri: /
+      route:
+      - destination:
+          host: ms-archetype-rest.urbancore.svc.cluster.local
+          port:
+            number: 5000

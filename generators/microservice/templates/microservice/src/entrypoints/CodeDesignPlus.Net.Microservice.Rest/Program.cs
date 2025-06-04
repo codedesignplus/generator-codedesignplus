@@ -1,3 +1,4 @@
+using CodeDesignPlus.Net.Microservice.Commons.Application;
 using CodeDesignPlus.Net.Microservice.Commons.EntryPoints.Rest.Middlewares;
 using CodeDesignPlus.Net.Microservice.Commons.EntryPoints.Rest.Resources;
 using CodeDesignPlus.Net.Microservice.Commons.EntryPoints.Rest.Swagger;
@@ -6,10 +7,9 @@ using CodeDesignPlus.Net.Microservice.Commons.HealthChecks;
 using CodeDesignPlus.Net.Microservice.Commons.MediatR;
 using CodeDesignPlus.Net.Redis.Cache.Extensions;
 using CodeDesignPlus.Net.Vault.Extensions;
-using NodaTime.Serialization.SystemTextJson;
+using NodaTime.Serialization.JsonNet;
 
-
-    var builder = WebApplication.CreateSlimBuilder(args);
+var builder = WebApplication.CreateSlimBuilder(args);
 
 Serilog.Debugging.SelfLog.Enable(Console.Error);
 
@@ -19,7 +19,11 @@ builder.Configuration.AddVault();
 
 builder.Services
     .AddControllers()
-    .AddJsonOptions(opt => opt.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Error;
+        options.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors();
@@ -45,6 +49,9 @@ app.UseCors(builder => builder
     .AllowAnyMethod()
     .AllowAnyHeader()
 );
+
+app.UsePath();
+
 app.UseExceptionMiddleware();
 app.UseHealthChecks();
 app.UseCodeErrors();
