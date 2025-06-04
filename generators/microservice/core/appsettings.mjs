@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+import { glob } from 'glob';
 import path from 'path';
 
 export default class AppSettingsGenerator {
@@ -10,42 +12,65 @@ export default class AppSettingsGenerator {
 
     async generate(options, sources = []) {
 
-        if(sources.length === 0) {
+        if (sources.length === 0) {
             sources = [
-                options.paths.src.rest,
-                options.paths.src.grpc,
-                options.paths.src.asyncWorker
+                options.paths.src.rest
             ];
+
+            if (options.enableGrpc)
+                sources.push(options.paths.src.grpc);
+
+            if (options.enableAsyncWorker)
+                sources.push(options.paths.src.asyncWorker);
         }
 
         const destination = this._generator.destinationPath();
 
         sources.forEach(source => {
 
-            const appSettingsFile = path.join(destination, source, 'appsettings.json');
+            const files = glob.sync('appsettings.*', { dot: true, nodir: true, cwd: path.join(destination, source) });
 
-            const json = this._generator.fs.readJSON(appSettingsFile, {});
+            files.forEach(file => {
 
-            json.Core.AppName = options.appSettings.appName;
-            json.Core.Description = options.appSettings.description;
-            json.Core.Business = options.appSettings.business;
-            json.Core.Contact.Name = options.appSettings.contact.name;
-            json.Core.Contact.Email = options.appSettings.contact.email;
-            json.Vault.Solution = options.appSettings.vault;
-            json.Vault.AppName = options.appSettings.appName;
-            json.Mongo.Database = options.appSettings.database;
+                const appSettingsFile = path.join(destination, source, file);
 
-            this._generator.fs.writeJSON(appSettingsFile, json);
+                const json = this._generator.fs.readJSON(appSettingsFile, {});
+
+                if (json.Core) {
+                    if (json.Core.Id)
+                        json.Core.Id = randomUUID().toString();
+                    if (json.Core.AppName)
+                        json.Core.AppName = options.appSettings.appName;
+                    if (json.Core.Description)
+                        json.Core.Description = options.appSettings.description;
+                    if (json.Core.Business)
+                        json.Core.Business = options.appSettings.business;
+                    if (json.Core.Contact?.Name)
+                        json.Core.Contact.Name = options.appSettings.contact.name;
+                    if (json.Core.Contact?.Email)
+                        json.Core.Contact.Email = options.appSettings.contact.email;
+                }
+                if (json.Vault) {
+                    json.Vault.Solution = options.appSettings.vault;
+                    json.Vault.AppName = options.appSettings.appName;
+                }
+                if (json.Mongo) {
+                    json.Mongo.Database = options.appSettings.database;
+                }
+
+                this._generator.fs.writeJSON(appSettingsFile, json);
+
+            });
         });
 
         try {
-            this._updateConfigVault(path.join('tools', 'vault','config-vault.ps1'), options);
-            this._updateConfigVault(path.join('tools', 'vault','config-vault.sh'), options);
+            this._updateConfigVault(path.join('tools', 'vault', 'config-vault.ps1'), options);
+            this._updateConfigVault(path.join('tools', 'vault', 'config-vault.sh'), options);
             this._updateReadme(options);
         } catch (error) {
             console.log('The vault configuration could not be updated.');
             console.log(error);
-        }    
+        }
     }
 
     _updateConfigVault(file, options) {

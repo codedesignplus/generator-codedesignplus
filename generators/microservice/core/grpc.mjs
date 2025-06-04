@@ -59,8 +59,6 @@ export default class GrpcGenerator {
         
         const files = glob.sync('**', { dot: true, nodir: true, cwd: templateGrpcProject, ignore: ignores });
 
-        console.log(templateGrpcProject, files);
-
         await this._utils.generateFiles(options, options.solution, templateGrpcProject, grpcProjectPathDestination, files);
 
         await this._appsettings.generate(options, [options.paths.src.grpc]);
