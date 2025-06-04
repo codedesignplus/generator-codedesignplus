@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace <%= ns %>;
 
 public sealed partial class <%= name %>
@@ -7,6 +9,7 @@ public sealed partial class <%= name %>
 
     public string Value { get; private set; }
 
+    [JsonConstructor]
     private <%= name %>(string value)
     {
         DomainGuard.IsNullOrEmpty(value, Errors.UnknownError);

@@ -16,7 +16,7 @@
     "prettier": "prettier --check ."
   },
   "type": "module",
-  "files": [
+  "files": [ 
     "generators"
   ],
   "keywords": [
