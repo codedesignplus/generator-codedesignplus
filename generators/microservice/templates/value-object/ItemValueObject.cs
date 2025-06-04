@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace <%= ns %>;
 
@@ -10,7 +10,7 @@ public sealed partial class <%= name %>
     public string Value { get; private set; }
 
     [JsonConstructor]
-    public <%= name %>(string value)
+    private <%= name %>(string value)
     {
         DomainGuard.IsNullOrEmpty(value, Errors.UnknownError);
 

@@ -164,6 +164,7 @@ export default class Utils {
             [/global using CodeDesignPlus\.Net\.Microservice\.Application\.Order\.Queries\.GetAllOrders;/g, ''],
             [/app\.MapGrpcService<OrdersService>\(\)/g, `app.MapGrpcService<${options.proto?.name}Service>()`],
             [/Order/g, options.aggregate.name],
+            [/ms-archetype/g, `${options.appSettings.appName}`],
             ...transformations
         ]
     }
@@ -178,6 +179,7 @@ export default class Utils {
                 .replace(/CodeDesignPlus\.Net\.Microservice/g, namespace)
                 .replace(/Order/g, options.microservice)
                 .replace(/orders.proto/g, options.proto?.file)
+                .replace(/ms-archetype/g, `${options.appSettings.appName }`)
             );
 
             const content = await fs.readFile(src, { encoding: 'utf-8' });
