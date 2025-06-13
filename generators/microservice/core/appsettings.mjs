@@ -40,7 +40,7 @@ export default class AppSettingsGenerator {
                     if (json.Core.Id)
                         json.Core.Id = randomUUID().toString();
                     if (json.Core.AppName)
-                        json.Core.AppName = options.appSettings.appName;
+                        json.Core.AppName = json.Core.AppName.replace(/ms-archetype/g, options.appSettings.appName);
                     if (json.Core.Description)
                         json.Core.Description = options.appSettings.description;
                     if (json.Core.Business)
