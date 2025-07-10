@@ -11,7 +11,7 @@ export class ConsumerModel extends BaseModel {
         this.file = `${this.fullname}.cs`;
         
         this.aggregate =  `${this._validate(toPascalCase(data.aggregate), 'Aggregate')}`;
-        this.action = data.action.toLowerCase();
+        this.action = `${data.action}${this.sufix}`;
         this.domainEvent = `${this._validate(toPascalCase(this.name), 'DomainEvent')}`;
         this.command = toPascalCase(data.action);
         this.microservice = data.microservice.toLowerCase();
