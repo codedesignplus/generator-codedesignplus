@@ -1,0 +1,27 @@
+{
+  "categories": [
+    { "title": "## 🚀 Features", "labels": ["feat", "feature"] },
+    { "title": "## 🐛 Bug Fixes", "labels": ["fix", "bug"] },
+    { "title": "## 🧪 Tests", "labels": ["test"] },
+    { "title": "## 📦 Dependencies", "labels": ["deps", "dependencies"] },
+    { "title": "## 📝 Documentation", "labels": ["docs"] },
+    { "title": "## 🔧 Maintenance", "labels": ["chore", "refactor"] }
+  ],
+  "ignore_labels": ["ignore"],
+  "sort": "ASC",
+  "template": "#{{NUMBER}} {{TITLE}}\n",
+  "pr_template": "- #{{NUMBER}} {{TITLE}}\n",
+  "empty_template": "- no changes",
+  "label_extractor": [
+    { "pattern": "^(feat|feature)(\\(.*\\))?!?:", "target": "$1" },
+    { "pattern": "^(fix|bug)(\\(.*\\))?!?:", "target": "$1" },
+    { "pattern": "^(test)(\\(.*\\))?!?:", "target": "$1" },
+    { "pattern": "^(docs)(\\(.*\\))?!?:", "target": "$1" },
+    { "pattern": "^(chore|refactor)(\\(.*\\))?!?:", "target": "$1" },
+    { "pattern": "^(deps)(\\(.*\\))?!?:", "target": "$1" }
+  ],
+  "duplicate_filter": { "pattern": "^Merge", "on_property": "title", "method": "match" },
+  "transformers": [
+    { "pattern": "^(feat|fix|test|docs|chore|refactor|deps)(\\(.*\\))?!?: ", "target": "" }
+  ]
+}
